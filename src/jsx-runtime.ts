@@ -1,5 +1,5 @@
-// JSX のカスタムランタイム
-// esbuild の jsxImportSource 設定でこのモジュールが使われる
+// Custom JSX runtime
+// Used via esbuild's jsxImportSource configuration
 
 export type JSXElement = {
   type: string | Function;

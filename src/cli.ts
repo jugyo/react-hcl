@@ -30,17 +30,17 @@ async function main() {
 
   const absoluteInput = resolve(inputFile);
 
-  // esbuild で TSX をトランスパイル（バンドル）
+  // Transpile and bundle TSX with esbuild
   const result = await esbuild.build({
     entryPoints: [absoluteInput],
     bundle: true,
     format: "esm",
     platform: "node",
-    // カスタム JSX ランタイムを使用
+    // Use custom JSX runtime
     jsx: "automatic",
     jsxImportSource: "react-terraform",
     write: false,
-    // react-terraform パッケージを外部化せず、ソースからバンドルする
+    // Bundle react-terraform from source instead of treating it as external
     alias: {
       "react-terraform/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
       "react-terraform": resolve(__dirname, "../src/index.ts"),
@@ -49,13 +49,13 @@ async function main() {
 
   const code = result.outputFiles[0].text;
 
-  // 一時ファイルに書き出して動的インポート
+  // Write to a temp file and dynamically import it
   const tmpDir = await mkdtemp(join(tmpdir(), "react-terraform-"));
   const tmpFile = join(tmpDir, "bundle.mjs");
   try {
     await writeFile(tmpFile, code);
     const mod = await import(tmpFile);
-    // default export を評価結果として出力
+    // Render the default export as output
     if (mod.default != null) {
       console.log(render(mod.default));
     }
