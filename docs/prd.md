@@ -42,6 +42,8 @@ The final output is a `main.tf` file that can be used directly with Terraform CL
 - JSX attribute syntax is recommended for simple cases
 - innerText HCL syntax is allowed for complex nesting/dynamic constructs
 - When using innerText, specifying attributes other than `type` and `name` is prohibited
+- innerText children can be a string (`{\`...\`}`) or a function returning a string (`{() => \`...\`}`)
+- When using `useRef` references inside innerText, a function is required for lazy evaluation; plain template literals with refs throw a runtime error with guidance
 - The JS expression evaluation scope within innerText follows standard JavaScript rules (lexical scoping)
 - `${expr}` within innerText is evaluated as a JS expression; `\${expr}` is output as-is as a Terraform expression (standard JS escaping)
 - JSX attribute names use Terraform field names (snake_case) directly

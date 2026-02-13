@@ -53,6 +53,9 @@
 - 複雑なネストブロック、`dynamic`、既存HCL移植に使用
 - `type` と `name` 以外の属性指定は禁止（TypeScript の型定義で検出する）
 - JSテンプレート式を評価後、HCLとして出力
+- children は文字列または文字列を返す関数（`() => string`）を指定可能
+- innerText 内で `useRef` の参照を使う場合は関数で包む必要がある（`{() => \`...\${ref.id}...\`}`）。テンプレートリテラルの即時評価による ref 未解決を防ぐため
+- ref を関数で包まずにテンプレートリテラルで使用した場合、ランタイムエラーが発生し、関数の使用を促すメッセージが表示される
 
 ### 4.3 JS式評価スコープ
 - JavaScript の通常のレキシカルスコープ規則に従う
@@ -119,9 +122,10 @@
 ### 7.2 innerText 記法フロー
 1. TSX 読み込み
 2. JSX/TSX パース
-3. innerText 内 `${}` を評価
-4. 評価後文字列を HCL として取り込み
-5. `main.tf` 出力
+3. レンダリング時、children が関数であれば呼び出す（遅延評価により ref が解決済みであることを保証）
+4. innerText 内 `${}` を評価
+5. 評価後文字列を HCL として取り込み
+6. `main.tf` 出力
 
 ### 7.3 ハイブリッド
 - 属性記法と innerText 記法を同一プロジェクトで混在可能
@@ -266,7 +270,7 @@ const vpcRef = useRef();
 ### 15.4 innerText
 ```tsx
 <Resource type="aws_security_group" name="example">
-  {`
+  {() => `
     name   = "example"
     vpc_id = ${vpcRef.id}
 
@@ -282,6 +286,9 @@ const vpcRef = useRef();
   `}
 </Resource>
 ```
+
+> **Note**: innerText 内で `useRef` の参照を使う場合は関数で包む（`{() => \`...\`}`）。ref を使わない静的な innerText は文字列のまま（`{\`...\`}`）で記述可能。
+
 
 ### 15.5 Provider エイリアス
 ```tsx

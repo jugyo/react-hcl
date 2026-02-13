@@ -42,6 +42,8 @@ React（JSX/TSX）の記法でTerraform設定を記述し、標準的な `.tf` �
 - シンプルなケースは JSX属性記法を推奨
 - 複雑なネスト/動的構文は innerText HCL記法を許可
 - innerText 使用時は `type` と `name` 以外の属性指定を禁止する
+- innerText の children は文字列（`{\`...\`}`）または文字列を返す関数（`{() => \`...\`}`）を指定可能
+- innerText 内で `useRef` の参照を使う場合は関数で包む必要がある。関数で包まずにテンプレートリテラルで ref を使用した場合、ランタイムエラーが発生し関数の使用を促す
 - innerText内のJS式評価スコープは JavaScript の通常仕様（レキシカルスコープ）に従う
 - innerText内の `${expr}` は JS式として評価、`\${expr}` は Terraform式としてそのまま出力する（JS標準のエスケープ）
 - JSX属性名は Terraform のフィールド名（snake_case）をそのまま使用する

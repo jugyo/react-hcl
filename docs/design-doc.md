@@ -53,6 +53,9 @@
 - Used for complex nested blocks, `dynamic`, and migrating existing HCL
 - Attributes other than `type` and `name` are prohibited (enforced by TypeScript type definitions)
 - JS template expressions are evaluated, then output as HCL
+- Children can be a string or a function returning a string (`() => string`)
+- When using `useRef` references inside innerText, a function is required (`{() => \`...\${ref.id}...\`}`) to ensure lazy evaluation
+- If a ref is used in a plain template literal (without function wrapping), a runtime error is thrown with guidance to use a function
 
 ### 4.3 JS Expression Evaluation Scope
 - Follows standard JavaScript lexical scoping rules
@@ -119,9 +122,10 @@
 ### 7.2 innerText Syntax Flow
 1. Read TSX
 2. Parse JSX/TSX
-3. Evaluate `${}` within innerText
-4. Incorporate evaluated strings as HCL
-5. Output `main.tf`
+3. During rendering, if children is a function, call it (lazy evaluation ensures refs are resolved)
+4. Evaluate `${}` within innerText
+5. Incorporate evaluated strings as HCL
+6. Output `main.tf`
 
 ### 7.3 Hybrid
 - Attribute syntax and innerText syntax can coexist in the same project
@@ -266,7 +270,7 @@ const vpcRef = useRef();
 ### 15.4 innerText
 ```tsx
 <Resource type="aws_security_group" name="example">
-  {`
+  {() => `
     name   = "example"
     vpc_id = ${vpcRef.id}
 
@@ -282,6 +286,9 @@ const vpcRef = useRef();
   `}
 </Resource>
 ```
+
+> **Note**: When using `useRef` references inside innerText, wrap in a function (`{() => \`...\`}`) for lazy evaluation. Plain strings without refs can be passed directly (`{\`...\`}`).
+
 
 ### 15.5 Provider Aliases
 ```tsx
