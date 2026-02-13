@@ -1,0 +1,3 @@
+- Use Bun instead of Node.js (`bun`, `bun test`, `bun install`, `bunx`)
+- Custom JSX runtime — not React. `jsxImportSource` is `"react-terraform"`
+- Design docs and implementation plan are in `docs/`
