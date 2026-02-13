@@ -14,7 +14,7 @@ React（JSX/TSX）の記法でTerraform設定を記述し、標準的な `.tf` �
 ### 1.3 スコープ
 **含む**
 - `.tsx` から `.tf` へのトランスパイル
-- `Resource` / `DataSource` / `Output` / `Provider` / `Variable` / `Local` / `Terraform` の表現
+- `Resource` / `DataSource` / `Output` / `Provider` / `Variable` / `Locals` / `Terraform` の表現
 - JSX属性記法とinnerText HCL記法のハイブリッド運用
 - `useRef` による参照表現
 - TypeScriptによる開発支援（初期は主要リソース中心）

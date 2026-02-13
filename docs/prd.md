@@ -14,7 +14,7 @@ The final output is a `main.tf` file that can be used directly with Terraform CL
 ### 1.3 Scope
 **In Scope**
 - Transpiling from `.tsx` to `.tf`
-- Expressing `Resource` / `DataSource` / `Output` / `Provider` / `Variable` / `Local` / `Terraform`
+- Expressing `Resource` / `DataSource` / `Output` / `Provider` / `Variable` / `Locals` / `Terraform`
 - Hybrid usage of JSX attribute syntax and innerText HCL syntax
 - Reference expressions via `useRef`
 - Development support through TypeScript (initially focused on major resources)
