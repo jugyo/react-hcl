@@ -14,6 +14,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("all-components.tsx → all primitive components", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/all-components.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/all-components.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {

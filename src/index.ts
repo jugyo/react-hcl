@@ -10,4 +10,10 @@
  * they should be exported from here.
  */
 export { Resource } from "./components/resource";
+export { DataSource } from "./components/data-source";
+export { Output } from "./components/output";
+export { Variable } from "./components/variable";
+export { Locals } from "./components/locals";
+export { Provider } from "./components/provider";
+export { Terraform } from "./components/terraform";
 export { Fragment } from "./jsx-runtime";

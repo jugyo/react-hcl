@@ -41,9 +41,12 @@
  * Usage: raw("aws_vpc.main.id") produces a RawHCL value that serializes without quotes.
  * Also implements toString() so it can be used in template literals.
  *
- * Identified at runtime via a private Symbol key (not enumerable, collision-free).
+ * Identified at runtime via a global Symbol key (Symbol.for).
+ * Global symbols are used because esbuild bundles inline this module, creating separate
+ * copies in the bundle and the CLI process. Symbol.for() ensures both copies share the
+ * same Symbol identity, so isRawHCL() works across the bundle boundary.
  */
-const RAW_HCL_SYMBOL = Symbol("RawHCL");
+const RAW_HCL_SYMBOL = Symbol.for("react-terraform:RawHCL");
 
 export type RawHCL = {
   [RAW_HCL_SYMBOL]: true;
@@ -75,9 +78,10 @@ export function isRawHCL(v: unknown): v is RawHCL {
  * This is needed when the key name is not in BLOCK_WHITELIST but should still
  * use block syntax (e.g. custom nested blocks in provider-specific resources).
  *
- * Identified at runtime via a private Symbol key.
+ * Identified at runtime via a global Symbol key (Symbol.for).
+ * See RAW_HCL_SYMBOL for why global symbols are necessary.
  */
-const BLOCK_HCL_SYMBOL = Symbol("BlockHCL");
+const BLOCK_HCL_SYMBOL = Symbol.for("react-terraform:BlockHCL");
 
 export type BlockHCL = {
   [BLOCK_HCL_SYMBOL]: true;
@@ -106,9 +110,10 @@ export function isBlockHCL(v: unknown): v is BlockHCL {
  * When no marker is specified, plain objects not in the whitelist are auto-wrapped
  * as AttributeHCL during the classification phase.
  *
- * Identified at runtime via a private Symbol key.
+ * Identified at runtime via a global Symbol key (Symbol.for).
+ * See RAW_HCL_SYMBOL for why global symbols are necessary.
  */
-const ATTRIBUTE_HCL_SYMBOL = Symbol("AttributeHCL");
+const ATTRIBUTE_HCL_SYMBOL = Symbol.for("react-terraform:AttributeHCL");
 
 export type AttributeHCL = {
   [ATTRIBUTE_HCL_SYMBOL]: true;
