@@ -15,7 +15,7 @@ import {
   raw,
 } from "react-terraform";
 
-function VpcNetwork() {
+function Main({ region }: { region: string }) {
   const azRef = useRef();
   const vpcRef = useRef();
   const igwRef = useRef();
@@ -26,7 +26,7 @@ function VpcNetwork() {
 
   return (
     <>
-      <Provider type="aws" region="ap-northeast-1" />
+      <Provider type="aws" region={region} />
 
       <Variable
         name="vpc_cidr"
@@ -183,4 +183,4 @@ function VpcNetwork() {
   );
 }
 
-export default <VpcNetwork />;
+export default <Main region="ap-northeast-1" />;

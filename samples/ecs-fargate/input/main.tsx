@@ -15,7 +15,7 @@ import {
   raw,
 } from "react-terraform";
 
-function EcsFargate() {
+function Main({ region }: { region: string }) {
   const azRef = useRef();
   const vpcRef = useRef();
   const igwRef = useRef();
@@ -29,7 +29,7 @@ function EcsFargate() {
 
   return (
     <>
-      <Provider type="aws" region="us-east-1" />
+      <Provider type="aws" region={region} />
 
       <Variable
         name="az_count"
@@ -283,4 +283,4 @@ function EcsFargate() {
   );
 }
 
-export default <EcsFargate />;
+export default <Main region="us-east-1" />;

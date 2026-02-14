@@ -17,7 +17,7 @@ import {
   raw,
 } from "react-terraform";
 
-function StaticWebsite() {
+function Main({ region }: { region: string }) {
   const bucketRef = useRef();
   const oacRef = useRef();
   const distributionRef = useRef();
@@ -26,7 +26,7 @@ function StaticWebsite() {
   return (
     <>
       <Terraform required_version=">= 1.2.8" />
-      <Provider type="aws" region="us-east-1" />
+      <Provider type="aws" region={region} />
 
       <Variable
         name="domain_name"
@@ -163,4 +163,4 @@ function StaticWebsite() {
   );
 }
 
-export default <StaticWebsite />;
+export default <Main region="us-east-1" />;
