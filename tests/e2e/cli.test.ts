@@ -50,6 +50,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("composite.tsx → composite components with ref passing", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/composite.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/composite.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {
