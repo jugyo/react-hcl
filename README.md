@@ -2,21 +2,113 @@
 
 A transpiler that converts TSX into Terraform `.tf` files. Write Terraform configurations using JSX/TSX syntax with a custom JSX runtime (no React dependency).
 
-## Tech Stack
+## Usage
 
-- **Runtime / Package Manager / Test**: [Bun](https://bun.sh)
-- **TSX Transpilation**: esbuild
-- **JSX**: Custom JSX runtime (`jsxImportSource: "react-terraform"`)
+```bash
+react-terraform infra.tsx                  # output to stdout
+react-terraform infra.tsx --out-dir ./tf   # write to ./tf/main.tf
+```
+
+## Example
+
+```tsx
+// infra.tsx
+import { Resource, useRef } from "react-terraform";
+
+function App() {
+  const vpcRef = useRef();
+  return (
+    <>
+      <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+      <Resource type="aws_subnet" name="public" vpc_id={vpcRef.id} cidr_block="10.0.1.0/24" />
+    </>
+  );
+}
+
+export default <App />;
+```
+
+```bash
+$ react-terraform infra.tsx
+```
+
+```hcl
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+}
+```
+
+## Components
+
+| Component | HCL block |
+|---|---|
+| `<Resource>` | `resource "type" "name" { ... }` |
+| `<DataSource>` | `data "type" "name" { ... }` |
+| `<Variable>` | `variable "name" { ... }` |
+| `<Output>` | `output "name" { ... }` |
+| `<Locals>` | `locals { ... }` |
+| `<Provider>` | `provider "type" { ... }` |
+| `<Terraform>` | `terraform { ... }` |
+
+## Hooks & Helpers
+
+- `useRef()` - Create a reference to a resource/data source (`ref.id`, `ref.arn`, etc.)
+- `tf.var("name")` - Reference a variable (`var.name`)
+- `tf.local("name")` - Reference a local value (`local.name`)
+
+## Installation
+
+### From npm
+
+```bash
+npm install -g react-terraform
+```
+
+### Manual install from source
+
+```bash
+git clone https://github.com/jugyo/react-terraform.git
+cd react-terraform
+bun install
+bun run build
+npm link
+```
+
+After this, the `react-terraform` command is available globally.
 
 ## Development
 
 ```bash
+git clone https://github.com/jugyo/react-terraform.git
+cd react-terraform
 bun install
+```
+
+Run the CLI directly without building:
+
+```bash
+bun src/cli.ts infra.tsx
+bun src/cli.ts infra.tsx --out-dir ./tf
+```
+
+Run tests:
+
+```bash
 bun test
+```
+
+Build:
+
+```bash
+bun run build
 ```
 
 ## Documentation
 
-- [PRD](docs/prd.md)
 - [Design Document](docs/design-doc.md)
 - [Implementation Plan](docs/plan.md)
