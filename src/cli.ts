@@ -27,6 +27,7 @@ import { mkdtemp, writeFile, rm, mkdir } from "fs/promises";
 import { fileURLToPath } from "url";
 import { render } from "./renderer";
 import { generate } from "./generator";
+import { detectConflicts } from "./conflict";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -80,6 +81,7 @@ async function main() {
 
     if (mod.default != null) {
       const blocks = render(mod.default);
+      detectConflicts(blocks);
       const hcl = generate(blocks);
 
       if (outDir) {
