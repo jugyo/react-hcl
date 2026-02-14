@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { serializeHCLAttributes, raw, block } from "../src/hcl-serializer";
+import { serializeHCLAttributes, raw, block, attribute } from "../src/hcl-serializer";
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
@@ -55,6 +55,22 @@ describe("serializeHCLAttributes", () => {
     expect(result).toContain("custom_block {");
     expect(result).not.toContain("custom_block = {");
     expect(result).toContain('nested_key = "value"');
+  });
+
+  it("explicit attribute() forces attribute syntax on whitelisted key", () => {
+    const result = serializeHCLAttributes({
+      lifecycle: attribute({ prevent_destroy: true }),
+    });
+    expect(result).toContain("lifecycle = {");
+    expect(result).toContain("prevent_destroy = true");
+  });
+
+  it("explicit attribute() on non-whitelisted key", () => {
+    const result = serializeHCLAttributes({
+      tags: attribute({ Name: "main" }),
+    });
+    expect(result).toContain("tags = {");
+    expect(result).toContain('Name = "main"');
   });
 
   it("combined case", () => {

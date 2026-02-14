@@ -14,9 +14,16 @@
  *   - Array of plain objects → repeated block syntax (e.g. multiple ingress { } blocks)
  *   - Primitive values (string, number, boolean) and arrays of primitives → attribute syntax
  *
- * Two special marker types are provided for explicit control:
+ * Three marker types represent the HCL value categories:
  *   - RawHCL: outputs a string value without quotes (for Terraform references like var.foo)
- *   - BlockHCL: forces block syntax for a nested object (overrides default heuristics)
+ *   - BlockHCL: block syntax for a nested object (key { ... }, no `=`)
+ *   - AttributeHCL: attribute syntax for a nested object (key = { ... }, with `=`)
+ *
+ * All three are user-facing — users can explicitly wrap values with raw(), block(), or attribute().
+ * When no marker is specified, the serializer auto-classifies plain objects:
+ *   - Key in BLOCK_WHITELIST → auto block()
+ *   - Otherwise              → auto attribute()
+ * Explicit markers always take precedence over auto-classification.
  *
  * Formatting:
  *   - Simple attributes are aligned by padding key names to the same width
@@ -88,6 +95,37 @@ export function isBlockHCL(v: unknown): v is BlockHCL {
 }
 
 /**
+ * AttributeHCL — marker type for attribute syntax with nested objects.
+ *
+ * Represents `key = { ... }` syntax (with `=`), as opposed to BlockHCL's `key { ... }`.
+ *
+ * Can be used explicitly to force attribute syntax even for BLOCK_WHITELIST keys:
+ *   { lifecycle: attribute({ prevent_destroy: true }) }
+ *   → lifecycle = { prevent_destroy = true }   (attribute syntax forced)
+ *
+ * When no marker is specified, plain objects not in the whitelist are auto-wrapped
+ * as AttributeHCL during the classification phase.
+ *
+ * Identified at runtime via a private Symbol key.
+ */
+const ATTRIBUTE_HCL_SYMBOL = Symbol("AttributeHCL");
+
+export type AttributeHCL = {
+  [ATTRIBUTE_HCL_SYMBOL]: true;
+  value: Record<string, any>;
+};
+
+/** Creates an AttributeHCL marker wrapping a plain object to force attribute syntax (key = { ... }). */
+export function attribute(value: Record<string, any>): AttributeHCL {
+  return { [ATTRIBUTE_HCL_SYMBOL]: true, value };
+}
+
+/** Type guard for AttributeHCL values. Checks for the private Symbol key. */
+export function isAttributeHCL(v: unknown): v is AttributeHCL {
+  return typeof v === "object" && v !== null && ATTRIBUTE_HCL_SYMBOL in v;
+}
+
+/**
  * Well-known Terraform nested block names that should use block syntax automatically.
  * When a key matches one of these names and its value is a plain object,
  * it renders as: key { ... } instead of key = { ... }
@@ -138,28 +176,11 @@ function serializeValue(value: unknown): string {
   return String(value);
 }
 
-/** Checks if a value is a plain JS object (not array, not RawHCL, not BlockHCL). */
+/** Checks if a value is a plain JS object (not array, not RawHCL, not BlockHCL, not AttributeHCL). */
 function isPlainObject(v: unknown): v is Record<string, any> {
-  return typeof v === "object" && v !== null && !Array.isArray(v) && !isRawHCL(v) && !isBlockHCL(v);
+  return typeof v === "object" && v !== null && !Array.isArray(v) && !isRawHCL(v) && !isBlockHCL(v) && !isAttributeHCL(v);
 }
 
-/**
- * Determines if a key-value pair should use block syntax (no `=`).
- * Returns true if:
- *   - Value is explicitly marked as BlockHCL, OR
- *   - Key is in BLOCK_WHITELIST and value is a plain object
- */
-function isBlockSyntax(key: string, value: unknown): boolean {
-  if (isBlockHCL(value)) return true;
-  if (BLOCK_WHITELIST.has(key) && isPlainObject(value)) return true;
-  return false;
-}
-
-/** Unwraps a BlockHCL marker to get its inner object, or returns the value as-is. */
-function getBlockValue(value: unknown): Record<string, any> {
-  if (isBlockHCL(value)) return value.value;
-  return value as Record<string, any>;
-}
 
 /**
  * Serializes a Record of attributes into indented HCL lines.
@@ -173,11 +194,13 @@ function getBlockValue(value: unknown): Record<string, any> {
  *   2. Simple attributes are rendered first, with keys aligned (padded to max key length)
  *   3. Block entries follow, separated from simple attrs by a blank line
  *
- * Entry classification:
- *   - BlockHCL or whitelisted key + object → block entry (block syntax, no `=`)
- *   - Plain object (not whitelisted)       → block entry (attribute syntax, with `=`)
- *   - Array of objects                     → block entry (repeated blocks)
- *   - Everything else                      → simple attribute
+ * Entry classification (explicit markers take precedence over auto-classification):
+ *   - AttributeHCL (explicit)              → attribute syntax (key = { ... }), overrides whitelist
+ *   - BlockHCL (explicit)                  → block syntax (key { ... })
+ *   - Whitelisted key + plain object       → auto block() (key { ... })
+ *   - Plain object (not whitelisted)       → auto attribute() (key = { ... })
+ *   - Array of objects                     → repeated blocks (key { } key { })
+ *   - Everything else                      → simple attribute (key = value)
  *
  * Example output (indent=2):
  *   cidr_block           = "10.0.0.0/16"
@@ -194,58 +217,77 @@ export function serializeHCLAttributes(
   const pad = " ".repeat(indent);
   const lines: string[] = [];
 
-  // Partition entries into simple (primitive) attributes and block (nested) entries
-  const simpleEntries: [string, unknown][] = [];
-  const blockEntries: [string, unknown][] = [];
+  // Classify each entry into one of the explicit internal representations:
+  //   - simple: primitive values rendered as `key = value`
+  //   - BlockHCL: nested object rendered as `key { ... }` (no `=`)
+  //   - AttributeHCL: nested object rendered as `key = { ... }` (with `=`)
+  //   - array of objects: repeated blocks rendered as `key { } key { }`
+  type SimpleEntry = { kind: "simple"; key: string; value: unknown };
+  type BlockEntry =
+    | { kind: "block"; key: string; value: BlockHCL }
+    | { kind: "attribute"; key: string; value: AttributeHCL }
+    | { kind: "repeated_block"; key: string; value: Record<string, any>[] };
+
+  const simpleEntries: SimpleEntry[] = [];
+  const blockEntries: BlockEntry[] = [];
 
   for (const [key, value] of Object.entries(attrs)) {
-    if (isBlockSyntax(key, value)) {
-      blockEntries.push([key, value]);
+    if (isAttributeHCL(value)) {
+      // Explicit AttributeHCL marker → attribute syntax (overrides whitelist)
+      blockEntries.push({ kind: "attribute", key, value });
+    } else if (isBlockHCL(value)) {
+      // Explicit BlockHCL marker → block syntax
+      blockEntries.push({ kind: "block", key, value });
+    } else if (BLOCK_WHITELIST.has(key) && isPlainObject(value)) {
+      // Whitelisted key + plain object → auto block()
+      blockEntries.push({ kind: "block", key, value: block(value) });
     } else if (isPlainObject(value)) {
-      // Plain object not in whitelist → attribute syntax: tags = { ... }
-      blockEntries.push([key, value]);
+      // Plain object not in whitelist → auto attribute()
+      blockEntries.push({ kind: "attribute", key, value: attribute(value) });
     } else if (Array.isArray(value) && value.length > 0 && isPlainObject(value[0])) {
-      // Array of objects → repeated block syntax: ingress { } ingress { }
-      blockEntries.push([key, value]);
+      // Array of objects → repeated block syntax
+      blockEntries.push({ kind: "repeated_block", key, value: value as Record<string, any>[] });
     } else {
-      simpleEntries.push([key, value]);
+      simpleEntries.push({ kind: "simple", key, value });
     }
   }
 
   // Align simple attribute keys by padding to the longest key length
-  const maxKeyLen = simpleEntries.reduce((max, [key]) => Math.max(max, key.length), 0);
+  const maxKeyLen = simpleEntries.reduce((max, e) => Math.max(max, e.key.length), 0);
 
-  for (const [key, value] of simpleEntries) {
+  for (const { key, value } of simpleEntries) {
     const padding = " ".repeat(maxKeyLen - key.length);
     lines.push(`${pad}${key}${padding} = ${serializeValue(value)}`);
   }
 
-  for (const [key, value] of blockEntries) {
+  for (const entry of blockEntries) {
     // Blank line separator between simple attrs and first block, or between blocks
     if (lines.length > 0) {
       lines.push("");
     }
 
-    if (Array.isArray(value)) {
-      // Array of objects → emit multiple blocks with the same key name
-      for (let i = 0; i < value.length; i++) {
-        if (i > 0) lines.push("");
-        lines.push(`${pad}${key} {`);
-        lines.push(serializeHCLAttributes(value[i], indent + 2));
+    switch (entry.kind) {
+      case "repeated_block":
+        // Array of objects → emit multiple blocks with the same key name
+        for (let i = 0; i < entry.value.length; i++) {
+          if (i > 0) lines.push("");
+          lines.push(`${pad}${entry.key} {`);
+          lines.push(serializeHCLAttributes(entry.value[i], indent + 2));
+          lines.push(`${pad}}`);
+        }
+        break;
+      case "block":
+        // BlockHCL → block syntax (no `=`): key { ... }
+        lines.push(`${pad}${entry.key} {`);
+        lines.push(serializeHCLAttributes(entry.value.value, indent + 2));
         lines.push(`${pad}}`);
-      }
-    } else if (isBlockSyntax(key, value)) {
-      // Block syntax (no `=`): key { ... }
-      const inner = getBlockValue(value);
-      lines.push(`${pad}${key} {`);
-      lines.push(serializeHCLAttributes(inner, indent + 2));
-      lines.push(`${pad}}`);
-    } else {
-      // Attribute syntax (with `=`): key = { ... }
-      const inner = value as Record<string, any>;
-      lines.push(`${pad}${key} = {`);
-      lines.push(serializeHCLAttributes(inner, indent + 2));
-      lines.push(`${pad}}`);
+        break;
+      case "attribute":
+        // AttributeHCL → attribute syntax (with `=`): key = { ... }
+        lines.push(`${pad}${entry.key} = {`);
+        lines.push(serializeHCLAttributes(entry.value.value, indent + 2));
+        lines.push(`${pad}}`);
+        break;
     }
   }
 
