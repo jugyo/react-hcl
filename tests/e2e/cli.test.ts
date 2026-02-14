@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { $ } from "bun";
+import { $, type ShellError } from "bun";
 
 describe("CLI E2E", () => {
   it("basic.tsx → matches expected HCL snapshot", async () => {
@@ -61,6 +61,77 @@ describe("CLI E2E", () => {
     try {
       await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${tmpDir}`;
       const content = await Bun.file(`${tmpDir}/main.tf`).text();
+      const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+      expect(content).toBe(expected);
+    } finally {
+      await $`rm -rf ${tmpDir}`;
+    }
+  });
+});
+
+describe("CLI error handling", () => {
+  it("exits with error when no input file is given", async () => {
+    try {
+      await $`bun run src/cli.ts`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain("Usage:");
+    }
+  });
+
+  it("exits with error for non-existent input file", async () => {
+    try {
+      await $`bun run src/cli.ts non-existent-file.tsx`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+    }
+  });
+
+  it("exits with error for invalid TSX syntax", async () => {
+    const tmpDir = (await $`mktemp -d`.text()).trim();
+    try {
+      await Bun.write(`${tmpDir}/bad.tsx`, `export default <NotClosed`);
+      await $`bun run src/cli.ts ${tmpDir}/bad.tsx`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+    } finally {
+      await $`rm -rf ${tmpDir}`;
+    }
+  });
+
+  it("exits with error for duplicate resource conflict", async () => {
+    try {
+      await $`bun run src/cli.ts tests/fixtures/error-duplicate-resource.tsx`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain("Conflict");
+    }
+  });
+
+  it("exits with error for invalid innerText HCL", async () => {
+    try {
+      await $`bun run src/cli.ts tests/fixtures/error-invalid-innertext.tsx`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+    }
+  });
+
+  it("--out-dir creates directory if it does not exist", async () => {
+    const tmpDir = (await $`mktemp -d`.text()).trim();
+    const nestedDir = `${tmpDir}/nested/output`;
+    try {
+      await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${nestedDir}`;
+      const content = await Bun.file(`${nestedDir}/main.tf`).text();
       const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
       expect(content).toBe(expected);
     } finally {
