@@ -12,6 +12,7 @@
 
 export { DataSource } from "./components/data-source";
 export { Locals } from "./components/locals";
+export { Module } from "./components/module";
 export { Output } from "./components/output";
 export { Provider } from "./components/provider";
 export { Resource } from "./components/resource";

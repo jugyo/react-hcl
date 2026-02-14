@@ -14,6 +14,7 @@
  *   - Locals: multiple blocks → allowed
  *   - Provider: same type with different alias → allowed; same type + alias → error
  *   - Terraform: more than one block → error
+ *   - Module: duplicate name → error
  */
 
 import type { Block } from "./blocks";
@@ -37,6 +38,7 @@ export function detectConflicts(blocks: Block[]): void {
   const variableNames = new Set<string>();
   const outputNames = new Set<string>();
   const providerKeys = new Set<string>();
+  const moduleNames = new Set<string>();
   let terraformCount = 0;
 
   for (const block of blocks) {
@@ -96,6 +98,13 @@ export function detectConflicts(blocks: Block[]): void {
             "Conflict: multiple terraform blocks defined",
           );
         }
+        break;
+      }
+      case "module": {
+        if (moduleNames.has(block.name)) {
+          throw new ConflictError(`Conflict: duplicate module "${block.name}"`);
+        }
+        moduleNames.add(block.name);
         break;
       }
       case "locals":

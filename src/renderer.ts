@@ -51,7 +51,7 @@ export function render(element: RootRenderable): Block[] {
     if (!proxy.__refMeta) {
       throw new Error(
         "Ref is used but was never registered with a component.\n" +
-          "Make sure every useRef() ref is passed to a Resource/DataSource/Provider component.",
+          "Make sure every useRef() ref is passed to a Resource/DataSource/Provider/Module component.",
       );
     }
   }

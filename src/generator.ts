@@ -28,6 +28,7 @@ import { validateInnerTextHCL } from "./hcl-validator";
  *   locals    → locals                        (no labels)
  *   provider  → provider "<type>"             (one label)
  *   terraform → terraform                     (no labels)
+ *   module    → module "<name>"               (one label)
  */
 function blockHeader(block: Block): string {
   switch (block.blockType) {
@@ -45,12 +46,14 @@ function blockHeader(block: Block): string {
       return `provider "${block.type}"`;
     case "terraform":
       return "terraform";
+    case "module":
+      return `module "${block.name}"`;
   }
 }
 
 /**
  * Type guard to check if a block carries an innerText field.
- * Only ResourceBlock, DataSourceBlock, and TerraformBlock can have innerText.
+ * ResourceBlock, DataSourceBlock, TerraformBlock, and ModuleBlock can have innerText.
  */
 function hasInnerText(block: Block): block is Block & { innerText: string } {
   return "innerText" in block && typeof block.innerText === "string";

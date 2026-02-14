@@ -21,6 +21,7 @@
  *   locals { ... }                   — LocalsBlock (no name label)
  *   provider "type" { ... }          — ProviderBlock
  *   terraform { ... }                — TerraformBlock (no name label)
+ *   module "name" { ... }            — ModuleBlock
  */
 
 /**
@@ -111,6 +112,21 @@ export type TerraformBlock = {
 };
 
 /**
+ * Represents a Terraform module block.
+ * Output: module "<name>" { <attributes> }
+ *
+ * Example:
+ *   { blockType: "module", name: "vpc", attributes: { source: "terraform-aws-modules/vpc/aws", cidr: "10.0.0.0/16" } }
+ *   → module "vpc" { source = "terraform-aws-modules/vpc/aws" cidr = "10.0.0.0/16" }
+ */
+export type ModuleBlock = {
+  blockType: "module";
+  name: string;
+  attributes: Record<string, any>;
+  innerText?: string;
+};
+
+/**
  * Union type of all supported HCL block types.
  * Used as the input to the generate() function in generator.ts.
  * The `blockType` field acts as a discriminated union tag.
@@ -122,4 +138,5 @@ export type Block =
   | OutputBlock
   | LocalsBlock
   | ProviderBlock
-  | TerraformBlock;
+  | TerraformBlock
+  | ModuleBlock;

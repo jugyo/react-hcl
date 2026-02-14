@@ -1,0 +1,99 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Integration: module samples Module: basic with registry source 1`] = `
+"module "vpc" {
+  source             = "terraform-aws-modules/vpc/aws"
+  version            = "~> 5.0"
+  cidr               = "10.0.0.0/16"
+  azs                = ["us-east-1a", "us-east-1b"]
+  private_subnets    = ["10.0.1.0/24", "10.0.2.0/24"]
+  enable_nat_gateway = true
+
+  tags = {
+    Environment = "dev"
+  }
+}
+"
+`;
+
+exports[`Integration: module samples Module: useRef output references 1`] = `
+"module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+  cidr    = "10.0.0.0/16"
+}
+
+resource "aws_instance" "app" {
+  ami                    = "ami-0c55b159cbfafe1f0"
+  instance_type          = "t3.micro"
+  subnet_id              = module.vpc.private_subnets
+  vpc_security_group_ids = module.vpc.default_security_group_id
+}
+"
+`;
+
+exports[`Integration: module samples Module: depends_on between modules 1`] = `
+"module "networking" {
+  source   = "./modules/networking"
+  vpc_cidr = "10.0.0.0/16"
+}
+
+module "database" {
+  source     = "./modules/rds"
+  vpc_id     = module.networking.vpc_id
+  depends_on = [module.networking]
+}
+
+module "application" {
+  source            = "./modules/ecs"
+  vpc_id            = module.networking.vpc_id
+  database_endpoint = module.database.endpoint
+  depends_on        = [module.networking, module.database]
+}
+"
+`;
+
+exports[`Integration: module samples Module: provider pass-through 1`] = `
+"provider "aws" {
+  alias  = "east"
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+
+module "vpc_east" {
+  source = "terraform-aws-modules/vpc/aws"
+  cidr   = "10.0.0.0/16"
+
+  providers = {
+    aws = aws.east
+  }
+}
+
+module "vpc_west" {
+  source = "terraform-aws-modules/vpc/aws"
+  cidr   = "10.1.0.0/16"
+
+  providers = {
+    aws = aws.west
+  }
+}
+"
+`;
+
+exports[`Integration: module samples Module: innerText 1`] = `
+"module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+"
+`;
