@@ -1,5 +1,7 @@
 import { describe, it, expect } from "bun:test";
 import { DataSource } from "../../src/components/data-source";
+import { useRef } from "../../src/hooks/use-ref";
+import { isRawHCL } from "../../src/hcl-serializer";
 
 describe("DataSource component", () => {
   it("returns a DataSourceBlock with attributes", () => {
@@ -24,5 +26,28 @@ describe("DataSource component", () => {
   it("does not set innerText when children is undefined", () => {
     const block = DataSource({ type: "aws_ami", name: "latest" });
     expect(block.innerText).toBeUndefined();
+  });
+
+  it("registers __refMeta on useRef proxy", () => {
+    const ref = useRef();
+    DataSource({ type: "aws_ami", name: "latest", ref, most_recent: true });
+    expect(ref.__refMeta).toEqual({ blockType: "data", type: "aws_ami", name: "latest" });
+  });
+
+  it("resolves provider ref to raw HCL", () => {
+    const providerRef = useRef();
+    providerRef.__refMeta = { blockType: "provider", type: "aws", name: "virginia", alias: "virginia" };
+    const block = DataSource({ type: "aws_ami", name: "latest", provider: providerRef });
+    expect(isRawHCL(block.attributes.provider)).toBe(true);
+    expect(block.attributes.provider.value).toBe("aws.virginia");
+  });
+
+  it("resolves depends_on refs to raw HCL array", () => {
+    const vpcRef = useRef();
+    vpcRef.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    const block = DataSource({ type: "aws_ami", name: "latest", depends_on: [vpcRef] });
+    expect(block.attributes.depends_on).toHaveLength(1);
+    expect(isRawHCL(block.attributes.depends_on[0])).toBe(true);
+    expect(block.attributes.depends_on[0].value).toBe("aws_vpc.main");
   });
 });

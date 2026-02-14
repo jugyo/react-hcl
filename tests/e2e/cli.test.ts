@@ -20,6 +20,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("refs.tsx → resource references with useRef", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/refs.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/refs.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {

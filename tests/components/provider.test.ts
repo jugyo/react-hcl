@@ -1,5 +1,6 @@
 import { describe, it, expect } from "bun:test";
 import { Provider } from "../../src/components/provider";
+import { useRef } from "../../src/hooks/use-ref";
 
 describe("Provider component", () => {
   it("returns a ProviderBlock with type and attributes", () => {
@@ -19,9 +20,24 @@ describe("Provider component", () => {
     expect(block.attributes).toEqual({ region: "ap-northeast-1" });
   });
 
-  it("stores alias on ref metadata when both ref and alias are provided", () => {
-    const ref = { __refMeta: {} } as any;
+  it("registers __refMeta on useRef proxy with alias", () => {
+    const ref = useRef();
     Provider({ type: "aws", ref, alias: "west", region: "us-west-2" });
-    expect(ref.__refMeta.alias).toBe("west");
+    expect(ref.__refMeta).toEqual({
+      blockType: "provider",
+      type: "aws",
+      name: "west",
+      alias: "west",
+    });
+  });
+
+  it("registers __refMeta on useRef proxy without alias", () => {
+    const ref = useRef();
+    Provider({ type: "aws", ref, region: "us-west-2" });
+    expect(ref.__refMeta).toEqual({
+      blockType: "provider",
+      type: "aws",
+      name: "aws",
+    });
   });
 });
