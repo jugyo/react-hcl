@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react-terraform",
+    "baseUrl": "..",
+    "paths": {
+      "react-terraform": ["./src/index.ts"],
+      "react-terraform/jsx-runtime": ["./src/jsx-runtime.ts"]
+    }
+  },
+  "include": ["./**/*.tsx"]
+}

@@ -145,6 +145,7 @@ const BLOCK_WHITELIST = new Set([
   "default_action",
   "health_check",
   "launch_template",
+  "listener",
   "root_block_device",
   "network_interface",
   "metadata",
@@ -152,6 +153,7 @@ const BLOCK_WHITELIST = new Set([
   "provisioner",
   "connection",
   "backend",
+  "tag",
 ]);
 
 /**
