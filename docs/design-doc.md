@@ -134,7 +134,6 @@
 - Distributed as an npm package and provided as a CLI tool
 - `.tsx` is transpiled then evaluated
 - Module format supports ESM only
-- `process.env` is available as-is in the execution context
 - Side effects are allowed within normal JavaScript execution scope (user responsibility)
 - No platform restrictions (usable in any environment where Node.js runs)
 
@@ -171,9 +170,25 @@
 - Consider auto-generating types from provider schemas
 
 ## 10. Environment-Specific Build Strategy
-- Evaluate environment variables (e.g., `ENV=prod`) in `.tsx`
+- Separate entry-point `.tsx` files per environment (e.g., `prod.tsx`, `staging.tsx`)
+- Each entry point passes environment-specific values via props or variables — the structure is up to the user
+- Secret values are handled at Terraform runtime via `tf.var()` or data sources (Secrets Manager, Vault, etc.)
 - Generate `main.tf` to different output directories per environment
 - No conditional logic remains in generated output
+
+### 10.1 Example
+```tsx
+// prod.tsx
+<Main region="ap-northeast-1" vpcCidr="10.0.0.0/16" subnetCount={3} />
+
+// staging.tsx
+<Main region="ap-northeast-1" vpcCidr="10.1.0.0/16" subnetCount={2} />
+```
+
+```bash
+react-terraform build src/prod.tsx -o envs/prod/
+react-terraform build src/staging.tsx -o envs/staging/
+```
 
 ## 11. Additional Specifications
 

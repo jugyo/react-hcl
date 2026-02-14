@@ -62,7 +62,7 @@ The final output is a `main.tf` file that can be used directly with Terraform CL
 - Duplicate `<Variable>` names are an error
 
 ### 2.5 Environment Separation
-- Environment differences are handled via branching on the `.tsx` side (environment variables or config objects)
+- Environment differences are handled by separating entry-point `.tsx` files per environment, passing environment-specific values via props or variables
 - The intended workflow generates `main.tf` into separate directories per environment
 
 ### 2.6 Validation Responsibility
