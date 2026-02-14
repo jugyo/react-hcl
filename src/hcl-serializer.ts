@@ -51,6 +51,7 @@ const RAW_HCL_SYMBOL = Symbol.for("react-terraform:RawHCL");
 export type RawHCL = {
   [RAW_HCL_SYMBOL]: true;
   value: string;
+  toString(): string;
 };
 
 /** Creates a RawHCL marker. The value string is emitted as-is (no quoting). */
