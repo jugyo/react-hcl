@@ -38,6 +38,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("export-default-function.tsx → default exported function component", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/export-default-function.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/export-default-function.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {

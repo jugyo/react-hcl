@@ -20,20 +20,24 @@ function renderTree(element: JSXElement | JSXElement[] | string | null): Block[]
   return element.children.flatMap((child: any) => renderTree(child));
 }
 
+type Renderable = JSXElement | JSXElement[] | string | null;
+type RootRenderable = Renderable | (() => Renderable);
+
 /**
  * 2-pass rendering:
  *   Pass 1: Clear hook store, render tree to collect ref metadata (result discarded).
  *   Pass 2: Reset hook index only (reuse proxies with metadata), render tree (result kept).
  *   Validation: Check that all refs in hookStore have __refMeta set.
  */
-export function render(element: JSXElement | JSXElement[] | string | null): Block[] {
+export function render(element: RootRenderable): Block[] {
+  const resolveRoot = (): Renderable => (typeof element === "function" ? element() : element);
   // Pass 1: collect ref metadata
   resetHookState(true);
-  renderTree(element);
+  renderTree(resolveRoot());
 
   // Pass 2: resolve references (same proxies, now with metadata)
   resetHookState();
-  const blocks = renderTree(element);
+  const blocks = renderTree(resolveRoot());
 
   // Validate: all refs must have metadata after 2 passes
   const store = getHookStore();
