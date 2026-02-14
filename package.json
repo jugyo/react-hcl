@@ -1,5 +1,5 @@
 {
-  "name": "react-terraform",
+  "name": "react-hcl",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
     }
   },
   "bin": {
-    "react-terraform": "dist/cli.js"
+    "react-hcl": "dist/cli.js"
   },
   "files": [
     "dist",

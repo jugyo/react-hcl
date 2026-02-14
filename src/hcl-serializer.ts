@@ -46,7 +46,7 @@
  * copies in the bundle and the CLI process. Symbol.for() ensures both copies share the
  * same Symbol identity, so isRawHCL() works across the bundle boundary.
  */
-const RAW_HCL_SYMBOL = Symbol.for("react-terraform:RawHCL");
+const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
 export type RawHCL = {
   [RAW_HCL_SYMBOL]: true;
@@ -82,7 +82,7 @@ export function isRawHCL(v: unknown): v is RawHCL {
  * Identified at runtime via a global Symbol key (Symbol.for).
  * See RAW_HCL_SYMBOL for why global symbols are necessary.
  */
-const BLOCK_HCL_SYMBOL = Symbol.for("react-terraform:BlockHCL");
+const BLOCK_HCL_SYMBOL = Symbol.for("react-hcl:BlockHCL");
 
 export type BlockHCL = {
   [BLOCK_HCL_SYMBOL]: true;
@@ -114,7 +114,7 @@ export function isBlockHCL(v: unknown): v is BlockHCL {
  * Identified at runtime via a global Symbol key (Symbol.for).
  * See RAW_HCL_SYMBOL for why global symbols are necessary.
  */
-const ATTRIBUTE_HCL_SYMBOL = Symbol.for("react-terraform:AttributeHCL");
+const ATTRIBUTE_HCL_SYMBOL = Symbol.for("react-hcl:AttributeHCL");
 
 export type AttributeHCL = {
   [ATTRIBUTE_HCL_SYMBOL]: true;

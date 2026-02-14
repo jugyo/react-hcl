@@ -5,13 +5,7 @@
  * instead of Terraform variables, TypeScript loops instead of count,
  * and composite components for each infrastructure concern.
  */
-import {
-  DataSource,
-  Output,
-  Provider,
-  Resource,
-  useRef,
-} from "react-terraform";
+import { DataSource, Output, Provider, Resource, useRef } from "react-hcl";
 import { Alb } from "./alb";
 import { AlbListener } from "./alb-listener";
 import { EcsService } from "./ecs-service";

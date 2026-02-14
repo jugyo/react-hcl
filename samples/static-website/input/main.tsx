@@ -15,7 +15,7 @@ import {
   tf,
   useRef,
   Variable,
-} from "react-terraform";
+} from "react-hcl";
 
 function Main({ region }: { region: string }) {
   const bucketRef = useRef();

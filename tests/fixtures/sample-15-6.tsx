@@ -1,4 +1,4 @@
-import { Resource, useRef } from "react-terraform";
+import { Resource, useRef } from "react-hcl";
 
 function App() {
   const vpcRef = useRef();

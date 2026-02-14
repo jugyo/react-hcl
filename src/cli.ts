@@ -1,5 +1,5 @@
 /**
- * CLI entry point for react-terraform.
+ * CLI entry point for react-hcl.
  *
  * Usage: bun src/cli.ts <input.tsx> [-o <file>]
  *
@@ -13,8 +13,8 @@
  *
  * esbuild configuration:
  *   - jsx: "automatic" — uses the new JSX transform (no manual import needed)
- *   - jsxImportSource: "react-terraform" — resolves jsx/jsxs from our custom runtime
- *   - alias: maps "react-terraform" and "react-terraform/jsx-runtime" to local source
+ *   - jsxImportSource: "react-hcl" — resolves jsx/jsxs from our custom runtime
+ *   - alias: maps "react-hcl" and "react-hcl/jsx-runtime" to local source
  *   - format: "esm" — output as ES modules for dynamic import() compatibility
  *   - bundle: true — inline all imports so the temp file is self-contained
  *   - write: false — keep output in memory (outputFiles) instead of writing to disk
@@ -46,7 +46,7 @@ function parseArgs(argv: string[]): { inputFile: string; output?: string } {
   }
 
   if (!inputFile) {
-    console.error("Usage: react-terraform <input.tsx> [-o <file>]");
+    console.error("Usage: react-hcl <input.tsx> [-o <file>]");
     process.exit(1);
   }
 
@@ -63,20 +63,17 @@ async function main() {
     format: "esm",
     platform: "node",
     jsx: "automatic",
-    jsxImportSource: "react-terraform",
+    jsxImportSource: "react-hcl",
     write: false,
     alias: {
-      "react-terraform/jsx-runtime": resolve(
-        __dirname,
-        "../src/jsx-runtime.ts",
-      ),
-      "react-terraform": resolve(__dirname, "../src/index.ts"),
+      "react-hcl/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
+      "react-hcl": resolve(__dirname, "../src/index.ts"),
     },
   });
 
   const code = result.outputFiles[0].text;
 
-  const tmpDir = await mkdtemp(join(tmpdir(), "react-terraform-"));
+  const tmpDir = await mkdtemp(join(tmpdir(), "react-hcl-"));
   const tmpFile = join(tmpDir, "bundle.mjs");
   try {
     await writeFile(tmpFile, code);

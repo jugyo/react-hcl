@@ -1,4 +1,4 @@
-import { Output, Resource, useRef } from "react-terraform";
+import { Output, Resource, useRef } from "react-hcl";
 
 function VpcModule({ cidr, vpcRef }: { cidr: string; vpcRef: any }) {
   return (
