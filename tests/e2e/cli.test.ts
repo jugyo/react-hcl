@@ -1,11 +1,28 @@
 import { describe, it, expect } from "bun:test";
 import { $ } from "bun";
 
-describe("CLI PoC", () => {
-  it("transpiles and evaluates a TSX file to produce output", async () => {
+describe("CLI E2E", () => {
+  it("basic.tsx → matches expected HCL snapshot", async () => {
     const result = await $`bun run src/cli.ts tests/fixtures/basic.tsx`.text();
-    expect(result.trim()).toContain("resource");
-    expect(result.trim()).toContain("aws_vpc");
-    expect(result.trim()).toContain("main");
+    const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
+  it("multiple.tsx → multiple resources via Fragment", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/multiple.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/multiple.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
+  it("--out-dir writes main.tf to directory", async () => {
+    const tmpDir = (await $`mktemp -d`.text()).trim();
+    try {
+      await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${tmpDir}`;
+      const content = await Bun.file(`${tmpDir}/main.tf`).text();
+      const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+      expect(content).toBe(expected);
+    } finally {
+      await $`rm -rf ${tmpDir}`;
+    }
   });
 });

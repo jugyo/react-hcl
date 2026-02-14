@@ -1,16 +1,32 @@
 /**
- * Resource component — stub implementation for Step 2 PoC.
+ * Resource component — produces a ResourceBlock for the Block[] IR pipeline.
  *
- * Currently returns a simple string representation of a Terraform resource block.
- * In later steps, this will be replaced with a proper implementation that:
- *   - Extracts `type`, `name`, and remaining props as attributes
- *   - Handles children (for innerText / nested block content)
- *   - Returns a ResourceBlock object for the Block[] IR pipeline
+ * Extracts `type` and `name` as block labels, passes remaining props as HCL attributes.
+ * Special props `ref` and `children` are excluded from attributes:
+ *   - `ref`: reserved for useRef (Step 8)
+ *   - `children`: if string or function returning string, stored as `innerText`
+ *     for raw HCL body output (Step 10)
  *
  * Usage in TSX:
  *   <Resource type="aws_vpc" name="main" cidr_block="10.0.0.0/16" />
- *   → resource "aws_vpc" "main" {}  (stub — attributes not yet rendered)
+ *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
-export function Resource(props: { type: string; name: string; [key: string]: any }): string {
-  return `resource "${props.type}" "${props.name}" {}`;
+import type { ResourceBlock } from "../blocks";
+
+export function Resource(props: {
+  type: string;
+  name: string;
+  ref?: any;
+  children?: string | (() => string);
+  [key: string]: any;
+}): ResourceBlock {
+  const { type, name, ref, children, ...attributes } = props;
+  const text = typeof children === "function" ? children() : children;
+  return {
+    blockType: "resource",
+    type,
+    name,
+    attributes,
+    ...(typeof text === "string" ? { innerText: text } : {}),
+  };
 }
