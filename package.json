@@ -4,6 +4,16 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    }
+  },
   "bin": {
     "react-terraform": "dist/cli.js"
   },
@@ -13,7 +23,7 @@
   ],
   "scripts": {
     "build": "bun run build:js && bun run build:types",
-    "build:js": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node' && bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle",
+    "build:js": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node' && bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle && bun x esbuild src/jsx-runtime.ts --outfile=dist/jsx-runtime.js --format=esm --platform=node --bundle",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "lint": "bunx biome check .",
     "lint:fix": "bunx biome check --fix .",

@@ -345,7 +345,7 @@ export function adjustIndent(text: string, targetIndent: number = 2): string {
   let minIndent = Infinity;
   for (const line of lines) {
     if (line.trim() === "") continue;
-    const leadingSpaces = line.match(/^( *)/)?.[1].length;
+    const leadingSpaces = line.search(/\S|$/);
     if (leadingSpaces < minIndent) minIndent = leadingSpaces;
   }
   if (minIndent === Infinity) minIndent = 0;
