@@ -15,6 +15,8 @@
     "build": "bun run build:js && bun run build:types",
     "build:js": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node' && bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check --fix .",
     "test": "bun test",
     "prepublishOnly": "bun run build"
   },
