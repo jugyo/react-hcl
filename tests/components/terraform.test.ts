@@ -14,8 +14,8 @@ describe("Terraform component", () => {
     expect(block.attributes).toEqual({});
   });
 
-  it("calls children function and stores result as innerText", () => {
-    const block = Terraform({ children: () => "dynamic backend config" });
+  it("unwraps children array and stores first element as innerText", () => {
+    const block = Terraform({ children: ["dynamic backend config"] as any });
     expect(block.innerText).toBe("dynamic backend config");
   });
 

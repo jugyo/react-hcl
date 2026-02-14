@@ -11,14 +11,14 @@
 import type { TerraformBlock } from "../blocks";
 
 export function Terraform(props: {
-  children?: string | (() => string);
+  children?: string | string[];
   [key: string]: any;
 }): TerraformBlock {
   const { children, ...attributes } = props;
-  const text = typeof children === "function" ? children() : children;
+  const rawChildren = Array.isArray(children) ? children[0] : children;
   return {
     blockType: "terraform",
     attributes,
-    ...(typeof text === "string" ? { innerText: text } : {}),
+    ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
   };
 }

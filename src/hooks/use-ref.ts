@@ -11,9 +11,10 @@
  *   4. Provides special __dependsOnValue (type.name format for depends_on)
  *   5. Provides special __providerValue (type.alias format for provider references)
  *
- * IMPORTANT: Property access is lazy. When JSX is evaluated, ref.id is accessed
- * BEFORE the component sets __refMeta. The returned RawHCL uses getters so that
- * the actual value string is computed at serialization time, when metadata is available.
+ * Stateful hook store:
+ *   useRef() uses a global hookStore to return the same proxy across multiple render passes.
+ *   resetHookState(clear?) resets the hook index (and optionally clears the store).
+ *   This enables 2-pass rendering: pass 1 collects ref metadata, pass 2 resolves references.
  *
  * The ref lifecycle (inside a component):
  *   function App() {
@@ -52,6 +53,44 @@ export type RefProxy = {
   [key: string]: any;
 };
 
+// --- Hook store for stateful behavior across render passes ---
+// Uses globalThis to share state across module instances (e.g., esbuild-bundled code
+// inlines its own copy of useRef, but renderer.ts calls resetHookState from the source copy).
+
+const HOOK_KEY = Symbol.for("react-terraform:hookState");
+
+type HookState = {
+  hookIndex: number;
+  hookStore: RefProxy[];
+};
+
+function getState(): HookState {
+  if (!(globalThis as any)[HOOK_KEY]) {
+    (globalThis as any)[HOOK_KEY] = { hookIndex: 0, hookStore: [] };
+  }
+  return (globalThis as any)[HOOK_KEY];
+}
+
+/**
+ * Resets the hook state between render passes.
+ * @param clear If true, clears the store entirely (used before pass 1).
+ *              If false/omitted, only resets the index (used before pass 2).
+ */
+export function resetHookState(clear?: boolean): void {
+  const state = getState();
+  state.hookIndex = 0;
+  if (clear) {
+    state.hookStore = [];
+  }
+}
+
+/**
+ * Returns the current hook store (for validation after rendering).
+ */
+export function getHookStore(): RefProxy[] {
+  return getState().hookStore;
+}
+
 /**
  * Builds the Terraform reference prefix from ref metadata.
  *
@@ -64,6 +103,8 @@ function buildPrefix(meta: RefMeta): string {
   }
   return `${meta.type}.${meta.name}`;
 }
+
+const UNRESOLVED_PLACEHOLDER = "__UNRESOLVED_REF__";
 
 /**
  * Creates a lazy RawHCL object that resolves its value at read time.
@@ -102,6 +143,10 @@ function createLazyRawHCL(resolvePath: () => string): any {
 /**
  * Creates a ref Proxy object for tracking Terraform resource references.
  *
+ * Stateful: returns the same proxy on repeated calls within a render cycle
+ * (identified by hookIndex). This enables 2-pass rendering where pass 1
+ * collects metadata and pass 2 resolves references using the same proxies.
+ *
  * Usage (inside a component function):
  *   function App() {
  *     const vpcRef = useRef();
@@ -112,22 +157,26 @@ function createLazyRawHCL(resolvePath: () => string): any {
  *       </>
  *     );
  *   }
- *
- * The returned proxy intercepts property access:
- *   - __refMeta: get/set metadata (used internally by components)
- *   - __dependsOnValue: lazy raw("type.name") for depends_on arrays
- *   - __providerValue: lazy raw("type.alias") for provider attribute
- *   - any other prop: lazy chainable RawHCL (supports ref.id and ref.outputs.vpc_id)
  */
 export function useRef(): RefProxy {
+  const state = getState();
+  const idx = state.hookIndex++;
+
+  // Return existing proxy from store if available (pass 2 reuses pass 1 proxies)
+  if (idx < state.hookStore.length) {
+    return state.hookStore[idx];
+  }
+
   let meta: RefMeta | undefined;
 
   const getMeta = (): RefMeta => {
     if (!meta) {
-      throw new Error(
-        "Ref is used before it was registered with a component.\n" +
-          "Make sure the ref is passed to a Resource/DataSource/Provider component.",
-      );
+      // Return placeholder during pass 1 (metadata not yet set)
+      return {
+        blockType: "resource",
+        type: UNRESOLVED_PLACEHOLDER,
+        name: UNRESOLVED_PLACEHOLDER,
+      };
     }
     return meta;
   };
@@ -167,5 +216,6 @@ export function useRef(): RefProxy {
     },
   });
 
+  state.hookStore.push(proxy);
   return proxy;
 }

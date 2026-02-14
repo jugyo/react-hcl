@@ -1,9 +1,13 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeEach } from "bun:test";
 import { Resource } from "../../src/components/resource";
-import { useRef } from "../../src/hooks/use-ref";
+import { useRef, resetHookState } from "../../src/hooks/use-ref";
 import { isRawHCL } from "../../src/hcl-serializer";
 
 describe("Resource component", () => {
+  beforeEach(() => {
+    resetHookState(true);
+  });
+
   it("returns a ResourceBlock with attributes", () => {
     const block = Resource({ type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" });
     expect(block.blockType).toBe("resource");
@@ -18,9 +22,9 @@ describe("Resource component", () => {
     expect(block.innerText).toBe("hcl text");
   });
 
-  it("calls children function and stores result as innerText", () => {
-    const block = Resource({ type: "aws_vpc", name: "main", children: () => "dynamic hcl" });
-    expect(block.innerText).toBe("dynamic hcl");
+  it("unwraps children array and stores first element as innerText", () => {
+    const block = Resource({ type: "aws_vpc", name: "main", children: ["hcl text"] as any });
+    expect(block.innerText).toBe("hcl text");
   });
 
   it("does not set innerText when children is undefined", () => {

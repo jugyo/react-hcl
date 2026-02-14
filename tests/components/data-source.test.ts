@@ -1,9 +1,13 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeEach } from "bun:test";
 import { DataSource } from "../../src/components/data-source";
-import { useRef } from "../../src/hooks/use-ref";
+import { useRef, resetHookState } from "../../src/hooks/use-ref";
 import { isRawHCL } from "../../src/hcl-serializer";
 
 describe("DataSource component", () => {
+  beforeEach(() => {
+    resetHookState(true);
+  });
+
   it("returns a DataSourceBlock with attributes", () => {
     const block = DataSource({ type: "aws_ami", name: "latest", most_recent: true });
     expect(block.blockType).toBe("data");
@@ -18,9 +22,9 @@ describe("DataSource component", () => {
     expect(block.innerText).toBe("hcl text");
   });
 
-  it("calls children function and stores result as innerText", () => {
-    const block = DataSource({ type: "aws_ami", name: "latest", children: () => "dynamic hcl" });
-    expect(block.innerText).toBe("dynamic hcl");
+  it("unwraps children array and stores first element as innerText", () => {
+    const block = DataSource({ type: "aws_ami", name: "latest", children: ["hcl text"] as any });
+    expect(block.innerText).toBe("hcl text");
   });
 
   it("does not set innerText when children is undefined", () => {

@@ -4,7 +4,7 @@
  * Extracts `type` and `name` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
  *   - `ref`: reserved for useRef (Step 8)
- *   - `children`: if string or function returning string, stored as `innerText`
+ *   - `children`: if string, stored as `innerText`
  *
  * Usage in TSX:
  *   <DataSource type="aws_ami" name="latest" most_recent={true} />
@@ -17,7 +17,7 @@ export function DataSource(props: {
   type: string;
   name: string;
   ref?: any;
-  children?: string | (() => string);
+  children?: string | string[];
   [key: string]: any;
 }): DataSourceBlock {
   const { type, name, ref, children, ...attributes } = props;
@@ -47,12 +47,12 @@ export function DataSource(props: {
     });
   }
 
-  const text = typeof children === "function" ? children() : children;
+  const rawChildren = Array.isArray(children) ? children[0] : children;
   return {
     blockType: "data",
     type,
     name,
     attributes,
-    ...(typeof text === "string" ? { innerText: text } : {}),
+    ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
   };
 }

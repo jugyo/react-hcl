@@ -10,8 +10,8 @@
  *   - `attributes`: key-value pairs serialized into the block body via serializeHCLAttributes()
  *   - `innerText` (optional): pre-formatted HCL string that replaces attribute serialization.
  *     When present, the generator outputs innerText as-is instead of serializing attributes.
- *     This is used for cases where children provide raw HCL content (Step 10 lazy evaluation).
- *     The children source can be `string | (() => string)`; functions are called at render time.
+ *     This is used for cases where children provide raw HCL content.
+ *     With 2-pass rendering, template literals in children are resolved automatically.
  *
  * Supported HCL output forms:
  *   resource "type" "name" { ... }   — ResourceBlock

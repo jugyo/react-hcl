@@ -32,6 +32,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("innertext-ref.tsx → template literal ref without function wrapper", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/innertext-ref.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/innertext-ref.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {
