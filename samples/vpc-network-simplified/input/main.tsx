@@ -10,11 +10,11 @@ import {
   Output,
   Provider,
   Resource,
-  useRef,
   raw,
+  useRef,
 } from "react-terraform";
-import { PublicNetwork } from "./public-network";
 import { PrivateNetwork } from "./private-network";
+import { PublicNetwork } from "./public-network";
 
 function Main({
   vpcCidr,

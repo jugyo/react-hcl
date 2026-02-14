@@ -1,4 +1,4 @@
-import { Resource, useRef, raw } from "react-terraform";
+import { Resource, raw, useRef } from "react-terraform";
 
 export function Network({
   vpcRef,

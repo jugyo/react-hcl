@@ -1,4 +1,4 @@
-import { Resource, useRef } from "react-terraform";
+import { Resource } from "react-terraform";
 
 export function AlbListener({
   albRef,

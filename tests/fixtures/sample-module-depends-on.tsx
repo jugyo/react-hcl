@@ -1,4 +1,4 @@
-import { Module, useRef, Fragment } from "react-terraform";
+import { Module, useRef } from "react-terraform";
 
 export default function App() {
   const network = useRef();

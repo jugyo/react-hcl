@@ -9,10 +9,10 @@ import {
   Output,
   Provider,
   Resource,
-  Variable,
-  useRef,
-  tf,
   raw,
+  tf,
+  useRef,
+  Variable,
 } from "react-terraform";
 
 function Main({ region }: { region: string }) {
@@ -237,15 +237,15 @@ function Main({ region }: { region: string }) {
           container_definitions = <<-DEFINITION
             [
               {
-                "cpu": ${"${var.fargate_cpu}"},
-                "image": "${"${var.app_image}"}",
-                "memory": ${"${var.fargate_memory}"},
+                "cpu": \${var.fargate_cpu},
+                "image": "\${var.app_image}",
+                "memory": \${var.fargate_memory},
                 "name": "app",
                 "networkMode": "awsvpc",
                 "portMappings": [
                   {
-                    "containerPort": ${"${var.app_port}"},
-                    "hostPort": ${"${var.app_port}"}
+                    "containerPort": \${var.app_port},
+                    "hostPort": \${var.app_port}
                   }
                 ]
               }

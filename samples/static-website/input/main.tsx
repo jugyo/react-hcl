@@ -10,11 +10,11 @@ import {
   Output,
   Provider,
   Resource,
-  Terraform,
-  Variable,
-  useRef,
-  tf,
   raw,
+  Terraform,
+  tf,
+  useRef,
+  Variable,
 } from "react-terraform";
 
 function Main({ region }: { region: string }) {
@@ -46,9 +46,8 @@ function Main({ region }: { region: string }) {
         description="Default root object for CloudFront"
       />
 
-      <Locals
-        s3_origin_id={raw('"${var.domain_name}-origin-id"')}
-      />
+      {/* biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation */}
+      <Locals s3_origin_id={raw('"${var.domain_name}-origin-id"')} />
 
       {/* S3 Bucket */}
       <Resource
@@ -69,7 +68,11 @@ function Main({ region }: { region: string }) {
       />
 
       {/* CloudFront Origin Access Control */}
-      <Resource type="aws_cloudfront_origin_access_control" name="this" ref={oacRef}>
+      <Resource
+        type="aws_cloudfront_origin_access_control"
+        name="this"
+        ref={oacRef}
+      >
         {`
           name                              = ${tf.var("domain_name")}
           description                       = "\${${tf.var("domain_name")}} OAC"
@@ -80,7 +83,11 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* CloudFront Distribution */}
-      <Resource type="aws_cloudfront_distribution" name="this" ref={distributionRef}>
+      <Resource
+        type="aws_cloudfront_distribution"
+        name="this"
+        ref={distributionRef}
+      >
         {`
           origin {
             domain_name              = ${bucketRef.bucket_regional_domain_name}
@@ -156,7 +163,10 @@ function Main({ region }: { region: string }) {
       />
 
       {/* Outputs */}
-      <Output name="cloudfront_domain_name" value={distributionRef.domain_name} />
+      <Output
+        name="cloudfront_domain_name"
+        value={distributionRef.domain_name}
+      />
       <Output name="cloudfront_distribution_id" value={distributionRef.id} />
       <Output name="s3_bucket_arn" value={bucketRef.arn} />
     </>

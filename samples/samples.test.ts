@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
-import { $ } from "bun";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
+import { $ } from "bun";
 
 const samplesDir = import.meta.dir;
 

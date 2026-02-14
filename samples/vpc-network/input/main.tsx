@@ -9,10 +9,10 @@ import {
   Output,
   Provider,
   Resource,
-  Variable,
-  useRef,
-  tf,
   raw,
+  tf,
+  useRef,
+  Variable,
 } from "react-terraform";
 
 function Main({ region }: { region: string }) {
@@ -62,7 +62,8 @@ function Main({ region }: { region: string }) {
         cidr_block={tf.var("vpc_cidr")}
         enable_dns_hostnames={true}
         enable_dns_support={true}
-        tags={{ Name: '${var.project_name}-vpc' }}
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
+        tags={{ Name: "${var.project_name}-vpc" }}
       />
 
       {/* Public subnets across multiple AZs */}
@@ -100,7 +101,8 @@ function Main({ region }: { region: string }) {
         name="main"
         ref={igwRef}
         vpc_id={vpcRef.id}
-        tags={{ Name: '${var.project_name}-igw' }}
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
+        tags={{ Name: "${var.project_name}-igw" }}
       />
 
       {/* Public route table */}
@@ -109,7 +111,8 @@ function Main({ region }: { region: string }) {
         name="public"
         ref={publicRtRef}
         vpc_id={vpcRef.id}
-        tags={{ Name: '${var.project_name}-public-rt' }}
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
+        tags={{ Name: "${var.project_name}-public-rt" }}
       />
 
       <Resource
@@ -134,7 +137,8 @@ function Main({ region }: { region: string }) {
         name="nat"
         ref={eipRef}
         domain="vpc"
-        tags={{ Name: '${var.project_name}-nat-eip' }}
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
+        tags={{ Name: "${var.project_name}-nat-eip" }}
       />
 
       <Resource type="aws_nat_gateway" name="main" ref={natRef}>
@@ -156,7 +160,8 @@ function Main({ region }: { region: string }) {
         name="private"
         ref={privateRtRef}
         vpc_id={vpcRef.id}
-        tags={{ Name: '${var.project_name}-private-rt' }}
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
+        tags={{ Name: "${var.project_name}-private-rt" }}
       />
 
       <Resource
@@ -178,7 +183,10 @@ function Main({ region }: { region: string }) {
       {/* Outputs */}
       <Output name="vpc_id" value={vpcRef.id} />
       <Output name="public_subnet_ids" value={raw("aws_subnet.public[*].id")} />
-      <Output name="private_subnet_ids" value={raw("aws_subnet.private[*].id")} />
+      <Output
+        name="private_subnet_ids"
+        value={raw("aws_subnet.private[*].id")}
+      />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Output, Resource, useRef, raw } from "react-terraform";
+import { Output, Resource, raw, useRef } from "react-terraform";
 
 export function PrivateNetwork({
   vpcRef,

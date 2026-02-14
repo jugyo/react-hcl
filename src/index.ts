@@ -18,7 +18,7 @@ export { Provider } from "./components/provider";
 export { Resource } from "./components/resource";
 export { Terraform } from "./components/terraform";
 export { Variable } from "./components/variable";
+export { block, raw } from "./hcl-serializer";
 export { tf } from "./helpers/tf";
-export { raw, block } from "./hcl-serializer";
 export { useRef } from "./hooks/use-ref";
 export { Fragment } from "./jsx-runtime";

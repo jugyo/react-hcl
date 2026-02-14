@@ -1,4 +1,4 @@
-import { Module, Resource, useRef, Fragment } from "react-terraform";
+import { Module, Resource, useRef } from "react-terraform";
 
 export default function App() {
   const vpc = useRef();

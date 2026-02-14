@@ -12,10 +12,10 @@ import {
   Resource,
   useRef,
 } from "react-terraform";
-import { Network } from "./network";
 import { Alb } from "./alb";
 import { AlbListener } from "./alb-listener";
 import { EcsService } from "./ecs-service";
+import { Network } from "./network";
 
 function Main({
   region,

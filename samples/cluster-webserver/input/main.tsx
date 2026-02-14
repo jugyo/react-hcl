@@ -9,9 +9,9 @@ import {
   Output,
   Provider,
   Resource,
-  Variable,
-  useRef,
   tf,
+  useRef,
+  Variable,
 } from "react-terraform";
 
 function ClusterWebServer() {
@@ -64,7 +64,11 @@ function ClusterWebServer() {
         }}
       />
 
-      <Resource type="aws_launch_configuration" name="example" ref={launchConfigRef}>
+      <Resource
+        type="aws_launch_configuration"
+        name="example"
+        ref={launchConfigRef}
+      >
         {`
           image_id        = "ami-785db401"
           instance_type   = "t2.micro"
