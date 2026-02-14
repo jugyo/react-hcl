@@ -73,16 +73,76 @@ describe("serializeHCLAttributes", () => {
     expect(result).toContain('Name = "main"');
   });
 
-  it("combined case", () => {
+  it("array of objects produces repeated blocks", () => {
+    const result = serializeHCLAttributes({
+      ingress: [
+        { from_port: 80, to_port: 80, protocol: "tcp" },
+        { from_port: 443, to_port: 443, protocol: "tcp" },
+      ],
+    });
+    // Two separate ingress blocks (block syntax, no =)
+    const blocks = result.split("ingress {");
+    expect(blocks.length).toBe(3); // 1 before + 2 blocks
+    expect(result).toContain("from_port = 80");
+    expect(result).toContain("from_port = 443");
+    expect(result).not.toContain("ingress = {");
+  });
+
+  it("nested indentation increases by 2 spaces per level", () => {
+    const result = serializeHCLAttributes({
+      lifecycle: { nested: block({ deep_key: "value" }) },
+    });
+    // level 0 (indent=2): "  lifecycle {"
+    // level 1 (indent=4): "    nested {"
+    // level 2 (indent=6): "      deep_key = \"value\""
+    expect(result).toContain('  lifecycle {');
+    expect(result).toContain('    nested {');
+    expect(result).toContain('      deep_key = "value"');
+  });
+
+  it("key alignment pads shorter keys to match longest", () => {
+    const result = serializeHCLAttributes({
+      id: "abc",
+      long_key_name: "xyz",
+    });
+    // "id" (2 chars) should be padded to align with "long_key_name" (13 chars)
+    expect(result).toContain('  id            = "abc"');
+    expect(result).toContain('  long_key_name = "xyz"');
+  });
+
+  it("empty attributes returns empty string", () => {
+    const result = serializeHCLAttributes({});
+    expect(result).toBe("");
+  });
+
+  it("blank line between simple attributes and block entries", () => {
+    const result = serializeHCLAttributes({
+      name: "example",
+      lifecycle: { prevent_destroy: true },
+    });
+    // Simple attr followed by blank line then block
+    expect(result).toContain('  name = "example"\n\n  lifecycle {');
+  });
+
+  it("combined case: order, alignment, and blank line separation", () => {
     const result = serializeHCLAttributes({
       cidr_block: "10.0.0.0/16",
       enable_dns_hostnames: true,
       tags: { Name: "main" },
       lifecycle: { prevent_destroy: true },
     });
-    expect(result).toContain('cidr_block');
-    expect(result).toContain('enable_dns_hostnames');
-    expect(result).toContain('tags = {');
-    expect(result).toContain('lifecycle {');
+    // Simple attributes come before block entries
+    const cidrPos = result.indexOf("cidr_block");
+    const tagsPos = result.indexOf("tags = {");
+    const lifecyclePos = result.indexOf("lifecycle {");
+    expect(cidrPos).toBeLessThan(tagsPos);
+    expect(cidrPos).toBeLessThan(lifecyclePos);
+
+    // Simple attributes are aligned
+    expect(result).toContain('cidr_block           = "10.0.0.0/16"');
+    expect(result).toContain("enable_dns_hostnames = true");
+
+    // Blank line between simple attrs and first block entry
+    expect(result).toContain("enable_dns_hostnames = true\n\n  tags = {");
   });
 });
