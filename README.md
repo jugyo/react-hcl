@@ -1,4 +1,4 @@
-# react-terraform
+# react-hcl
 
 A transpiler that converts TSX into Terraform `.tf` files. Write Terraform configurations using JSX/TSX syntax with a custom JSX runtime (no React dependency).
 
@@ -13,15 +13,15 @@ The goal is not to rewrite Terraform in JS, but to structurally improve IaC comp
 ## Usage
 
 ```bash
-react-terraform infra.tsx                  # output to stdout
-react-terraform infra.tsx -o ./tf/main.tf   # write to file
+react-hcl infra.tsx                  # output to stdout
+react-hcl infra.tsx -o ./tf/main.tf   # write to file
 ```
 
 ## Example
 
 ```tsx
 // infra.tsx
-import { Resource, useRef } from "react-terraform";
+import { Resource, useRef } from "react-hcl";
 
 function App() {
   const vpcRef = useRef();
@@ -37,7 +37,7 @@ export default <App />;
 ```
 
 ```bash
-$ react-terraform infra.tsx
+$ react-hcl infra.tsx
 ```
 
 ```hcl
@@ -74,26 +74,26 @@ resource "aws_subnet" "public" {
 ### From npm
 
 ```bash
-npm install -g react-terraform
+npm install -g react-hcl
 ```
 
 ### Manual install from source
 
 ```bash
-git clone https://github.com/jugyo/react-terraform.git
-cd react-terraform
+git clone https://github.com/jugyo/react-hcl.git
+cd react-hcl
 bun install
 bun run build
 npm link
 ```
 
-After this, the `react-terraform` command is available globally.
+After this, the `react-hcl` command is available globally.
 
 ## Development
 
 ```bash
-git clone https://github.com/jugyo/react-terraform.git
-cd react-terraform
+git clone https://github.com/jugyo/react-hcl.git
+cd react-hcl
 bun install
 ```
 

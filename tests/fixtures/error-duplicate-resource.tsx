@@ -1,4 +1,4 @@
-import { Resource } from "react-terraform";
+import { Resource } from "react-hcl";
 
 export default (
   <>

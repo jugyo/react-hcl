@@ -1,4 +1,4 @@
-import { Module, Provider, useRef } from "react-terraform";
+import { Module, Provider, useRef } from "react-hcl";
 
 export default function App() {
   const east = useRef();

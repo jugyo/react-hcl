@@ -12,7 +12,7 @@ import {
   Resource,
   raw,
   useRef,
-} from "react-terraform";
+} from "react-hcl";
 import { PrivateNetwork } from "./private-network";
 import { PublicNetwork } from "./public-network";
 

@@ -1,4 +1,4 @@
-import { Terraform } from "react-terraform";
+import { Terraform } from "react-hcl";
 
 export default (
   <Terraform

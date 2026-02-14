@@ -11,7 +11,7 @@ import {
   Provider,
   Resource,
   useRef,
-} from "react-terraform";
+} from "react-hcl";
 import { Alb } from "./alb";
 import { AlbListener } from "./alb-listener";
 import { EcsService } from "./ecs-service";

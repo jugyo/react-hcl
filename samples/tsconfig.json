@@ -4,11 +4,11 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "jsxImportSource": "react-terraform",
+    "jsxImportSource": "react-hcl",
     "baseUrl": "..",
     "paths": {
-      "react-terraform": ["./src/index.ts"],
-      "react-terraform/jsx-runtime": ["./src/jsx-runtime.ts"]
+      "react-hcl": ["./src/index.ts"],
+      "react-hcl/jsx-runtime": ["./src/jsx-runtime.ts"]
     }
   },
   "include": ["./**/*.tsx"]

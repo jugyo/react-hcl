@@ -1,4 +1,4 @@
-import { Module, useRef } from "react-terraform";
+import { Module, useRef } from "react-hcl";
 
 export default function App() {
   const network = useRef();

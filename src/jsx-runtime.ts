@@ -1,12 +1,12 @@
 /**
- * Custom JSX runtime for react-terraform.
+ * Custom JSX runtime for react-hcl.
  *
  * This is NOT React — it is a minimal JSX runtime that produces plain JSXElement objects
  * (a simple { type, props, children } structure) instead of React elements.
  *
  * How it integrates:
- *   - esbuild's `jsx: "automatic"` + `jsxImportSource: "react-terraform"` causes
- *     TSX files to import jsx/jsxs from "react-terraform/jsx-runtime" automatically.
+ *   - esbuild's `jsx: "automatic"` + `jsxImportSource: "react-hcl"` causes
+ *     TSX files to import jsx/jsxs from "react-hcl/jsx-runtime" automatically.
  *   - When users write <Resource type="aws_vpc" name="main" />, esbuild transforms it to
  *     jsx(Resource, { type: "aws_vpc", name: "main" }) which returns a JSXElement.
  *   - The CLI (cli.ts) then renders the JSXElement tree by calling component functions

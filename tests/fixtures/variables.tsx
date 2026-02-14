@@ -1,4 +1,4 @@
-import { Locals, Resource, tf, Variable } from "react-terraform";
+import { Locals, Resource, tf, Variable } from "react-hcl";
 
 export default (
   <>

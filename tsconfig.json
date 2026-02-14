@@ -4,14 +4,14 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "jsxImportSource": "react-terraform",
+    "jsxImportSource": "react-hcl",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "dist",
     "declaration": true,
     "paths": {
-      "react-terraform/jsx-runtime": ["./src/jsx-runtime.ts"]
+      "react-hcl/jsx-runtime": ["./src/jsx-runtime.ts"]
     }
   },
   "include": ["src/**/*", "tests/**/*"]

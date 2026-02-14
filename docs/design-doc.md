@@ -186,8 +186,8 @@
 ```
 
 ```bash
-react-terraform build src/prod.tsx -o envs/prod/
-react-terraform build src/staging.tsx -o envs/staging/
+react-hcl build src/prod.tsx -o envs/prod/
+react-hcl build src/staging.tsx -o envs/staging/
 ```
 
 ## 11. Additional Specifications

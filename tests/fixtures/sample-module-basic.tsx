@@ -1,4 +1,4 @@
-import { Module } from "react-terraform";
+import { Module } from "react-hcl";
 
 export default (
   <Module

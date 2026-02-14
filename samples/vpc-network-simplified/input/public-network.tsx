@@ -1,4 +1,4 @@
-import { Output, Resource, raw, useRef } from "react-terraform";
+import { Output, Resource, raw, useRef } from "react-hcl";
 
 export function PublicNetwork({
   vpcRef,

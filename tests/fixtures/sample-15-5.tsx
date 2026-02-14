@@ -1,4 +1,4 @@
-import { Provider, Resource, useRef } from "react-terraform";
+import { Provider, Resource, useRef } from "react-hcl";
 
 function App() {
   const virginiaRef = useRef();

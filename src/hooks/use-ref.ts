@@ -29,7 +29,7 @@
  */
 import type { RawHCL } from "../hcl-serializer";
 
-const RAW_HCL_SYMBOL = Symbol.for("react-terraform:RawHCL");
+const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
 /**
  * Metadata stored on a ref after a component registers it.
@@ -57,7 +57,7 @@ export type RefProxy = {
 // Uses globalThis to share state across module instances (e.g., esbuild-bundled code
 // inlines its own copy of useRef, but renderer.ts calls resetHookState from the source copy).
 
-const HOOK_KEY = Symbol.for("react-terraform:hookState");
+const HOOK_KEY = Symbol.for("react-hcl:hookState");
 
 type HookState = {
   hookIndex: number;

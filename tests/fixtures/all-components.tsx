@@ -6,7 +6,7 @@ import {
   Resource,
   Terraform,
   Variable,
-} from "react-terraform";
+} from "react-hcl";
 
 export default (
   <>
