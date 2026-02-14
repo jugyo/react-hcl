@@ -26,6 +26,12 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
+  it("variables.tsx → tf.var / tf.local helpers", async () => {
+    const result = await $`bun run src/cli.ts tests/fixtures/variables.tsx`.text();
+    const expected = await Bun.file("tests/fixtures/variables.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
   it("--out-dir writes main.tf to directory", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {

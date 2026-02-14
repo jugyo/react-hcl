@@ -18,3 +18,4 @@ export { Provider } from "./components/provider";
 export { Terraform } from "./components/terraform";
 export { Fragment } from "./jsx-runtime";
 export { useRef } from "./hooks/use-ref";
+export { tf } from "./helpers/tf";
