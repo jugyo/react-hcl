@@ -15,6 +15,7 @@
 
 import type { Block } from "./blocks";
 import { serializeHCLAttributes } from "./hcl-serializer";
+import { validateInnerTextHCL } from "./hcl-validator";
 
 /**
  * Produces the HCL block header string based on block type.
@@ -66,6 +67,7 @@ function hasInnerText(block: Block): block is Block & { innerText: string } {
 function renderBlock(block: Block): string {
   const header = blockHeader(block);
   if (hasInnerText(block)) {
+    validateInnerTextHCL(block.innerText);
     return `${header} {\n${block.innerText}\n}`;
   }
   const body = serializeHCLAttributes(block.attributes);

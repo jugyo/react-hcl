@@ -19,12 +19,12 @@ describe("Resource component", () => {
   it("excludes ref and children from attributes", () => {
     const block = Resource({ type: "aws_vpc", name: "main", ref: {}, children: "hcl text" });
     expect(block.attributes).toEqual({});
-    expect(block.innerText).toBe("hcl text");
+    expect(block.innerText).toBe("  hcl text");
   });
 
   it("unwraps children array and stores first element as innerText", () => {
     const block = Resource({ type: "aws_vpc", name: "main", children: ["hcl text"] as any });
-    expect(block.innerText).toBe("hcl text");
+    expect(block.innerText).toBe("  hcl text");
   });
 
   it("does not set innerText when children is undefined", () => {

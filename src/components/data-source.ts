@@ -11,7 +11,7 @@
  *   → data "aws_ami" "latest" { most_recent = true }
  */
 import type { DataSourceBlock } from "../blocks";
-import { raw } from "../hcl-serializer";
+import { raw, adjustIndent } from "../hcl-serializer";
 
 export function DataSource(props: {
   type: string;
@@ -53,6 +53,6 @@ export function DataSource(props: {
     type,
     name,
     attributes,
-    ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+    ...(typeof rawChildren === "string" ? { innerText: adjustIndent(rawChildren, 2) } : {}),
   };
 }

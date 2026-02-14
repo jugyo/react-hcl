@@ -13,6 +13,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "esbuild": "^0.27.3"
+    "esbuild": "^0.27.3",
+    "hcl2-parser": "^1.0.3"
   }
 }

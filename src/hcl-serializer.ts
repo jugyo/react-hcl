@@ -298,3 +298,43 @@ export function serializeHCLAttributes(
 
   return lines.join("\n");
 }
+
+/**
+ * Adjusts indentation of a multi-line HCL string.
+ *
+ * 1. Strips leading and trailing blank lines
+ * 2. Computes the minimum indentation across non-empty lines
+ * 3. Re-indents all lines to the target indentation level
+ *
+ * @param text - Raw multi-line string (e.g. from JSX children)
+ * @param targetIndent - Desired indentation in number of spaces (default: 2)
+ * @returns Re-indented string
+ */
+export function adjustIndent(text: string, targetIndent: number = 2): string {
+  // Split and strip leading/trailing blank lines
+  const rawLines = text.split("\n");
+  let start = 0;
+  while (start < rawLines.length && rawLines[start].trim() === "") start++;
+  let end = rawLines.length - 1;
+  while (end > start && rawLines[end].trim() === "") end--;
+  const lines = rawLines.slice(start, end + 1);
+
+  if (lines.length === 0) return "";
+
+  // Compute minimum indentation (ignoring empty lines)
+  let minIndent = Infinity;
+  for (const line of lines) {
+    if (line.trim() === "") continue;
+    const leadingSpaces = line.match(/^( *)/)![1].length;
+    if (leadingSpaces < minIndent) minIndent = leadingSpaces;
+  }
+  if (minIndent === Infinity) minIndent = 0;
+
+  const pad = " ".repeat(targetIndent);
+  return lines
+    .map((line) => {
+      if (line.trim() === "") return "";
+      return pad + line.slice(minIndent);
+    })
+    .join("\n");
+}

@@ -11,7 +11,7 @@
  *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
 import type { ResourceBlock } from "../blocks";
-import { raw } from "../hcl-serializer";
+import { raw, adjustIndent } from "../hcl-serializer";
 
 export function Resource(props: {
   type: string;
@@ -53,6 +53,6 @@ export function Resource(props: {
     type,
     name,
     attributes,
-    ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+    ...(typeof rawChildren === "string" ? { innerText: adjustIndent(rawChildren, 2) } : {}),
   };
 }
