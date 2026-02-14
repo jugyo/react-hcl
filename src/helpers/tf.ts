@@ -18,7 +18,7 @@
  *     tags          = local.common_tags
  *   }
  */
-import { raw, type RawHCL } from "../hcl-serializer";
+import { type RawHCL, raw } from "../hcl-serializer";
 
 export const tf = {
   /** tf.var("name") → var.name */

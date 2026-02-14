@@ -1,4 +1,12 @@
-import { Resource, DataSource, Output, Variable, Locals, Provider, Terraform } from "react-terraform";
+import {
+  DataSource,
+  Locals,
+  Output,
+  Provider,
+  Resource,
+  Terraform,
+  Variable,
+} from "react-terraform";
 
 export default (
   <>

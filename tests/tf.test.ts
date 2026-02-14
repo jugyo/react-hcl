@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
-import { tf } from "../src/helpers/tf";
+import { describe, expect, it } from "bun:test";
 import { isRawHCL, serializeHCLAttributes } from "../src/hcl-serializer";
+import { tf } from "../src/helpers/tf";
 
 describe("tf helper", () => {
   describe("tf.var", () => {
@@ -26,7 +26,9 @@ describe("tf helper", () => {
 
   describe("HCL serializer integration", () => {
     it("tf.var is serialized without quotes", () => {
-      const result = serializeHCLAttributes({ environment: tf.var("environment") });
+      const result = serializeHCLAttributes({
+        environment: tf.var("environment"),
+      });
       expect(result).toContain("environment = var.environment");
       expect(result).not.toContain('"var.environment"');
     });

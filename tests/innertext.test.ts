@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+import { generate } from "../src/generator";
 import { adjustIndent } from "../src/hcl-serializer";
 import { validateInnerTextHCL } from "../src/hcl-validator";
-import { generate } from "../src/generator";
 
 describe("adjustIndent", () => {
   it("strips leading and trailing blank lines", () => {
@@ -36,8 +36,10 @@ describe("adjustIndent", () => {
 
   it("handles template literal with leading blank line", () => {
     // Simulates what happens with `{`\n  content\n`}`
-    const input = "\nami = \"test\"\ninstance_type = \"t2.micro\"\n";
-    expect(adjustIndent(input, 2)).toBe("  ami = \"test\"\n  instance_type = \"t2.micro\"");
+    const input = '\nami = "test"\ninstance_type = "t2.micro"\n';
+    expect(adjustIndent(input, 2)).toBe(
+      '  ami = "test"\n  instance_type = "t2.micro"',
+    );
   });
 });
 
@@ -59,7 +61,9 @@ describe("validateInnerTextHCL", () => {
   });
 
   it("rejects unclosed blocks", () => {
-    expect(() => validateInnerTextHCL("  block {\n    x = 1")).toThrow("Invalid HCL");
+    expect(() => validateInnerTextHCL("  block {\n    x = 1")).toThrow(
+      "Invalid HCL",
+    );
   });
 });
 

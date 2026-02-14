@@ -1,4 +1,4 @@
-import { Resource, DataSource } from "react-terraform";
+import { DataSource, Resource } from "react-terraform";
 
 function App() {
   return (

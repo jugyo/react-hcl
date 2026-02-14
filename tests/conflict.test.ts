@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
-import { detectConflicts, ConflictError } from "../src/conflict";
+import { describe, expect, it } from "bun:test";
 import type { Block } from "../src/blocks";
+import { ConflictError, detectConflicts } from "../src/conflict";
 
 describe("detectConflicts", () => {
   it("throws on duplicate resource with same type + name", () => {

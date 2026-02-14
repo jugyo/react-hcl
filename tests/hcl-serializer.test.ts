@@ -1,5 +1,10 @@
-import { describe, it, expect } from "bun:test";
-import { serializeHCLAttributes, raw, block, attribute } from "../src/hcl-serializer";
+import { describe, expect, it } from "bun:test";
+import {
+  attribute,
+  block,
+  raw,
+  serializeHCLAttributes,
+} from "../src/hcl-serializer";
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
@@ -24,12 +29,16 @@ describe("serializeHCLAttributes", () => {
   });
 
   it("string array", () => {
-    const result = serializeHCLAttributes({ cidr_blocks: ["10.0.0.0/16", "10.0.1.0/24"] });
+    const result = serializeHCLAttributes({
+      cidr_blocks: ["10.0.0.0/16", "10.0.1.0/24"],
+    });
     expect(result).toContain('cidr_blocks = ["10.0.0.0/16", "10.0.1.0/24"]');
   });
 
   it("RawHCL array", () => {
-    const result = serializeHCLAttributes({ depends_on: [raw("aws_vpc.main")] });
+    const result = serializeHCLAttributes({
+      depends_on: [raw("aws_vpc.main")],
+    });
     expect(result).toContain("depends_on = [aws_vpc.main]");
   });
 
@@ -95,8 +104,8 @@ describe("serializeHCLAttributes", () => {
     // level 0 (indent=2): "  lifecycle {"
     // level 1 (indent=4): "    nested {"
     // level 2 (indent=6): "      deep_key = \"value\""
-    expect(result).toContain('  lifecycle {');
-    expect(result).toContain('    nested {');
+    expect(result).toContain("  lifecycle {");
+    expect(result).toContain("    nested {");
     expect(result).toContain('      deep_key = "value"');
   });
 

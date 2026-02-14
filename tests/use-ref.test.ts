@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "bun:test";
-import { useRef, resetHookState, getHookStore } from "../src/hooks/use-ref";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { isRawHCL } from "../src/hcl-serializer";
+import { getHookStore, resetHookState, useRef } from "../src/hooks/use-ref";
 
 describe("useRef", () => {
   beforeEach(() => {
@@ -41,15 +41,26 @@ describe("useRef", () => {
 
   it("nested access (outputs.xxx)", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "data", type: "terraform_remote_state", name: "network" };
+    ref.__refMeta = {
+      blockType: "data",
+      type: "terraform_remote_state",
+      name: "network",
+    };
     const result = ref.outputs.vpc_id;
     expect(isRawHCL(result)).toBe(true);
-    expect(result.value).toBe("data.terraform_remote_state.network.outputs.vpc_id");
+    expect(result.value).toBe(
+      "data.terraform_remote_state.network.outputs.vpc_id",
+    );
   });
 
   it("provider ref (type.alias format)", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "provider", type: "aws", name: "virginia", alias: "virginia" };
+    ref.__refMeta = {
+      blockType: "provider",
+      type: "aws",
+      name: "virginia",
+      alias: "virginia",
+    };
     const result = ref.__providerValue;
     expect(isRawHCL(result)).toBe(true);
     expect(result.value).toBe("aws.virginia");
@@ -83,8 +94,14 @@ describe("useRef", () => {
   it("lazy evaluation: nested access resolves after registration", () => {
     const ref = useRef();
     const lazyValue = ref.outputs.vpc_id;
-    ref.__refMeta = { blockType: "data", type: "terraform_remote_state", name: "network" };
-    expect(lazyValue.value).toBe("data.terraform_remote_state.network.outputs.vpc_id");
+    ref.__refMeta = {
+      blockType: "data",
+      type: "terraform_remote_state",
+      name: "network",
+    };
+    expect(lazyValue.value).toBe(
+      "data.terraform_remote_state.network.outputs.vpc_id",
+    );
   });
 
   it("lazy evaluation: __dependsOnValue resolves after registration", () => {
@@ -107,7 +124,11 @@ describe("useRef", () => {
       const ref1 = useRef();
       const ref2 = useRef();
       ref1.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
-      ref2.__refMeta = { blockType: "resource", type: "aws_subnet", name: "sub" };
+      ref2.__refMeta = {
+        blockType: "resource",
+        type: "aws_subnet",
+        name: "sub",
+      };
 
       // Reset index only (not clearing store)
       resetHookState();
@@ -118,7 +139,11 @@ describe("useRef", () => {
       expect(ref1Again).toBe(ref1);
       expect(ref2Again).toBe(ref2);
       // Metadata preserved
-      expect(ref1Again.__refMeta).toEqual({ blockType: "resource", type: "aws_vpc", name: "main" });
+      expect(ref1Again.__refMeta).toEqual({
+        blockType: "resource",
+        type: "aws_vpc",
+        name: "main",
+      });
     });
 
     it("stores proxies in hookStore", () => {

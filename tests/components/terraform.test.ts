@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { Terraform } from "../../src/components/terraform";
 
 describe("Terraform component", () => {
@@ -9,7 +9,9 @@ describe("Terraform component", () => {
   });
 
   it("stores children string as innerText", () => {
-    const block = Terraform({ children: 'backend "s3" {\n  bucket = "my-bucket"\n}' });
+    const block = Terraform({
+      children: 'backend "s3" {\n  bucket = "my-bucket"\n}',
+    });
     expect(block.innerText).toBe('backend "s3" {\n  bucket = "my-bucket"\n}');
     expect(block.attributes).toEqual({});
   });

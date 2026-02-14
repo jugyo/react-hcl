@@ -1,11 +1,15 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { Variable } from "../../src/components/variable";
-import { isRawHCL } from "../../src/hcl-serializer";
 import { generate } from "../../src/generator";
+import { isRawHCL } from "../../src/hcl-serializer";
 
 describe("Variable component", () => {
   it("returns a VariableBlock with name and attributes", () => {
-    const block = Variable({ name: "environment", type: "string", default: "dev" });
+    const block = Variable({
+      name: "environment",
+      type: "string",
+      default: "dev",
+    });
     expect(block.blockType).toBe("variable");
     expect(block.name).toBe("environment");
   });

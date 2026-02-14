@@ -11,7 +11,7 @@
  *   → data "aws_ami" "latest" { most_recent = true }
  */
 import type { DataSourceBlock } from "../blocks";
-import { raw, adjustIndent } from "../hcl-serializer";
+import { adjustIndent, raw } from "../hcl-serializer";
 
 export function DataSource(props: {
   type: string;
@@ -28,7 +28,7 @@ export function DataSource(props: {
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
-  if (attributes.provider && attributes.provider.__refMeta) {
+  if (attributes.provider?.__refMeta) {
     const meta = attributes.provider.__refMeta;
     attributes.provider = raw(`${meta.type}.${meta.alias || meta.name}`);
   }
@@ -53,6 +53,8 @@ export function DataSource(props: {
     type,
     name,
     attributes,
-    ...(typeof rawChildren === "string" ? { innerText: adjustIndent(rawChildren, 2) } : {}),
+    ...(typeof rawChildren === "string"
+      ? { innerText: adjustIndent(rawChildren, 2) }
+      : {}),
   };
 }

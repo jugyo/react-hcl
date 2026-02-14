@@ -1,12 +1,12 @@
-import { describe, it, expect } from "bun:test";
-import { render } from "../src/renderer";
-import { jsx, jsxs, Fragment } from "../src/jsx-runtime";
-import { Resource } from "../src/components/resource";
+import { describe, expect, it } from "bun:test";
 import { Output } from "../src/components/output";
+import { Resource } from "../src/components/resource";
 import { Variable } from "../src/components/variable";
 import { generate } from "../src/generator";
-import { useRef } from "../src/hooks/use-ref";
 import { isRawHCL } from "../src/hcl-serializer";
+import { useRef } from "../src/hooks/use-ref";
+import { Fragment, jsx, jsxs } from "../src/jsx-runtime";
+import { render } from "../src/renderer";
 
 describe("Composite components", () => {
   it("expands a function component", () => {
@@ -27,8 +27,16 @@ describe("Composite components", () => {
     function NetworkModule() {
       return jsxs(Fragment, {
         children: [
-          jsx(Resource, { type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" }),
-          jsx(Resource, { type: "aws_subnet", name: "public", cidr_block: "10.0.1.0/24" }),
+          jsx(Resource, {
+            type: "aws_vpc",
+            name: "main",
+            cidr_block: "10.0.0.0/16",
+          }),
+          jsx(Resource, {
+            type: "aws_subnet",
+            name: "public",
+            cidr_block: "10.0.1.0/24",
+          }),
         ],
       });
     }
@@ -39,12 +47,20 @@ describe("Composite components", () => {
 
   it("expands nested custom components", () => {
     function InnerComponent() {
-      return jsx(Resource, { type: "aws_instance", name: "web", ami: "ami-xxx" });
+      return jsx(Resource, {
+        type: "aws_instance",
+        name: "web",
+        ami: "ami-xxx",
+      });
     }
     function OuterComponent() {
       return jsxs(Fragment, {
         children: [
-          jsx(Resource, { type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" }),
+          jsx(Resource, {
+            type: "aws_vpc",
+            name: "main",
+            cidr_block: "10.0.0.0/16",
+          }),
           jsx(InnerComponent, {}),
         ],
       });
@@ -57,10 +73,27 @@ describe("Composite components", () => {
   });
 
   it("passes props correctly", () => {
-    function ConfigurableVpc({ name, cidr, dns }: { name: string; cidr: string; dns: boolean }) {
-      return jsx(Resource, { type: "aws_vpc", name, cidr_block: cidr, enable_dns_hostnames: dns });
+    function ConfigurableVpc({
+      name,
+      cidr,
+      dns,
+    }: {
+      name: string;
+      cidr: string;
+      dns: boolean;
+    }) {
+      return jsx(Resource, {
+        type: "aws_vpc",
+        name,
+        cidr_block: cidr,
+        enable_dns_hostnames: dns,
+      });
     }
-    const element = jsx(ConfigurableVpc, { name: "custom", cidr: "192.168.0.0/16", dns: true });
+    const element = jsx(ConfigurableVpc, {
+      name: "custom",
+      cidr: "192.168.0.0/16",
+      dns: true,
+    });
     const blocks = render(element);
     expect(blocks[0].attributes.cidr_block).toBe("192.168.0.0/16");
     expect(blocks[0].attributes.enable_dns_hostnames).toBe(true);
@@ -68,14 +101,24 @@ describe("Composite components", () => {
 
   it("passes ref as props", () => {
     function SubnetModule({ vpcRef }: { vpcRef: any }) {
-      return jsx(Resource, { type: "aws_subnet", name: "public", vpc_id: vpcRef.id, cidr_block: "10.0.1.0/24" });
+      return jsx(Resource, {
+        type: "aws_subnet",
+        name: "public",
+        vpc_id: vpcRef.id,
+        cidr_block: "10.0.1.0/24",
+      });
     }
 
     const vpcRef = useRef();
 
     const element = jsxs(Fragment, {
       children: [
-        jsx(Resource, { type: "aws_vpc", name: "main", ref: vpcRef, cidr_block: "10.0.0.0/16" }),
+        jsx(Resource, {
+          type: "aws_vpc",
+          name: "main",
+          ref: vpcRef,
+          cidr_block: "10.0.0.0/16",
+        }),
         jsx(SubnetModule, { vpcRef }),
       ],
     });
@@ -88,14 +131,24 @@ describe("Composite components", () => {
 
   it("resolves ref passed as props to RawHCL in generated output", () => {
     function SubnetModule({ vpcRef }: { vpcRef: any }) {
-      return jsx(Resource, { type: "aws_subnet", name: "public", vpc_id: vpcRef.id, cidr_block: "10.0.1.0/24" });
+      return jsx(Resource, {
+        type: "aws_subnet",
+        name: "public",
+        vpc_id: vpcRef.id,
+        cidr_block: "10.0.1.0/24",
+      });
     }
 
     const vpcRef = useRef();
 
     const element = jsxs(Fragment, {
       children: [
-        jsx(Resource, { type: "aws_vpc", name: "main", ref: vpcRef, cidr_block: "10.0.0.0/16" }),
+        jsx(Resource, {
+          type: "aws_vpc",
+          name: "main",
+          ref: vpcRef,
+          cidr_block: "10.0.0.0/16",
+        }),
         jsx(SubnetModule, { vpcRef }),
       ],
     });
@@ -104,7 +157,7 @@ describe("Composite components", () => {
     expect(isRawHCL(subnetBlock.attributes.vpc_id)).toBe(true);
 
     const hcl = generate(blocks);
-    expect(hcl).toContain('vpc_id     = aws_vpc.main.id');
+    expect(hcl).toContain("vpc_id     = aws_vpc.main.id");
   });
 
   it("returns mixed primitive types from a component", () => {
@@ -113,7 +166,12 @@ describe("Composite components", () => {
       return jsxs(Fragment, {
         children: [
           jsx(Variable, { name: "env", type: "string", default: "dev" }),
-          jsx(Resource, { type: "aws_instance", name: "web", ref, ami: "ami-xxx" }),
+          jsx(Resource, {
+            type: "aws_instance",
+            name: "web",
+            ref,
+            ami: "ami-xxx",
+          }),
           jsx(Output, { name: "instance_id", value: ref.id }),
         ],
       });
@@ -136,13 +194,21 @@ describe("Composite components", () => {
     function Wrapper({ children }: { children: any }) {
       return jsxs(Fragment, {
         children: [
-          jsx(Resource, { type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" }),
-          ...([].concat(children)),
+          jsx(Resource, {
+            type: "aws_vpc",
+            name: "main",
+            cidr_block: "10.0.0.0/16",
+          }),
+          ...[].concat(children),
         ],
       });
     }
     const element = jsx(Wrapper, {
-      children: jsx(Resource, { type: "aws_subnet", name: "sub", cidr_block: "10.0.1.0/24" }),
+      children: jsx(Resource, {
+        type: "aws_subnet",
+        name: "sub",
+        cidr_block: "10.0.1.0/24",
+      }),
     });
     const blocks = render(element);
     expect(blocks).toHaveLength(2);
@@ -167,7 +233,7 @@ describe("Composite components", () => {
       ],
     });
     const blocks = render(element);
-    const names = blocks.map(b => (b as any).name);
+    const names = blocks.map((b) => (b as any).name);
     expect(names).toEqual(["before", "first", "second", "after"]);
   });
 });

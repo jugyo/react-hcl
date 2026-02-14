@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
-import { generate } from "../src/generator";
+import { describe, expect, it } from "bun:test";
 import type { Block } from "../src/blocks";
+import { generate } from "../src/generator";
 
 describe("generate", () => {
   it("resource block", () => {

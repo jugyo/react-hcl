@@ -184,9 +184,15 @@ function serializeValue(value: unknown): string {
 
 /** Checks if a value is a plain JS object (not array, not RawHCL, not BlockHCL, not AttributeHCL). */
 function isPlainObject(v: unknown): v is Record<string, any> {
-  return typeof v === "object" && v !== null && !Array.isArray(v) && !isRawHCL(v) && !isBlockHCL(v) && !isAttributeHCL(v);
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    !Array.isArray(v) &&
+    !isRawHCL(v) &&
+    !isBlockHCL(v) &&
+    !isAttributeHCL(v)
+  );
 }
-
 
 /**
  * Serializes a Record of attributes into indented HCL lines.
@@ -250,16 +256,27 @@ export function serializeHCLAttributes(
     } else if (isPlainObject(value)) {
       // Plain object not in whitelist → auto attribute()
       blockEntries.push({ kind: "attribute", key, value: attribute(value) });
-    } else if (Array.isArray(value) && value.length > 0 && isPlainObject(value[0])) {
+    } else if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      isPlainObject(value[0])
+    ) {
       // Array of objects → repeated block syntax
-      blockEntries.push({ kind: "repeated_block", key, value: value as Record<string, any>[] });
+      blockEntries.push({
+        kind: "repeated_block",
+        key,
+        value: value as Record<string, any>[],
+      });
     } else {
       simpleEntries.push({ kind: "simple", key, value });
     }
   }
 
   // Align simple attribute keys by padding to the longest key length
-  const maxKeyLen = simpleEntries.reduce((max, e) => Math.max(max, e.key.length), 0);
+  const maxKeyLen = simpleEntries.reduce(
+    (max, e) => Math.max(max, e.key.length),
+    0,
+  );
 
   for (const { key, value } of simpleEntries) {
     const padding = " ".repeat(maxKeyLen - key.length);
@@ -326,7 +343,7 @@ export function adjustIndent(text: string, targetIndent: number = 2): string {
   let minIndent = Infinity;
   for (const line of lines) {
     if (line.trim() === "") continue;
-    const leadingSpaces = line.match(/^( *)/)![1].length;
+    const leadingSpaces = line.match(/^( *)/)?.[1].length;
     if (leadingSpaces < minIndent) minIndent = leadingSpaces;
   }
   if (minIndent === Infinity) minIndent = 0;

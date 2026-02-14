@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { $, type ShellError } from "bun";
 
 describe("CLI E2E", () => {
@@ -9,14 +9,20 @@ describe("CLI E2E", () => {
   });
 
   it("multiple.tsx → multiple resources via Fragment", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/multiple.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/multiple.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/multiple.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/multiple.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
   it("all-components.tsx → all primitive components", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/all-components.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/all-components.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/all-components.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/all-components.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
@@ -27,32 +33,47 @@ describe("CLI E2E", () => {
   });
 
   it("variables.tsx → tf.var / tf.local helpers", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/variables.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/variables.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/variables.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/variables.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
   it("innertext.tsx → innerText with adjustIndent", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/innertext.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/innertext.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/innertext.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/innertext.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
   it("innertext-ref.tsx → template literal ref without function wrapper", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/innertext-ref.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/innertext-ref.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/innertext-ref.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/innertext-ref.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
   it("export-default-function.tsx → default exported function component", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/export-default-function.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/export-default-function.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/export-default-function.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/export-default-function.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
   it("composite.tsx → composite components with ref passing", async () => {
-    const result = await $`bun run src/cli.ts tests/fixtures/composite.tsx`.text();
-    const expected = await Bun.file("tests/fixtures/composite.expected.tf").text();
+    const result =
+      await $`bun run src/cli.ts tests/fixtures/composite.tsx`.text();
+    const expected = await Bun.file(
+      "tests/fixtures/composite.expected.tf",
+    ).text();
     expect(result).toBe(expected);
   });
 
@@ -61,7 +82,9 @@ describe("CLI E2E", () => {
     try {
       await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${tmpDir}`;
       const content = await Bun.file(`${tmpDir}/main.tf`).text();
-      const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+      const expected = await Bun.file(
+        "tests/fixtures/basic.expected.tf",
+      ).text();
       expect(content).toBe(expected);
     } finally {
       await $`rm -rf ${tmpDir}`;
@@ -132,7 +155,9 @@ describe("CLI error handling", () => {
     try {
       await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${nestedDir}`;
       const content = await Bun.file(`${nestedDir}/main.tf`).text();
-      const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+      const expected = await Bun.file(
+        "tests/fixtures/basic.expected.tf",
+      ).text();
       expect(content).toBe(expected);
     } finally {
       await $`rm -rf ${tmpDir}`;

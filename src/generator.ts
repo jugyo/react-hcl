@@ -98,5 +98,5 @@ function renderBlock(block: Block): string {
  *   }
  */
 export function generate(blocks: Block[]): string {
-  return blocks.map(renderBlock).join("\n\n") + "\n";
+  return `${blocks.map(renderBlock).join("\n\n")}\n`;
 }

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { Resource } from "../../src/components/resource";
-import { useRef, resetHookState } from "../../src/hooks/use-ref";
 import { isRawHCL } from "../../src/hcl-serializer";
+import { resetHookState, useRef } from "../../src/hooks/use-ref";
 
 describe("Resource component", () => {
   beforeEach(() => {
@@ -9,7 +9,11 @@ describe("Resource component", () => {
   });
 
   it("returns a ResourceBlock with attributes", () => {
-    const block = Resource({ type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" });
+    const block = Resource({
+      type: "aws_vpc",
+      name: "main",
+      cidr_block: "10.0.0.0/16",
+    });
     expect(block.blockType).toBe("resource");
     expect(block.type).toBe("aws_vpc");
     expect(block.name).toBe("main");
@@ -17,13 +21,22 @@ describe("Resource component", () => {
   });
 
   it("excludes ref and children from attributes", () => {
-    const block = Resource({ type: "aws_vpc", name: "main", ref: {}, children: "hcl text" });
+    const block = Resource({
+      type: "aws_vpc",
+      name: "main",
+      ref: {},
+      children: "hcl text",
+    });
     expect(block.attributes).toEqual({});
     expect(block.innerText).toBe("  hcl text");
   });
 
   it("unwraps children array and stores first element as innerText", () => {
-    const block = Resource({ type: "aws_vpc", name: "main", children: ["hcl text"] as any });
+    const block = Resource({
+      type: "aws_vpc",
+      name: "main",
+      children: ["hcl text"] as any,
+    });
     expect(block.innerText).toBe("  hcl text");
   });
 
@@ -35,13 +48,26 @@ describe("Resource component", () => {
   it("registers __refMeta on useRef proxy", () => {
     const ref = useRef();
     Resource({ type: "aws_vpc", name: "main", ref, cidr_block: "10.0.0.0/16" });
-    expect(ref.__refMeta).toEqual({ blockType: "resource", type: "aws_vpc", name: "main" });
+    expect(ref.__refMeta).toEqual({
+      blockType: "resource",
+      type: "aws_vpc",
+      name: "main",
+    });
   });
 
   it("resolves provider ref to raw HCL", () => {
     const providerRef = useRef();
-    providerRef.__refMeta = { blockType: "provider", type: "aws", name: "virginia", alias: "virginia" };
-    const block = Resource({ type: "aws_instance", name: "web", provider: providerRef });
+    providerRef.__refMeta = {
+      blockType: "provider",
+      type: "aws",
+      name: "virginia",
+      alias: "virginia",
+    };
+    const block = Resource({
+      type: "aws_instance",
+      name: "web",
+      provider: providerRef,
+    });
     expect(isRawHCL(block.attributes.provider)).toBe(true);
     expect(block.attributes.provider.value).toBe("aws.virginia");
   });
@@ -51,7 +77,11 @@ describe("Resource component", () => {
     vpcRef.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
     const dataRef = useRef();
     dataRef.__refMeta = { blockType: "data", type: "aws_ami", name: "latest" };
-    const block = Resource({ type: "aws_instance", name: "web", depends_on: [vpcRef, dataRef] });
+    const block = Resource({
+      type: "aws_instance",
+      name: "web",
+      depends_on: [vpcRef, dataRef],
+    });
     expect(block.attributes.depends_on).toHaveLength(2);
     expect(isRawHCL(block.attributes.depends_on[0])).toBe(true);
     expect(block.attributes.depends_on[0].value).toBe("aws_vpc.main");

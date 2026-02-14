@@ -1,10 +1,14 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { resetHookState, useRef } from "../src/hooks/use-ref";
+import { Fragment, jsx, jsxs } from "../src/jsx-runtime";
 import { render } from "../src/renderer";
-import { jsx, jsxs, Fragment } from "../src/jsx-runtime";
-import { useRef, resetHookState } from "../src/hooks/use-ref";
 
 // Dummy component for testing
-function DummyResource(props: { type: string; name: string; [key: string]: any }) {
+function DummyResource(props: {
+  type: string;
+  name: string;
+  [key: string]: any;
+}) {
   const { type, name, children, ...attrs } = props;
   return {
     blockType: "resource" as const,
@@ -20,7 +24,11 @@ describe("render", () => {
   });
 
   it("returns a single Block", () => {
-    const element = jsx(DummyResource, { type: "aws_vpc", name: "main", cidr_block: "10.0.0.0/16" });
+    const element = jsx(DummyResource, {
+      type: "aws_vpc",
+      name: "main",
+      cidr_block: "10.0.0.0/16",
+    });
     const blocks = render(element);
     expect(blocks).toHaveLength(1);
     expect(blocks[0]).toEqual({
@@ -46,7 +54,11 @@ describe("render", () => {
 
   it("expands custom components (functions)", () => {
     function MyVpc(props: { cidr: string }) {
-      return jsx(DummyResource, { type: "aws_vpc", name: "custom", cidr_block: props.cidr });
+      return jsx(DummyResource, {
+        type: "aws_vpc",
+        name: "custom",
+        cidr_block: props.cidr,
+      });
     }
     const element = jsx(MyVpc, { cidr: "10.0.0.0/16" });
     const blocks = render(element);
@@ -55,7 +67,9 @@ describe("render", () => {
   });
 
   it("handles null-returning component", () => {
-    function Empty() { return null; }
+    function Empty() {
+      return null;
+    }
     const element = jsx(Empty, {});
     const blocks = render(element);
     expect(blocks).toHaveLength(0);
@@ -63,7 +77,11 @@ describe("render", () => {
 
   it("renders nested components", () => {
     function Inner(props: { cidr: string }) {
-      return jsx(DummyResource, { type: "aws_vpc", name: "inner", cidr_block: props.cidr });
+      return jsx(DummyResource, {
+        type: "aws_vpc",
+        name: "inner",
+        cidr_block: props.cidr,
+      });
     }
     function Outer(props: { cidr: string }) {
       return jsx(Inner, { cidr: props.cidr });
@@ -120,7 +138,11 @@ describe("render", () => {
     });
     const blocks = render(element);
     expect(blocks).toHaveLength(3);
-    expect(blocks.map(b => (b as any).name)).toEqual(["first", "second", "third"]);
+    expect(blocks.map((b) => (b as any).name)).toEqual([
+      "first",
+      "second",
+      "third",
+    ]);
   });
 
   it("preserves declaration order", () => {
@@ -132,12 +154,21 @@ describe("render", () => {
       ],
     });
     const blocks = render(element);
-    expect(blocks.map(b => (b as any).name)).toEqual(["first", "second", "third"]);
+    expect(blocks.map((b) => (b as any).name)).toEqual([
+      "first",
+      "second",
+      "third",
+    ]);
   });
 
   describe("2-pass rendering", () => {
     it("resolves ref in innerText template literal", () => {
-      function ResourceWithRef(props: { type: string; name: string; ref?: any; [key: string]: any }) {
+      function ResourceWithRef(props: {
+        type: string;
+        name: string;
+        ref?: any;
+        [key: string]: any;
+      }) {
         const { type, name, ref, children, ...attrs } = props;
         if (ref) ref.__refMeta = { blockType: "resource", type, name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
@@ -146,7 +177,9 @@ describe("render", () => {
           type,
           name,
           attributes: attrs,
-          ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+          ...(typeof rawChildren === "string"
+            ? { innerText: rawChildren }
+            : {}),
         };
       }
 
@@ -154,8 +187,17 @@ describe("render", () => {
         const vpcRef = useRef();
         return jsxs(Fragment, {
           children: [
-            jsx(ResourceWithRef, { type: "aws_vpc", name: "main", ref: vpcRef, cidr_block: "10.0.0.0/16" }),
-            jsx(ResourceWithRef, { type: "aws_subnet", name: "sub", children: `vpc_id = ${vpcRef.id}` }),
+            jsx(ResourceWithRef, {
+              type: "aws_vpc",
+              name: "main",
+              ref: vpcRef,
+              cidr_block: "10.0.0.0/16",
+            }),
+            jsx(ResourceWithRef, {
+              type: "aws_subnet",
+              name: "sub",
+              children: `vpc_id = ${vpcRef.id}`,
+            }),
           ],
         });
       }
@@ -170,15 +212,26 @@ describe("render", () => {
       function App() {
         const ref = useRef();
         // ref is never passed to a component with ref= prop
-        return jsx(DummyResource, { type: "aws_vpc", name: "main", vpc_id: ref.id });
+        return jsx(DummyResource, {
+          type: "aws_vpc",
+          name: "main",
+          vpc_id: ref.id,
+        });
       }
 
       const element = jsx(App, {});
-      expect(() => render(element)).toThrow("Ref is used but was never registered");
+      expect(() => render(element)).toThrow(
+        "Ref is used but was never registered",
+      );
     });
 
     it("resolves multiple refs in template literals", () => {
-      function ResourceWithRef(props: { type: string; name: string; ref?: any; [key: string]: any }) {
+      function ResourceWithRef(props: {
+        type: string;
+        name: string;
+        ref?: any;
+        [key: string]: any;
+      }) {
         const { type, name, ref, children, ...attrs } = props;
         if (ref) ref.__refMeta = { blockType: "resource", type, name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
@@ -187,7 +240,9 @@ describe("render", () => {
           type,
           name,
           attributes: attrs,
-          ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+          ...(typeof rawChildren === "string"
+            ? { innerText: rawChildren }
+            : {}),
         };
       }
 
@@ -196,10 +251,21 @@ describe("render", () => {
         const sgRef = useRef();
         return jsxs(Fragment, {
           children: [
-            jsx(ResourceWithRef, { type: "aws_vpc", name: "main", ref: vpcRef, cidr_block: "10.0.0.0/16" }),
-            jsx(ResourceWithRef, { type: "aws_security_group", name: "web", ref: sgRef, vpc_id: vpcRef.id }),
             jsx(ResourceWithRef, {
-              type: "aws_instance", name: "app",
+              type: "aws_vpc",
+              name: "main",
+              ref: vpcRef,
+              cidr_block: "10.0.0.0/16",
+            }),
+            jsx(ResourceWithRef, {
+              type: "aws_security_group",
+              name: "web",
+              ref: sgRef,
+              vpc_id: vpcRef.id,
+            }),
+            jsx(ResourceWithRef, {
+              type: "aws_instance",
+              name: "app",
               children: `vpc_security_group_ids = [${sgRef.id}]\nsubnet_id = ${vpcRef.id}`,
             }),
           ],
@@ -215,7 +281,12 @@ describe("render", () => {
     });
 
     it("resolves refs from useRef in different child components", () => {
-      function ResourceWithRef(props: { type: string; name: string; ref?: any; [key: string]: any }) {
+      function ResourceWithRef(props: {
+        type: string;
+        name: string;
+        ref?: any;
+        [key: string]: any;
+      }) {
         const { type, name, ref, children, ...attrs } = props;
         if (ref) ref.__refMeta = { blockType: "resource", type, name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
@@ -224,7 +295,9 @@ describe("render", () => {
           type,
           name,
           attributes: attrs,
-          ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+          ...(typeof rawChildren === "string"
+            ? { innerText: rawChildren }
+            : {}),
         };
       }
 
@@ -232,8 +305,17 @@ describe("render", () => {
         const vpcRef = useRef();
         return jsxs(Fragment, {
           children: [
-            jsx(ResourceWithRef, { type: "aws_vpc", name: "main", ref: vpcRef, cidr_block: "10.0.0.0/16" }),
-            jsx(ResourceWithRef, { type: "aws_subnet", name: "sub", children: `vpc_id = ${vpcRef.id}` }),
+            jsx(ResourceWithRef, {
+              type: "aws_vpc",
+              name: "main",
+              ref: vpcRef,
+              cidr_block: "10.0.0.0/16",
+            }),
+            jsx(ResourceWithRef, {
+              type: "aws_subnet",
+              name: "sub",
+              children: `vpc_id = ${vpcRef.id}`,
+            }),
           ],
         });
       }
@@ -242,18 +324,23 @@ describe("render", () => {
         const sgRef = useRef();
         return jsxs(Fragment, {
           children: [
-            jsx(ResourceWithRef, { type: "aws_security_group", name: "web", ref: sgRef }),
-            jsx(ResourceWithRef, { type: "aws_instance", name: "app", children: `sg = ${sgRef.id}` }),
+            jsx(ResourceWithRef, {
+              type: "aws_security_group",
+              name: "web",
+              ref: sgRef,
+            }),
+            jsx(ResourceWithRef, {
+              type: "aws_instance",
+              name: "app",
+              children: `sg = ${sgRef.id}`,
+            }),
           ],
         });
       }
 
       function App() {
         return jsxs(Fragment, {
-          children: [
-            jsx(VpcModule, {}),
-            jsx(SgModule, {}),
-          ],
+          children: [jsx(VpcModule, {}), jsx(SgModule, {})],
         });
       }
 
@@ -261,7 +348,9 @@ describe("render", () => {
       const blocks = render(element);
       expect(blocks).toHaveLength(4);
       expect((blocks[1] as any).innerText).toBe("vpc_id = aws_vpc.main.id");
-      expect((blocks[3] as any).innerText).toBe("sg = aws_security_group.web.id");
+      expect((blocks[3] as any).innerText).toBe(
+        "sg = aws_security_group.web.id",
+      );
     });
   });
 });

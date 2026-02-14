@@ -72,9 +72,7 @@ export function detectConflicts(blocks: Block[]): void {
       }
       case "output": {
         if (outputNames.has(block.name)) {
-          throw new ConflictError(
-            `Conflict: duplicate output "${block.name}"`,
-          );
+          throw new ConflictError(`Conflict: duplicate output "${block.name}"`);
         }
         outputNames.add(block.name);
         break;

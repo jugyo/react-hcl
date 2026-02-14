@@ -1,19 +1,24 @@
-import type { JSXElement } from "./jsx-runtime";
 import type { Block } from "./blocks";
-import { resetHookState, getHookStore } from "./hooks/use-ref";
+import { getHookStore, resetHookState } from "./hooks/use-ref";
+import type { JSXElement } from "./jsx-runtime";
 
 function isBlock(value: unknown): value is Block {
   return value != null && typeof value === "object" && "blockType" in value;
 }
 
-function renderTree(element: JSXElement | JSXElement[] | string | null): Block[] {
+function renderTree(
+  element: JSXElement | JSXElement[] | string | null,
+): Block[] {
   if (element == null) return [];
   if (typeof element === "string" || typeof element === "function") return [];
-  if (Array.isArray(element)) return element.flatMap(e => renderTree(e));
+  if (Array.isArray(element)) return element.flatMap((e) => renderTree(e));
   if (isBlock(element)) return [element];
   // Function component — call it and render the result
   if (typeof element.type === "function") {
-    const result = element.type({ ...element.props, children: element.children });
+    const result = element.type({
+      ...element.props,
+      children: element.children,
+    });
     return renderTree(result);
   }
   // Fragment or unknown string type — render children
@@ -30,7 +35,8 @@ type RootRenderable = Renderable | (() => Renderable);
  *   Validation: Check that all refs in hookStore have __refMeta set.
  */
 export function render(element: RootRenderable): Block[] {
-  const resolveRoot = (): Renderable => (typeof element === "function" ? element() : element);
+  const resolveRoot = (): Renderable =>
+    typeof element === "function" ? element() : element;
   // Pass 1: collect ref metadata
   resetHookState(true);
   renderTree(resolveRoot());

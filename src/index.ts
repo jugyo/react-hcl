@@ -9,13 +9,14 @@
  * As more components are added (Data, Variable, Output, Provider, etc.),
  * they should be exported from here.
  */
-export { Resource } from "./components/resource";
+
 export { DataSource } from "./components/data-source";
-export { Output } from "./components/output";
-export { Variable } from "./components/variable";
 export { Locals } from "./components/locals";
+export { Output } from "./components/output";
 export { Provider } from "./components/provider";
+export { Resource } from "./components/resource";
 export { Terraform } from "./components/terraform";
-export { Fragment } from "./jsx-runtime";
-export { useRef } from "./hooks/use-ref";
+export { Variable } from "./components/variable";
 export { tf } from "./helpers/tf";
+export { useRef } from "./hooks/use-ref";
+export { Fragment } from "./jsx-runtime";

@@ -20,14 +20,14 @@
  *   - write: false — keep output in memory (outputFiles) instead of writing to disk
  */
 
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as esbuild from "esbuild";
-import { resolve, dirname, join } from "path";
-import { tmpdir } from "os";
-import { mkdtemp, writeFile, rm, mkdir } from "fs/promises";
-import { fileURLToPath } from "url";
-import { render } from "./renderer";
-import { generate } from "./generator";
 import { detectConflicts } from "./conflict";
+import { generate } from "./generator";
+import { render } from "./renderer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,7 +50,7 @@ function parseArgs(argv: string[]): { inputFile: string; outDir?: string } {
     process.exit(1);
   }
 
-  return { inputFile: inputFile!, outDir };
+  return { inputFile: inputFile as string, outDir };
 }
 
 async function main() {
@@ -66,7 +66,10 @@ async function main() {
     jsxImportSource: "react-terraform",
     write: false,
     alias: {
-      "react-terraform/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
+      "react-terraform/jsx-runtime": resolve(
+        __dirname,
+        "../src/jsx-runtime.ts",
+      ),
       "react-terraform": resolve(__dirname, "../src/index.ts"),
     },
   });

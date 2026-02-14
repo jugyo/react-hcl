@@ -11,7 +11,7 @@
  *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
 import type { ResourceBlock } from "../blocks";
-import { raw, adjustIndent } from "../hcl-serializer";
+import { adjustIndent, raw } from "../hcl-serializer";
 
 export function Resource(props: {
   type: string;
@@ -28,7 +28,7 @@ export function Resource(props: {
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
-  if (attributes.provider && attributes.provider.__refMeta) {
+  if (attributes.provider?.__refMeta) {
     const meta = attributes.provider.__refMeta;
     attributes.provider = raw(`${meta.type}.${meta.alias || meta.name}`);
   }
@@ -53,6 +53,8 @@ export function Resource(props: {
     type,
     name,
     attributes,
-    ...(typeof rawChildren === "string" ? { innerText: adjustIndent(rawChildren, 2) } : {}),
+    ...(typeof rawChildren === "string"
+      ? { innerText: adjustIndent(rawChildren, 2) }
+      : {}),
   };
 }

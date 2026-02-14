@@ -4,7 +4,12 @@ function App() {
   const vpcRef = useRef();
   return (
     <>
-      <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+      <Resource
+        type="aws_vpc"
+        name="main"
+        ref={vpcRef}
+        cidr_block="10.0.0.0/16"
+      />
       <Resource type="aws_security_group" name="example">
         {`
           name   = "example"
