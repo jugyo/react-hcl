@@ -5,14 +5,7 @@
  * instead of Terraform variables, and TypeScript loops instead of count.
  * Resources are grouped into composite components (PublicNetwork, PrivateNetwork).
  */
-import {
-  DataSource,
-  Output,
-  Provider,
-  Resource,
-  raw,
-  useRef,
-} from "react-hcl";
+import { DataSource, Output, Provider, Resource, raw, useRef } from "react-hcl";
 import { PrivateNetwork } from "./private-network";
 import { PublicNetwork } from "./public-network";
 

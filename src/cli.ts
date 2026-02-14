@@ -66,10 +66,7 @@ async function main() {
     jsxImportSource: "react-hcl",
     write: false,
     alias: {
-      "react-hcl/jsx-runtime": resolve(
-        __dirname,
-        "../src/jsx-runtime.ts",
-      ),
+      "react-hcl/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
       "react-hcl": resolve(__dirname, "../src/index.ts"),
     },
   });
