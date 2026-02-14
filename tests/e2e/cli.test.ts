@@ -77,10 +77,10 @@ describe("CLI E2E", () => {
     expect(result).toBe(expected);
   });
 
-  it("--out-dir writes main.tf to directory", async () => {
+  it("-o writes to specified file", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {
-      await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${tmpDir}`;
+      await $`bun run src/cli.ts tests/fixtures/basic.tsx -o ${tmpDir}/main.tf`;
       const content = await Bun.file(`${tmpDir}/main.tf`).text();
       const expected = await Bun.file(
         "tests/fixtures/basic.expected.tf",
@@ -149,12 +149,12 @@ describe("CLI error handling", () => {
     }
   });
 
-  it("--out-dir creates directory if it does not exist", async () => {
+  it("-o creates parent directories if they do not exist", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
-    const nestedDir = `${tmpDir}/nested/output`;
+    const outFile = `${tmpDir}/nested/output/infra.tf`;
     try {
-      await $`bun run src/cli.ts tests/fixtures/basic.tsx --out-dir ${nestedDir}`;
-      const content = await Bun.file(`${nestedDir}/main.tf`).text();
+      await $`bun run src/cli.ts tests/fixtures/basic.tsx -o ${outFile}`;
+      const content = await Bun.file(outFile).text();
       const expected = await Bun.file(
         "tests/fixtures/basic.expected.tf",
       ).text();

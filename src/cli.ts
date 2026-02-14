@@ -1,7 +1,7 @@
 /**
  * CLI entry point for react-terraform.
  *
- * Usage: bun src/cli.ts <input.tsx> [--out-dir <dir>]
+ * Usage: bun src/cli.ts <input.tsx> [-o <file>]
  *
  * Pipeline:
  *   1. Takes a user-authored .tsx file as input
@@ -9,7 +9,7 @@
  *   3. Writes the bundled ESM code to a temp file and dynamically imports it
  *   4. render() evaluates the JSXElement tree into Block[] IR
  *   5. generate() converts Block[] into HCL string
- *   6. Outputs to stdout, or writes to <out-dir>/main.tf if --out-dir is given
+ *   6. Outputs to stdout, or writes to a file if -o / --output is given
  *
  * esbuild configuration:
  *   - jsx: "automatic" — uses the new JSX transform (no manual import needed)
@@ -32,29 +32,29 @@ import { render } from "./renderer";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-function parseArgs(argv: string[]): { inputFile: string; outDir?: string } {
+function parseArgs(argv: string[]): { inputFile: string; output?: string } {
   const args = argv.slice(2);
   let inputFile: string | undefined;
-  let outDir: string | undefined;
+  let output: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--out-dir" && i + 1 < args.length) {
-      outDir = args[++i];
+    if ((args[i] === "-o" || args[i] === "--output") && i + 1 < args.length) {
+      output = args[++i];
     } else if (!inputFile) {
       inputFile = args[i];
     }
   }
 
   if (!inputFile) {
-    console.error("Usage: react-terraform <input.tsx> [--out-dir <dir>]");
+    console.error("Usage: react-terraform <input.tsx> [-o <file>]");
     process.exit(1);
   }
 
-  return { inputFile: inputFile as string, outDir };
+  return { inputFile: inputFile as string, output };
 }
 
 async function main() {
-  const { inputFile, outDir } = parseArgs(process.argv);
+  const { inputFile, output } = parseArgs(process.argv);
   const absoluteInput = resolve(inputFile);
 
   const result = await esbuild.build({
@@ -87,10 +87,10 @@ async function main() {
       detectConflicts(blocks);
       const hcl = generate(blocks);
 
-      if (outDir) {
-        const resolvedOutDir = resolve(outDir);
-        await mkdir(resolvedOutDir, { recursive: true });
-        await writeFile(join(resolvedOutDir, "main.tf"), hcl);
+      if (output) {
+        const resolvedOutput = resolve(output);
+        await mkdir(dirname(resolvedOutput), { recursive: true });
+        await writeFile(resolvedOutput, hcl);
       } else {
         process.stdout.write(hcl);
       }
