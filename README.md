@@ -6,7 +6,7 @@ A transpiler that converts TSX into Terraform `.tf` files. Write Terraform confi
 
 ```bash
 react-terraform infra.tsx                  # output to stdout
-react-terraform infra.tsx --out-dir ./tf   # write to ./tf/main.tf
+react-terraform infra.tsx -o ./tf/main.tf   # write to file
 ```
 
 ## Example
@@ -93,7 +93,7 @@ Run the CLI directly without building:
 
 ```bash
 bun src/cli.ts infra.tsx
-bun src/cli.ts infra.tsx --out-dir ./tf
+bun src/cli.ts infra.tsx -o ./tf/main.tf
 ```
 
 Run tests:
