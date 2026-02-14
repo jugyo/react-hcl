@@ -23,7 +23,10 @@
   ],
   "scripts": {
     "build": "bun run build:js && bun run build:types",
-    "build:js": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node' && bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle && bun x esbuild src/jsx-runtime.ts --outfile=dist/jsx-runtime.js --format=esm --platform=node --bundle",
+    "build:js": "bun run build:js:cli && bun run build:js:index && bun run build:js:jsx-runtime",
+    "build:js:cli": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node'",
+    "build:js:index": "bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle",
+    "build:js:jsx-runtime": "bun x esbuild src/jsx-runtime.ts --outfile=dist/jsx-runtime.js --format=esm --platform=node --bundle",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "lint": "bunx biome check .",
     "lint:fix": "bunx biome check --fix .",
