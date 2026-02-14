@@ -2,6 +2,14 @@
 
 A transpiler that converts TSX into Terraform `.tf` files. Write Terraform configurations using JSX/TSX syntax with a custom JSX runtime (no React dependency).
 
+## Why React for IaC?
+
+This project starts from a readability problem in IaC.
+In HCL, reference direction and state flow are hard to constrain at the notation level, so causality tends to spread across the config.
+That makes end-to-end reasoning from input to output expensive.
+We use React because component boundaries and data flow provide structure for understanding first.
+The goal is not to rewrite Terraform in JS, but to structurally improve IaC comprehensibility.
+
 ## Usage
 
 ```bash
