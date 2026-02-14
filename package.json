@@ -3,17 +3,29 @@
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "react-terraform": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "bun run build:js && bun run build:types",
+    "build:js": "bun x esbuild src/cli.ts --outfile=dist/cli.js --format=esm --platform=node --external:esbuild --bundle --banner:js='#!/usr/bin/env node' && bun x esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --external:esbuild --bundle",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
   "devDependencies": {
-    "@types/bun": "^1.3.9"
+    "@types/bun": "^1.3.9",
+    "hcl2-parser": "^1.0.3"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "esbuild": "^0.27.3",
-    "hcl2-parser": "^1.0.3"
+    "esbuild": "^0.27.3"
   }
 }
