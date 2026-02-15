@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.2.8"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -66,7 +77,7 @@ resource "aws_route" "internet_access" {
 
 resource "aws_eip" "gw" {
   count      = var.az_count
-  vpc        = true
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.gw]
 }
 
