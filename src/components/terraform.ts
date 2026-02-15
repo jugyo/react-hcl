@@ -16,9 +16,10 @@ export function Terraform(props: {
 }): TerraformBlock {
   const { children, ...attributes } = props;
   const rawChildren = Array.isArray(children) ? children[0] : children;
+  const hasInnerText = typeof rawChildren === "string";
   return {
     blockType: "terraform",
-    attributes,
-    ...(typeof rawChildren === "string" ? { innerText: rawChildren } : {}),
+    attributes: hasInnerText ? {} : attributes,
+    ...(hasInnerText ? { innerText: rawChildren } : {}),
   };
 }

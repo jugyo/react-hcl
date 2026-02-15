@@ -40,6 +40,18 @@ describe("Resource component", () => {
     expect(block.innerText).toBe("  hcl text");
   });
 
+  it("discards props and attributes when innerText is used", () => {
+    const block = Resource({
+      type: "aws_instance",
+      name: "web",
+      ami: "ami-123",
+      attributes: { name: "my-instance" },
+      children: 'ami = "ami-456"\nname = "override"',
+    });
+    expect(block.attributes).toEqual({});
+    expect(block.innerText).toContain('name = "override"');
+  });
+
   it("does not set innerText when children is undefined", () => {
     const block = Resource({ type: "aws_vpc", name: "main" });
     expect(block.innerText).toBeUndefined();

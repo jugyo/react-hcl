@@ -50,6 +50,17 @@ describe("Module component", () => {
     expect(block.innerText).toBe('  source = "./modules/vpc"');
   });
 
+  it("discards props and attributes when innerText is used", () => {
+    const block = Module({
+      name: "vpc",
+      source: "./modules/vpc",
+      attributes: { name: "my-network" },
+      children: 'source = "./local"\nname = "override"',
+    });
+    expect(block.attributes).toEqual({});
+    expect(block.innerText).toContain('name = "override"');
+  });
+
   it("does not set innerText when children is undefined", () => {
     const block = Module({
       name: "vpc",

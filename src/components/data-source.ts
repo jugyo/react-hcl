@@ -50,13 +50,12 @@ export function DataSource(props: {
   }
 
   const rawChildren = Array.isArray(children) ? children[0] : children;
+  const hasInnerText = typeof rawChildren === "string";
   return {
     blockType: "data",
     type,
     name,
-    attributes,
-    ...(typeof rawChildren === "string"
-      ? { innerText: adjustIndent(rawChildren, 2) }
-      : {}),
+    attributes: hasInnerText ? {} : attributes,
+    ...(hasInnerText ? { innerText: adjustIndent(rawChildren, 2) } : {}),
   };
 }

@@ -40,6 +40,17 @@ describe("DataSource component", () => {
     expect(block.innerText).toBe("  hcl text");
   });
 
+  it("discards props and attributes when innerText is used", () => {
+    const block = DataSource({
+      type: "external",
+      name: "config",
+      attributes: { name: "my-config" },
+      children: 'name = "override"',
+    });
+    expect(block.attributes).toEqual({});
+    expect(block.innerText).toContain('name = "override"');
+  });
+
   it("does not set innerText when children is undefined", () => {
     const block = DataSource({ type: "aws_ami", name: "latest" });
     expect(block.innerText).toBeUndefined();
