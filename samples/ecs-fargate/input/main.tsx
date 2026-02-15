@@ -33,8 +33,9 @@ function Main({ region }: { region: string }) {
 
       <Variable
         name="az_count"
+        type="number"
         description="Number of AZs to cover in a given AWS region"
-        default="2"
+        default={2}
       />
       <Variable
         name="app_image"
@@ -53,13 +54,15 @@ function Main({ region }: { region: string }) {
       />
       <Variable
         name="fargate_cpu"
+        type="number"
         description="Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-        default="256"
+        default={256}
       />
       <Variable
         name="fargate_memory"
+        type="number"
         description="Fargate instance memory to provision (in MiB)"
-        default="512"
+        default={512}
       />
 
       <DataSource type="aws_availability_zones" name="available" ref={azRef} />
@@ -109,7 +112,7 @@ function Main({ region }: { region: string }) {
       <Resource type="aws_eip" name="gw">
         {`
           count      = ${tf.var("az_count")}
-          vpc        = true
+          domain     = "vpc"
           depends_on = [${igwRef.__dependsOnValue}]
         `}
       </Resource>

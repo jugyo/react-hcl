@@ -2,6 +2,21 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
+data "aws_ami" "al2023" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-kernel-6.1-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "~> 5.0"
@@ -20,7 +35,7 @@ module "vpc" {
 }
 
 resource "aws_instance" "app" {
-  ami           = "ami-0c55b159cbfafe1f0"
+  ami           = data.aws_ami.al2023.id
   instance_type = "t3.micro"
   subnet_id     = module.vpc.private_subnets[0]
 

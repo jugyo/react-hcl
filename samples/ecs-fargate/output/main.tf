@@ -3,8 +3,9 @@ provider "aws" {
 }
 
 variable "az_count" {
+  type        = number
   description = "Number of AZs to cover in a given AWS region"
-  default     = "2"
+  default     = 2
 }
 
 variable "app_image" {
@@ -23,13 +24,15 @@ variable "app_count" {
 }
 
 variable "fargate_cpu" {
+  type        = number
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  default     = "256"
+  default     = 256
 }
 
 variable "fargate_memory" {
+  type        = number
   description = "Fargate instance memory to provision (in MiB)"
-  default     = "512"
+  default     = 512
 }
 
 data "aws_availability_zones" "available" {
@@ -66,7 +69,7 @@ resource "aws_route" "internet_access" {
 
 resource "aws_eip" "gw" {
   count      = var.az_count
-  vpc        = true
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.gw]
 }
 

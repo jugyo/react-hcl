@@ -4,14 +4,40 @@
  * Uses the terraform-aws-modules/vpc/aws registry module
  * and references its outputs via useRef to place an EC2 instance.
  */
-import { Module, Output, Provider, Resource, raw, useRef } from "react-hcl";
+import {
+  DataSource,
+  Module,
+  Output,
+  Provider,
+  Resource,
+  raw,
+  useRef,
+} from "react-hcl";
 
 function Main() {
   const vpc = useRef();
+  const ami = useRef();
 
   return (
     <>
       <Provider type="aws" region="ap-northeast-1" />
+      <DataSource
+        type="aws_ami"
+        name="al2023"
+        ref={ami}
+        most_recent={true}
+        owners={["amazon"]}
+        filter={[
+          {
+            name: "name",
+            values: ["al2023-ami-*-kernel-6.1-x86_64"],
+          },
+          {
+            name: "virtualization-type",
+            values: ["hvm"],
+          },
+        ]}
+      />
 
       <Module
         ref={vpc}
@@ -31,7 +57,7 @@ function Main() {
       <Resource
         type="aws_instance"
         name="app"
-        ami="ami-0c55b159cbfafe1f0"
+        ami={ami.id}
         instance_type="t3.micro"
         subnet_id={raw(`${vpc.private_subnets}[0]`)}
         tags={{ Name: "app-server" }}

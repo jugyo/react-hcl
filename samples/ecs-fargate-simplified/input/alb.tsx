@@ -35,9 +35,10 @@ export function Alb({
         `}
       </Resource>
 
-      <Resource type="aws_alb" name="main" ref={albRef}>
+      <Resource type="aws_lb" name="main" ref={albRef}>
         {`
           name            = "tf-ecs-chat"
+          load_balancer_type = "application"
           subnets         = [${publicSubnetRefs.map((r) => r.id).join(", ")}]
           security_groups = [${lbSgRef.id}]
         `}

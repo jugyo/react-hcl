@@ -7,61 +7,140 @@ variable "server_port" {
   default     = "8080"
 }
 
-data "aws_availability_zones" "all" {
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-kernel-6.1-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_security_group" "instance" {
-  ingress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  vpc_id      = data.aws_vpc.default.id
+  description = "Security group for web server instances"
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "aws_security_group" "elb" {
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_vpc_security_group_ingress_rule" "instance_http_from_alb" {
+  security_group_id            = aws_security_group.instance.id
+  from_port                    = var.server_port
+  to_port                      = var.server_port
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.alb.id
 }
 
-resource "aws_launch_configuration" "example" {
-  image_id        = "ami-785db401"
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.instance.id]
+resource "aws_vpc_security_group_egress_rule" "instance_all_egress" {
+  security_group_id = aws_security_group.instance.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
 
-  user_data = <<-EOF
+resource "aws_security_group" "alb" {
+  vpc_id      = data.aws_vpc.default.id
+  description = "Security group for public ALB"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "alb_http" {
+  security_group_id = aws_security_group.alb.id
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "alb_to_instances" {
+  security_group_id            = aws_security_group.alb.id
+  from_port                    = var.server_port
+  to_port                      = var.server_port
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.instance.id
+}
+
+resource "aws_launch_template" "example" {
+  image_id        = data.aws_ami.amazon_linux.id
+  instance_type   = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.instance.id]
+
+  user_data = base64encode(<<-EOF
     #!/bin/bash
     echo "Hello, World" > index.html
     nohup busybox httpd -f -p "${var.server_port}" &
   EOF
+  )
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
+resource "aws_lb_target_group" "example" {
+  port     = var.server_port
+  protocol = "HTTP"
+  vpc_id   = data.aws_vpc.default.id
+  name     = "terraform-asg-example"
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb" "example" {
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = data.aws_subnets.default.ids
+  name               = "terraform-asg-example"
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.example.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.example.arn
+  }
+}
+
 resource "aws_autoscaling_group" "example" {
-  launch_configuration = aws_launch_configuration.example.id
-  availability_zones   = data.aws_availability_zones.all.names
-  load_balancers       = [aws_elb.example.name]
-  health_check_type    = "ELB"
-  min_size             = 2
-  max_size             = 10
+  vpc_zone_identifier = data.aws_subnets.default.ids
+  target_group_arns   = [aws_lb_target_group.example.arn]
+  health_check_type   = "EC2"
+  min_size            = 2
+  max_size            = 10
+
+  launch_template {
+    id      = aws_launch_template.example.id
+    version = "$Latest"
+  }
 
   tag {
     key                 = "Name"
@@ -70,27 +149,6 @@ resource "aws_autoscaling_group" "example" {
   }
 }
 
-resource "aws_elb" "example" {
-  name               = "terraform-asg-example"
-  availability_zones = data.aws_availability_zones.all.names
-  security_groups    = [aws_security_group.elb.id]
-
-  listener {
-    lb_port           = 80
-    lb_protocol       = "http"
-    instance_port     = var.server_port
-    instance_protocol = "http"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    interval            = 30
-    target              = "HTTP:${var.server_port}/"
-  }
-}
-
-output "elb_dns_name" {
-  value = aws_elb.example.dns_name
+output "alb_dns_name" {
+  value = aws_lb.example.dns_name
 }

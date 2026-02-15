@@ -115,13 +115,14 @@ resource "aws_security_group" "lb" {
   }
 }
 
-resource "aws_alb" "main" {
+resource "aws_lb" "main" {
   name            = "tf-ecs-chat"
+  load_balancer_type = "application"
   subnets         = [aws_subnet.public_0.id, aws_subnet.public_1.id]
   security_groups = [aws_security_group.lb.id]
 }
 
-resource "aws_alb_target_group" "app" {
+resource "aws_lb_target_group" "app" {
   name        = "tf-ecs-chat"
   port        = 80
   protocol    = "HTTP"
@@ -129,13 +130,13 @@ resource "aws_alb_target_group" "app" {
   target_type = "ip"
 }
 
-resource "aws_alb_listener" "front_end" {
-  load_balancer_arn = aws_alb.main.id
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.app.id
+    target_group_arn = aws_lb_target_group.app.arn
     type             = "forward"
   }
 }
@@ -201,14 +202,14 @@ resource "aws_ecs_service" "main" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.app.id
+    target_group_arn = aws_lb_target_group.app.arn
     container_name   = "app"
     container_port   = 3000
   }
 
-  depends_on = [aws_alb_listener.front_end]
+  depends_on = [aws_lb_listener.front_end]
 }
 
 output "alb_hostname" {
-  value = aws_alb.main.dns_name
+  value = aws_lb.main.dns_name
 }

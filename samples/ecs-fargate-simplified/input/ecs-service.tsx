@@ -97,7 +97,7 @@ export function EcsService({
           }
 
           load_balancer {
-            target_group_arn = ${tgRef.id}
+            target_group_arn = ${tgRef.arn}
             container_name   = "app"
             container_port   = ${appPort}
           }
