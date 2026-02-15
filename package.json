@@ -36,8 +36,7 @@
     "lint:fix": "bunx biome check --fix .",
     "test": "bun test",
     "tf:validate:samples": "bash scripts/terraform-validate-samples.sh",
-    "prepack": "bun run build",
-    "prepublishOnly": "bun run build"
+    "prepack": "bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.15",
