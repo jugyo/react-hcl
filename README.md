@@ -201,6 +201,20 @@ See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudF
 | `<Provider>` | `provider "type" { ... }` |
 | `<Terraform>` | `terraform { ... }` |
 
+
+### AWS namespace components
+
+For frequently used AWS resources, you can use `<Aws.Xxx />` wrappers instead of a generic `<Resource />` declaration.
+
+```tsx
+import { Aws } from "react-hcl";
+
+<>
+  <Aws.Vpc name="main" cidr_block="10.0.0.0/16" />
+  <Aws.Subnet name="public_a" vpc_id="aws_vpc.main.id" cidr_block="10.0.1.0/24" />
+</>
+```
+
 ## Hooks & Helpers
 
 - `useRef()` - Create a reference to a resource/data source (`ref.id`, `ref.arn`, etc.)

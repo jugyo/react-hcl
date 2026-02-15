@@ -22,3 +22,23 @@ export { block, raw } from "./hcl-serializer";
 export { tf } from "./helpers/tf";
 export { useRef } from "./hooks/use-ref";
 export { Fragment } from "./jsx-runtime";
+export {
+  Aws,
+  AwsEip,
+  AwsIamPolicy,
+  AwsIamRole,
+  AwsIamRolePolicyAttachment,
+  AwsInternetGateway,
+  AwsNatGateway,
+  AwsRoute,
+  AwsRouteTable,
+  AwsRouteTableAssociation,
+  AwsS3Bucket,
+  AwsS3BucketPolicy,
+  AwsS3BucketPublicAccessBlock,
+  AwsSecurityGroup,
+  AwsSubnet,
+  AwsVpc,
+  AwsVpcSecurityGroupEgressRule,
+  AwsVpcSecurityGroupIngressRule,
+} from "./resources/aws";
