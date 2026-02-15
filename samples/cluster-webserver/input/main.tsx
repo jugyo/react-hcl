@@ -196,7 +196,7 @@ function ClusterWebServer() {
         name="example"
         vpc_zone_identifier={defaultSubnetsRef.ids}
         target_group_arns={[targetGroupRef.arn]}
-        health_check_type="EC2"
+        health_check_type="ELB"
         min_size={2}
         max_size={10}
         launch_template={[
