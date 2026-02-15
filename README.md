@@ -263,4 +263,4 @@ bun run build
 ## Documentation
 
 - [Design Document](docs/design-doc.md)
-- [Implementation Plan](docs/plan.md)
+- [Product Requirements](docs/prd.md)
