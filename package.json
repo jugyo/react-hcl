@@ -31,6 +31,7 @@
     "lint": "bunx biome check .",
     "lint:fix": "bunx biome check --fix .",
     "test": "bun test",
+    "tf:validate:samples": "bash scripts/terraform-validate-samples.sh",
     "prepare": "simple-git-hooks",
     "prepublishOnly": "bun run build"
   },
