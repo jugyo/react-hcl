@@ -163,6 +163,30 @@ describe("Module component", () => {
     expect(block.attributes.count).toBe(3);
   });
 
+  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+    const block = Module({
+      name: "vpc",
+      source: "./modules/vpc",
+      attributes: { name: "my-network", type: "internal" },
+    });
+    expect(block.name).toBe("vpc");
+    expect(block.attributes).toEqual({
+      source: "./modules/vpc",
+      name: "my-network",
+      type: "internal",
+    });
+  });
+
+  it("attributes prop overrides same-named regular props", () => {
+    const block = Module({
+      name: "vpc",
+      source: "./modules/vpc",
+      cidr: "10.0.0.0/16",
+      attributes: { cidr: "10.1.0.0/16" },
+    });
+    expect(block.attributes.cidr).toBe("10.1.0.0/16");
+  });
+
   it("passes multiple input variables of various types", () => {
     const block = Module({
       name: "vpc",

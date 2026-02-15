@@ -72,6 +72,20 @@ describe("DataSource component", () => {
     expect(block.attributes.provider.value).toBe("aws.virginia");
   });
 
+  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+    const block = DataSource({
+      type: "external",
+      name: "config",
+      attributes: { name: "my-config", type: "json" },
+    });
+    expect(block.type).toBe("external");
+    expect(block.name).toBe("config");
+    expect(block.attributes).toEqual({
+      name: "my-config",
+      type: "json",
+    });
+  });
+
   it("resolves depends_on refs to raw HCL array", () => {
     const vpcRef = useRef();
     vpcRef.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };

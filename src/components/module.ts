@@ -21,9 +21,11 @@ export function Module(props: {
   name: string;
   ref?: any;
   children?: string | string[];
+  attributes?: Record<string, any>;
   [key: string]: any;
 }): ModuleBlock {
-  const { name, ref, children, ...attributes } = props;
+  const { name, ref, children, attributes: extraAttrs, ...rest } = props;
+  const attributes = { ...rest, ...extraAttrs };
 
   // Register ref metadata so ref.vpc_id resolves to "module.vpc.vpc_id"
   if (ref) {

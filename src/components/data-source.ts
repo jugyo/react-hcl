@@ -18,9 +18,11 @@ export function DataSource(props: {
   name: string;
   ref?: any;
   children?: string | string[];
+  attributes?: Record<string, any>;
   [key: string]: any;
 }): DataSourceBlock {
-  const { type, name, ref, children, ...attributes } = props;
+  const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
+  const attributes = { ...rest, ...extraAttrs };
 
   // Register ref metadata so ref.id resolves to "data.aws_ami.latest.id"
   if (ref) {

@@ -88,6 +88,22 @@ describe("Resource component", () => {
     expect(block.attributes.depends_on[1].value).toBe("data.aws_ami.latest");
   });
 
+  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+    const block = Resource({
+      type: "aws_instance",
+      name: "web",
+      ami: "ami-123456",
+      attributes: { name: "my-instance", type: "t2.micro" },
+    });
+    expect(block.type).toBe("aws_instance");
+    expect(block.name).toBe("web");
+    expect(block.attributes).toEqual({
+      ami: "ami-123456",
+      name: "my-instance",
+      type: "t2.micro",
+    });
+  });
+
   it("passes multiple attributes of various types", () => {
     const block = Resource({
       type: "aws_instance",
