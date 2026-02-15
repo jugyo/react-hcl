@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.2.8"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
 variable "vpc_cidr" {
   type        = string
   description = "CIDR block for the VPC"

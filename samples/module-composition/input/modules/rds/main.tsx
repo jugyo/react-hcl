@@ -3,7 +3,7 @@
  *
  * Defines an RDS database instance with subnet group.
  */
-import { Output, Resource, tf, useRef, Variable } from "react-hcl";
+import { Output, Resource, Terraform, tf, useRef, Variable } from "react-hcl";
 
 function Main() {
   const subnetGroup = useRef();
@@ -11,6 +11,15 @@ function Main() {
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Variable name="vpc_id" type="string" description="VPC ID" />
       <Variable
         name="subnet_ids"

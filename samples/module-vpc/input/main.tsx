@@ -4,13 +4,30 @@
  * Uses the terraform-aws-modules/vpc/aws registry module
  * and references its outputs via useRef to place an EC2 instance.
  */
-import { Module, Output, Provider, Resource, raw, useRef } from "react-hcl";
+import {
+  Module,
+  Output,
+  Provider,
+  Resource,
+  raw,
+  Terraform,
+  useRef,
+} from "react-hcl";
 
 function Main() {
   const vpc = useRef();
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region="ap-northeast-1" />
 
       <Module

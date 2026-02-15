@@ -4,7 +4,7 @@
  * Demonstrates composing local modules with depends_on
  * and referencing module outputs via useRef.
  */
-import { Module, Output, Provider, useRef } from "react-hcl";
+import { Module, Output, Provider, Terraform, useRef } from "react-hcl";
 
 function Main() {
   const network = useRef();
@@ -12,6 +12,15 @@ function Main() {
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region="us-east-1" />
 
       <Module

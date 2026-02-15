@@ -3,7 +3,7 @@
  *
  * Defines a VPC and private subnet for use by other modules.
  */
-import { Output, Resource, tf, useRef, Variable } from "react-hcl";
+import { Output, Resource, Terraform, tf, useRef, Variable } from "react-hcl";
 
 function Main() {
   const vpc = useRef();
@@ -11,6 +11,15 @@ function Main() {
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Variable
         name="vpc_cidr"
         type="string"

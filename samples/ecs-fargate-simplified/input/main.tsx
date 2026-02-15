@@ -5,7 +5,14 @@
  * instead of Terraform variables, TypeScript loops instead of count,
  * and composite components for each infrastructure concern.
  */
-import { DataSource, Output, Provider, Resource, useRef } from "react-hcl";
+import {
+  DataSource,
+  Output,
+  Provider,
+  Resource,
+  Terraform,
+  useRef,
+} from "react-hcl";
 import { Alb } from "./alb";
 import { AlbListener } from "./alb-listener";
 import { EcsService } from "./ecs-service";
@@ -42,6 +49,15 @@ function Main({
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region={region} />
 
       <DataSource type="aws_availability_zones" name="available" ref={azRef} />

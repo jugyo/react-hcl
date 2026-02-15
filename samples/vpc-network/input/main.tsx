@@ -10,6 +10,7 @@ import {
   Provider,
   Resource,
   raw,
+  Terraform,
   tf,
   useRef,
   Variable,
@@ -26,6 +27,15 @@ function Main({ region }: { region: string }) {
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region={region} />
 
       <Variable

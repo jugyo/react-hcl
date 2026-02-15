@@ -9,6 +9,7 @@ import {
   Output,
   Provider,
   Resource,
+  Terraform,
   tf,
   useRef,
   Variable,
@@ -23,6 +24,15 @@ function ClusterWebServer() {
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region="eu-west-1" />
 
       <Variable

@@ -5,7 +5,15 @@
  * instead of Terraform variables, and TypeScript loops instead of count.
  * Resources are grouped into composite components (PublicNetwork, PrivateNetwork).
  */
-import { DataSource, Output, Provider, Resource, raw, useRef } from "react-hcl";
+import {
+  DataSource,
+  Output,
+  Provider,
+  Resource,
+  raw,
+  Terraform,
+  useRef,
+} from "react-hcl";
 import { PrivateNetwork } from "./private-network";
 import { PublicNetwork } from "./public-network";
 
@@ -29,6 +37,15 @@ function Main({
 
   return (
     <>
+      <Terraform
+        required_version=">= 1.2.8"
+        required_providers={{
+          aws: {
+            source: "hashicorp/aws",
+            version: "~> 6.0",
+          },
+        }}
+      />
       <Provider type="aws" region={region} />
 
       <DataSource type="aws_availability_zones" name="available" ref={azRef} />
