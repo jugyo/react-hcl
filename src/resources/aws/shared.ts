@@ -8,6 +8,9 @@ export type GenericAwsResourceProps = {
   [key: string]: any;
 };
 
-export function createAwsResource(type: string, props: GenericAwsResourceProps) {
+export function createAwsResource(
+  type: string,
+  props: GenericAwsResourceProps,
+) {
   return Resource({ type, ...props });
 }

@@ -1,46 +1,46 @@
 export {
+  AwsIamPolicy,
+  type AwsIamPolicyProps,
+  AwsIamRole,
+  AwsIamRolePolicyAttachment,
+  type AwsIamRolePolicyAttachmentProps,
+  type AwsIamRoleProps,
+} from "./iam";
+export {
   AwsEip,
+  type AwsEipProps,
   AwsInternetGateway,
+  type AwsInternetGatewayProps,
   AwsNatGateway,
+  type AwsNatGatewayProps,
   AwsRoute,
+  type AwsRouteProps,
   AwsRouteTable,
   AwsRouteTableAssociation,
-  AwsSecurityGroup,
-  AwsSubnet,
-  AwsVpc,
-  AwsVpcSecurityGroupEgressRule,
-  AwsVpcSecurityGroupIngressRule,
-  type AwsEipProps,
-  type AwsInternetGatewayProps,
-  type AwsNatGatewayProps,
-  type AwsRouteProps,
   type AwsRouteTableAssociationProps,
   type AwsRouteTableProps,
+  AwsSecurityGroup,
   type AwsSecurityGroupProps,
+  AwsSubnet,
   type AwsSubnetProps,
+  AwsVpc,
   type AwsVpcProps,
+  AwsVpcSecurityGroupEgressRule,
   type AwsVpcSecurityGroupEgressRuleProps,
+  AwsVpcSecurityGroupIngressRule,
   type AwsVpcSecurityGroupIngressRuleProps,
 } from "./network";
 
 export {
-  AwsIamPolicy,
-  AwsIamRole,
-  AwsIamRolePolicyAttachment,
-  type AwsIamPolicyProps,
-  type AwsIamRolePolicyAttachmentProps,
-  type AwsIamRoleProps,
-} from "./iam";
-
-export {
   AwsS3Bucket,
   AwsS3BucketPolicy,
-  AwsS3BucketPublicAccessBlock,
   type AwsS3BucketPolicyProps,
   type AwsS3BucketProps,
+  AwsS3BucketPublicAccessBlock,
   type AwsS3BucketPublicAccessBlockProps,
 } from "./s3";
 
+import { AwsIamPolicy, AwsIamRole, AwsIamRolePolicyAttachment } from "./iam";
 import {
   AwsEip,
   AwsInternetGateway,
@@ -54,8 +54,11 @@ import {
   AwsVpcSecurityGroupEgressRule,
   AwsVpcSecurityGroupIngressRule,
 } from "./network";
-import { AwsIamPolicy, AwsIamRole, AwsIamRolePolicyAttachment } from "./iam";
-import { AwsS3Bucket, AwsS3BucketPolicy, AwsS3BucketPublicAccessBlock } from "./s3";
+import {
+  AwsS3Bucket,
+  AwsS3BucketPolicy,
+  AwsS3BucketPublicAccessBlock,
+} from "./s3";
 
 export const Aws = {
   Vpc: AwsVpc,

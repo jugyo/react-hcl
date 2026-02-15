@@ -39,6 +39,8 @@ export type AwsS3BucketPublicAccessBlockProps = GenericAwsResourceProps & {
  * Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block
  * Verified: 2026-02-15
  */
-export function AwsS3BucketPublicAccessBlock(props: AwsS3BucketPublicAccessBlockProps) {
+export function AwsS3BucketPublicAccessBlock(
+  props: AwsS3BucketPublicAccessBlockProps,
+) {
   return createAwsResource("aws_s3_bucket_public_access_block", props);
 }

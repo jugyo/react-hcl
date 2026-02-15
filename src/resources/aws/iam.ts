@@ -39,6 +39,8 @@ export type AwsIamRolePolicyAttachmentProps = GenericAwsResourceProps & {
  * Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment
  * Verified: 2026-02-15
  */
-export function AwsIamRolePolicyAttachment(props: AwsIamRolePolicyAttachmentProps) {
+export function AwsIamRolePolicyAttachment(
+  props: AwsIamRolePolicyAttachmentProps,
+) {
   return createAwsResource("aws_iam_role_policy_attachment", props);
 }

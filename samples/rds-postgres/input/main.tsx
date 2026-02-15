@@ -1,4 +1,11 @@
-import { DataSource, Output, Provider, Resource, Terraform, useRef } from "react-hcl";
+import {
+  DataSource,
+  Output,
+  Provider,
+  Resource,
+  Terraform,
+  useRef,
+} from "react-hcl";
 
 function Main({ region }: { region: string }) {
   const defaultVpcRef = useRef();
@@ -20,7 +27,12 @@ function Main({ region }: { region: string }) {
       />
       <Provider type="aws" region={region} />
 
-      <DataSource type="aws_vpc" name="default" ref={defaultVpcRef} default={true} />
+      <DataSource
+        type="aws_vpc"
+        name="default"
+        ref={defaultVpcRef}
+        default={true}
+      />
       <DataSource
         type="aws_subnets"
         name="default"

@@ -78,7 +78,10 @@ function Main({ region }: { region: string }) {
         ]}
       />
 
-      <Output name="distribution_domain_name" value={distributionRef.domain_name} />
+      <Output
+        name="distribution_domain_name"
+        value={distributionRef.domain_name}
+      />
       <Output name="distribution_id" value={distributionRef.id} />
     </>
   );

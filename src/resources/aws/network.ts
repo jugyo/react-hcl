@@ -139,8 +139,14 @@ type AwsRouteTableAssociationBaseProps = GenericAwsResourceProps & {
 };
 
 export type AwsRouteTableAssociationProps =
-  | (AwsRouteTableAssociationBaseProps & { subnet_id: string; gateway_id?: never })
-  | (AwsRouteTableAssociationBaseProps & { gateway_id: string; subnet_id?: never });
+  | (AwsRouteTableAssociationBaseProps & {
+      subnet_id: string;
+      gateway_id?: never;
+    })
+  | (AwsRouteTableAssociationBaseProps & {
+      gateway_id: string;
+      subnet_id?: never;
+    });
 
 /**
  * Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
@@ -166,7 +172,9 @@ export type AwsVpcSecurityGroupIngressRuleProps = GenericAwsResourceProps & {
  * Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_ingress_rule
  * Verified: 2026-02-15
  */
-export function AwsVpcSecurityGroupIngressRule(props: AwsVpcSecurityGroupIngressRuleProps) {
+export function AwsVpcSecurityGroupIngressRule(
+  props: AwsVpcSecurityGroupIngressRuleProps,
+) {
   return createAwsResource("aws_vpc_security_group_ingress_rule", props);
 }
 
@@ -186,6 +194,8 @@ export type AwsVpcSecurityGroupEgressRuleProps = GenericAwsResourceProps & {
  * Docs: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_egress_rule
  * Verified: 2026-02-15
  */
-export function AwsVpcSecurityGroupEgressRule(props: AwsVpcSecurityGroupEgressRuleProps) {
+export function AwsVpcSecurityGroupEgressRule(
+  props: AwsVpcSecurityGroupEgressRuleProps,
+) {
   return createAwsResource("aws_vpc_security_group_egress_rule", props);
 }
