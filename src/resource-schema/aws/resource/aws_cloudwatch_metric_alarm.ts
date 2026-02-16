@@ -1,4 +1,4 @@
-import { resource } from "../../dsl";
+import { attr, block, resource } from "../../dsl";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 export const awsCloudwatchMetricAlarmResourceSchema = resource(
@@ -6,63 +6,62 @@ export const awsCloudwatchMetricAlarmResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      actions_enabled: { valueType: "bool", optional: true },
-      alarm_actions: { valueType: "set", optional: true },
-      alarm_description: { valueType: "string", optional: true },
-      alarm_name: { valueType: "string", required: true },
-      arn: { valueType: "string", computed: true },
-      comparison_operator: { valueType: "string", required: true },
-      datapoints_to_alarm: { valueType: "number", optional: true },
-      dimensions: { valueType: "map", optional: true },
-      evaluate_low_sample_count_percentiles: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
-      evaluation_periods: { valueType: "number", required: true },
-      extended_statistic: { valueType: "string", optional: true },
-      id: { valueType: "string", optional: true, computed: true },
-      insufficient_data_actions: { valueType: "set", optional: true },
-      metric_name: { valueType: "string", optional: true },
-      namespace: { valueType: "string", optional: true },
-      ok_actions: { valueType: "set", optional: true },
-      period: { valueType: "number", optional: true },
-      region: { valueType: "string", optional: true, computed: true },
-      statistic: { valueType: "string", optional: true },
-      tags: { valueType: "map", optional: true },
-      tags_all: { valueType: "map", optional: true, computed: true },
-      threshold: { valueType: "number", optional: true },
-      threshold_metric_id: { valueType: "string", optional: true },
-      treat_missing_data: { valueType: "string", optional: true },
-      unit: { valueType: "string", optional: true },
+      actions_enabled: attr.bool().optional(),
+      alarm_actions: attr.set().optional(),
+      alarm_description: attr.string().optional(),
+      alarm_name: attr.string().required(),
+      arn: attr.string().computed(),
+      comparison_operator: attr.string().required(),
+      datapoints_to_alarm: attr.number().optional(),
+      dimensions: attr.map().optional(),
+      evaluate_low_sample_count_percentiles: attr
+        .string()
+        .optional()
+        .computed(),
+      evaluation_periods: attr.number().required(),
+      extended_statistic: attr.string().optional(),
+      id: attr.string().optional().computed(),
+      insufficient_data_actions: attr.set().optional(),
+      metric_name: attr.string().optional(),
+      namespace: attr.string().optional(),
+      ok_actions: attr.set().optional(),
+      period: attr.number().optional(),
+      region: attr.string().optional().computed(),
+      statistic: attr.string().optional(),
+      tags: attr.map().optional(),
+      tags_all: attr.map().optional().computed(),
+      threshold: attr.number().optional(),
+      threshold_metric_id: attr.string().optional(),
+      treat_missing_data: attr.string().optional(),
+      unit: attr.string().optional(),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
-      metric_query: {
-        nestingMode: "set",
+      metric_query: block.set({
         attributes: {
-          account_id: { valueType: "string", optional: true },
-          expression: { valueType: "string", optional: true },
-          id: { valueType: "string", required: true },
-          label: { valueType: "string", optional: true },
-          period: { valueType: "number", optional: true },
-          return_data: { valueType: "bool", optional: true },
+          account_id: attr.string().optional(),
+          expression: attr.string().optional(),
+          id: attr.string().required(),
+          label: attr.string().optional(),
+          period: attr.number().optional(),
+          return_data: attr.bool().optional(),
         },
         blocks: {
-          metric: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              dimensions: { valueType: "map", optional: true },
-              metric_name: { valueType: "string", required: true },
-              namespace: { valueType: "string", optional: true },
-              period: { valueType: "number", required: true },
-              stat: { valueType: "string", required: true },
-              unit: { valueType: "string", optional: true },
+          metric: block.single(
+            {
+              attributes: {
+                dimensions: attr.map().optional(),
+                metric_name: attr.string().required(),
+                namespace: attr.string().optional(),
+                period: attr.number().required(),
+                stat: attr.string().required(),
+                unit: attr.string().optional(),
+              },
             },
-          },
+            { maxItems: 1 },
+          ),
         },
-      },
+      }),
     },
   },
 );

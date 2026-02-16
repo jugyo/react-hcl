@@ -1,4 +1,4 @@
-import { resource } from "../../dsl";
+import { attr, resource } from "../../dsl";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 export const awsVpcSecurityGroupIngressRuleResourceSchema = resource(
@@ -6,21 +6,21 @@ export const awsVpcSecurityGroupIngressRuleResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      arn: { valueType: "string", computed: true },
-      cidr_ipv4: { valueType: "string", optional: true },
-      cidr_ipv6: { valueType: "string", optional: true },
-      description: { valueType: "string", optional: true },
-      from_port: { valueType: "number", optional: true },
-      id: { valueType: "string", computed: true },
-      ip_protocol: { valueType: "string", required: true },
-      prefix_list_id: { valueType: "string", optional: true },
-      referenced_security_group_id: { valueType: "string", optional: true },
-      region: { valueType: "string", optional: true, computed: true },
-      security_group_id: { valueType: "string", required: true },
-      security_group_rule_id: { valueType: "string", computed: true },
-      tags: { valueType: "map", optional: true },
-      tags_all: { valueType: "map", computed: true },
-      to_port: { valueType: "number", optional: true },
+      arn: attr.string().computed(),
+      cidr_ipv4: attr.string().optional(),
+      cidr_ipv6: attr.string().optional(),
+      description: attr.string().optional(),
+      from_port: attr.number().optional(),
+      id: attr.string().computed(),
+      ip_protocol: attr.string().required(),
+      prefix_list_id: attr.string().optional(),
+      referenced_security_group_id: attr.string().optional(),
+      region: attr.string().optional().computed(),
+      security_group_id: attr.string().required(),
+      security_group_rule_id: attr.string().computed(),
+      tags: attr.map().optional(),
+      tags_all: attr.map().computed(),
+      to_port: attr.number().optional(),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,

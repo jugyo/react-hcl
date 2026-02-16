@@ -6,7 +6,7 @@ A set of scripts to generate `react-hcl` source schema files from Terraform prov
 
 - `create-source-schema.sh`: Wrapper for schema JSON export + source schema generation
 - `export-provider-schema.sh`: Runs `terraform providers schema -json` in a temporary Terraform directory
-- `generate-react-hcl-schema.mjs`: Generates one file under `src/resource-schema/aws/**` from JSON
+- `generate-react-hcl-schema.mjs`: Generates one file under `src/resource-schema/aws/**` from JSON using the DSL builders (`attr.*`, `block.*`, `resource/data`)
 
 ## Quick Start
 

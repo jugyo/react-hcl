@@ -1,30 +1,28 @@
-import { data } from "../../dsl";
+import { attr, block, data } from "../../dsl";
 
 export const awsAvailabilityZonesDataSchema = data("aws_availability_zones", {
   attributes: {
-    all_availability_zones: { valueType: "bool", optional: true },
-    exclude_names: { valueType: "set", optional: true },
-    exclude_zone_ids: { valueType: "set", optional: true },
-    group_names: { valueType: "set", computed: true },
-    id: { valueType: "string", optional: true, computed: true },
-    names: { valueType: "list", computed: true },
-    region: { valueType: "string", optional: true, computed: true },
-    state: { valueType: "string", optional: true },
-    zone_ids: { valueType: "list", computed: true },
+    all_availability_zones: attr.bool().optional(),
+    exclude_names: attr.set().optional(),
+    exclude_zone_ids: attr.set().optional(),
+    group_names: attr.set().computed(),
+    id: attr.string().optional().computed(),
+    names: attr.list().computed(),
+    region: attr.string().optional().computed(),
+    state: attr.string().optional(),
+    zone_ids: attr.list().computed(),
   },
   blocks: {
-    filter: {
-      nestingMode: "set",
+    filter: block.set({
       attributes: {
-        name: { valueType: "string", required: true },
-        values: { valueType: "set", required: true },
+        name: attr.string().required(),
+        values: attr.set().required(),
       },
-    },
-    timeouts: {
-      nestingMode: "single",
+    }),
+    timeouts: block.single({
       attributes: {
-        read: { valueType: "string", optional: true },
+        read: attr.string().optional(),
       },
-    },
+    }),
   },
 });

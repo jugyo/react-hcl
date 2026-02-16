@@ -1,73 +1,67 @@
-import type { AttributeSchema, NestedBlockSchema } from "../../types";
+import { attr, block } from "../../dsl";
 
 export const COMMON_RESOURCE_ATTRIBUTES = {
-  count: { valueType: "number", optional: true },
-  depends_on: { valueType: "list", optional: true },
-  for_each: { valueType: "any", optional: true },
-  provider: { valueType: "string", optional: true },
-} as const satisfies Record<string, AttributeSchema>;
+  count: attr.number().optional(),
+  depends_on: attr.list().optional(),
+  for_each: attr.any().optional(),
+  provider: attr.string().optional(),
+} as const;
 
-const LIFECYCLE_BLOCK = {
-  nestingMode: "single",
+const LIFECYCLE_BLOCK = block.single({
   attributes: {
-    create_before_destroy: { valueType: "bool", optional: true },
-    prevent_destroy: { valueType: "bool", optional: true },
-    replace_triggered_by: { valueType: "list", optional: true },
+    create_before_destroy: attr.bool().optional(),
+    prevent_destroy: attr.bool().optional(),
+    replace_triggered_by: attr.list().optional(),
   },
   blocks: {
-    precondition: {
-      nestingMode: "list",
+    precondition: block.list({
       attributes: {
-        condition: { valueType: "any", required: true },
-        error_message: { valueType: "string", required: true },
+        condition: attr.any().required(),
+        error_message: attr.string().required(),
       },
-    },
-    postcondition: {
-      nestingMode: "list",
+    }),
+    postcondition: block.list({
       attributes: {
-        condition: { valueType: "any", required: true },
-        error_message: { valueType: "string", required: true },
+        condition: attr.any().required(),
+        error_message: attr.string().required(),
       },
-    },
+    }),
   },
-} as const satisfies NestedBlockSchema;
+});
 
-const PROVISIONER_BLOCK = {
-  nestingMode: "list",
+const PROVISIONER_BLOCK = block.list({
   attributes: {
-    when: { valueType: "string", optional: true },
-    on_failure: { valueType: "string", optional: true },
+    when: attr.string().optional(),
+    on_failure: attr.string().optional(),
   },
   blocks: {
-    connection: {
-      nestingMode: "single",
+    connection: block.single({
       attributes: {
-        host: { valueType: "string", optional: true },
-        type: { valueType: "string", optional: true },
-        user: { valueType: "string", optional: true },
-        password: { valueType: "string", optional: true },
-        private_key: { valueType: "string", optional: true },
-        timeout: { valueType: "string", optional: true },
+        host: attr.string().optional(),
+        type: attr.string().optional(),
+        user: attr.string().optional(),
+        password: attr.string().optional(),
+        private_key: attr.string().optional(),
+        timeout: attr.string().optional(),
       },
-    },
+    }),
   },
-} as const satisfies NestedBlockSchema;
+});
 
-const CONNECTION_BLOCK = {
-  nestingMode: "single",
+const CONNECTION_BLOCK = block.single({
   attributes: {
-    host: { valueType: "string", optional: true },
-    type: { valueType: "string", optional: true },
-    user: { valueType: "string", optional: true },
-    password: { valueType: "string", optional: true },
-    private_key: { valueType: "string", optional: true },
-    timeout: { valueType: "string", optional: true },
-    agent: { valueType: "bool", optional: true },
+    host: attr.string().optional(),
+    type: attr.string().optional(),
+    user: attr.string().optional(),
+    password: attr.string().optional(),
+    private_key: attr.string().optional(),
+    timeout: attr.string().optional(),
+    agent: attr.bool().optional(),
   },
-} as const satisfies NestedBlockSchema;
+});
 
 export const COMMON_RESOURCE_BLOCKS = {
   lifecycle: LIFECYCLE_BLOCK,
   provisioner: PROVISIONER_BLOCK,
   connection: CONNECTION_BLOCK,
-} as const satisfies Record<string, NestedBlockSchema>;
+} as const;

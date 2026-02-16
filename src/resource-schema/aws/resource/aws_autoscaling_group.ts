@@ -1,4 +1,4 @@
-import { resource } from "../../dsl";
+import { attr, block, resource } from "../../dsl";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 export const awsAutoscalingGroupResourceSchema = resource(
@@ -6,418 +6,364 @@ export const awsAutoscalingGroupResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      arn: { valueType: "string", computed: true },
-      availability_zones: { valueType: "set", optional: true, computed: true },
-      capacity_rebalance: { valueType: "bool", optional: true },
-      context: { valueType: "string", optional: true },
-      default_cooldown: { valueType: "number", optional: true, computed: true },
-      default_instance_warmup: { valueType: "number", optional: true },
-      desired_capacity: { valueType: "number", optional: true, computed: true },
-      desired_capacity_type: { valueType: "string", optional: true },
-      enabled_metrics: { valueType: "set", optional: true },
-      force_delete: { valueType: "bool", optional: true },
-      force_delete_warm_pool: { valueType: "bool", optional: true },
-      health_check_grace_period: { valueType: "number", optional: true },
-      health_check_type: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
-      id: { valueType: "string", optional: true, computed: true },
-      ignore_failed_scaling_activities: { valueType: "bool", optional: true },
-      launch_configuration: { valueType: "string", optional: true },
-      load_balancers: { valueType: "set", optional: true, computed: true },
-      max_instance_lifetime: { valueType: "number", optional: true },
-      max_size: { valueType: "number", required: true },
-      metrics_granularity: { valueType: "string", optional: true },
-      min_elb_capacity: { valueType: "number", optional: true },
-      min_size: { valueType: "number", required: true },
-      name: { valueType: "string", optional: true, computed: true },
-      name_prefix: { valueType: "string", optional: true, computed: true },
-      placement_group: { valueType: "string", optional: true },
-      predicted_capacity: { valueType: "number", computed: true },
-      protect_from_scale_in: { valueType: "bool", optional: true },
-      region: { valueType: "string", optional: true, computed: true },
-      service_linked_role_arn: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
-      suspended_processes: { valueType: "set", optional: true },
-      target_group_arns: { valueType: "set", optional: true, computed: true },
-      termination_policies: { valueType: "list", optional: true },
-      vpc_zone_identifier: { valueType: "set", optional: true, computed: true },
-      wait_for_capacity_timeout: { valueType: "string", optional: true },
-      wait_for_elb_capacity: { valueType: "number", optional: true },
-      warm_pool_size: { valueType: "number", computed: true },
+      arn: attr.string().computed(),
+      availability_zones: attr.set().optional().computed(),
+      capacity_rebalance: attr.bool().optional(),
+      context: attr.string().optional(),
+      default_cooldown: attr.number().optional().computed(),
+      default_instance_warmup: attr.number().optional(),
+      desired_capacity: attr.number().optional().computed(),
+      desired_capacity_type: attr.string().optional(),
+      enabled_metrics: attr.set().optional(),
+      force_delete: attr.bool().optional(),
+      force_delete_warm_pool: attr.bool().optional(),
+      health_check_grace_period: attr.number().optional(),
+      health_check_type: attr.string().optional().computed(),
+      id: attr.string().optional().computed(),
+      ignore_failed_scaling_activities: attr.bool().optional(),
+      launch_configuration: attr.string().optional(),
+      load_balancers: attr.set().optional().computed(),
+      max_instance_lifetime: attr.number().optional(),
+      max_size: attr.number().required(),
+      metrics_granularity: attr.string().optional(),
+      min_elb_capacity: attr.number().optional(),
+      min_size: attr.number().required(),
+      name: attr.string().optional().computed(),
+      name_prefix: attr.string().optional().computed(),
+      placement_group: attr.string().optional(),
+      predicted_capacity: attr.number().computed(),
+      protect_from_scale_in: attr.bool().optional(),
+      region: attr.string().optional().computed(),
+      service_linked_role_arn: attr.string().optional().computed(),
+      suspended_processes: attr.set().optional(),
+      target_group_arns: attr.set().optional().computed(),
+      termination_policies: attr.list().optional(),
+      vpc_zone_identifier: attr.set().optional().computed(),
+      wait_for_capacity_timeout: attr.string().optional(),
+      wait_for_elb_capacity: attr.number().optional(),
+      warm_pool_size: attr.number().computed(),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
-      availability_zone_distribution: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          capacity_distribution_strategy: {
-            valueType: "string",
-            optional: true,
+      availability_zone_distribution: block.single(
+        {
+          attributes: {
+            capacity_distribution_strategy: attr.string().optional(),
           },
         },
-      },
-      capacity_reservation_specification: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          capacity_reservation_preference: {
-            valueType: "string",
-            optional: true,
-            computed: true,
+        { maxItems: 1 },
+      ),
+      capacity_reservation_specification: block.single(
+        {
+          attributes: {
+            capacity_reservation_preference: attr
+              .string()
+              .optional()
+              .computed(),
           },
-        },
-        blocks: {
-          capacity_reservation_target: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              capacity_reservation_ids: { valueType: "list", optional: true },
-              capacity_reservation_resource_group_arns: {
-                valueType: "list",
-                optional: true,
-              },
-            },
-          },
-        },
-      },
-      initial_lifecycle_hook: {
-        nestingMode: "set",
-        attributes: {
-          default_result: {
-            valueType: "string",
-            optional: true,
-            computed: true,
-          },
-          heartbeat_timeout: { valueType: "number", optional: true },
-          lifecycle_transition: { valueType: "string", required: true },
-          name: { valueType: "string", required: true },
-          notification_metadata: { valueType: "string", optional: true },
-          notification_target_arn: { valueType: "string", optional: true },
-          role_arn: { valueType: "string", optional: true },
-        },
-      },
-      instance_maintenance_policy: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          max_healthy_percentage: { valueType: "number", required: true },
-          min_healthy_percentage: { valueType: "number", required: true },
-        },
-      },
-      instance_refresh: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          strategy: { valueType: "string", required: true },
-          triggers: { valueType: "set", optional: true },
-        },
-        blocks: {
-          preferences: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              auto_rollback: { valueType: "bool", optional: true },
-              checkpoint_delay: { valueType: "string", optional: true },
-              checkpoint_percentages: { valueType: "list", optional: true },
-              instance_warmup: { valueType: "string", optional: true },
-              max_healthy_percentage: { valueType: "number", optional: true },
-              min_healthy_percentage: { valueType: "number", optional: true },
-              scale_in_protected_instances: {
-                valueType: "string",
-                optional: true,
-              },
-              skip_matching: { valueType: "bool", optional: true },
-              standby_instances: { valueType: "string", optional: true },
-            },
-            blocks: {
-              alarm_specification: {
-                nestingMode: "single",
-                maxItems: 1,
+          blocks: {
+            capacity_reservation_target: block.single(
+              {
                 attributes: {
-                  alarms: { valueType: "list", optional: true },
+                  capacity_reservation_ids: attr.list().optional(),
+                  capacity_reservation_resource_group_arns: attr
+                    .list()
+                    .optional(),
                 },
               },
-            },
+              { maxItems: 1 },
+            ),
           },
         },
-      },
-      launch_template: {
-        nestingMode: "single",
-        maxItems: 1,
+        { maxItems: 1 },
+      ),
+      initial_lifecycle_hook: block.set({
         attributes: {
-          id: { valueType: "string", optional: true, computed: true },
-          name: { valueType: "string", optional: true, computed: true },
-          version: { valueType: "string", optional: true, computed: true },
+          default_result: attr.string().optional().computed(),
+          heartbeat_timeout: attr.number().optional(),
+          lifecycle_transition: attr.string().required(),
+          name: attr.string().required(),
+          notification_metadata: attr.string().optional(),
+          notification_target_arn: attr.string().optional(),
+          role_arn: attr.string().optional(),
         },
-      },
-      mixed_instances_policy: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {},
-        blocks: {
-          instances_distribution: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              on_demand_allocation_strategy: {
-                valueType: "string",
-                optional: true,
-                computed: true,
-              },
-              on_demand_base_capacity: {
-                valueType: "number",
-                optional: true,
-                computed: true,
-              },
-              on_demand_percentage_above_base_capacity: {
-                valueType: "number",
-                optional: true,
-                computed: true,
-              },
-              spot_allocation_strategy: {
-                valueType: "string",
-                optional: true,
-                computed: true,
-              },
-              spot_instance_pools: {
-                valueType: "number",
-                optional: true,
-                computed: true,
-              },
-              spot_max_price: { valueType: "string", optional: true },
-            },
+      }),
+      instance_maintenance_policy: block.single(
+        {
+          attributes: {
+            max_healthy_percentage: attr.number().required(),
+            min_healthy_percentage: attr.number().required(),
           },
-          launch_template: {
-            nestingMode: "single",
-            minItems: 1,
-            maxItems: 1,
-            attributes: {},
-            blocks: {
-              launch_template_specification: {
-                nestingMode: "single",
-                minItems: 1,
-                maxItems: 1,
+        },
+        { maxItems: 1 },
+      ),
+      instance_refresh: block.single(
+        {
+          attributes: {
+            strategy: attr.string().required(),
+            triggers: attr.set().optional(),
+          },
+          blocks: {
+            preferences: block.single(
+              {
                 attributes: {
-                  launch_template_id: {
-                    valueType: "string",
-                    optional: true,
-                    computed: true,
-                  },
-                  launch_template_name: {
-                    valueType: "string",
-                    optional: true,
-                    computed: true,
-                  },
-                  version: {
-                    valueType: "string",
-                    optional: true,
-                    computed: true,
-                  },
-                },
-              },
-              override: {
-                nestingMode: "list",
-                attributes: {
-                  instance_type: { valueType: "string", optional: true },
-                  weighted_capacity: { valueType: "string", optional: true },
+                  auto_rollback: attr.bool().optional(),
+                  checkpoint_delay: attr.string().optional(),
+                  checkpoint_percentages: attr.list().optional(),
+                  instance_warmup: attr.string().optional(),
+                  max_healthy_percentage: attr.number().optional(),
+                  min_healthy_percentage: attr.number().optional(),
+                  scale_in_protected_instances: attr.string().optional(),
+                  skip_matching: attr.bool().optional(),
+                  standby_instances: attr.string().optional(),
                 },
                 blocks: {
-                  instance_requirements: {
-                    nestingMode: "single",
-                    maxItems: 1,
-                    attributes: {
-                      accelerator_manufacturers: {
-                        valueType: "set",
-                        optional: true,
-                      },
-                      accelerator_names: { valueType: "set", optional: true },
-                      accelerator_types: { valueType: "set", optional: true },
-                      allowed_instance_types: {
-                        valueType: "set",
-                        optional: true,
-                      },
-                      bare_metal: { valueType: "string", optional: true },
-                      burstable_performance: {
-                        valueType: "string",
-                        optional: true,
-                      },
-                      cpu_manufacturers: { valueType: "set", optional: true },
-                      excluded_instance_types: {
-                        valueType: "set",
-                        optional: true,
-                      },
-                      instance_generations: {
-                        valueType: "set",
-                        optional: true,
-                      },
-                      local_storage: { valueType: "string", optional: true },
-                      local_storage_types: { valueType: "set", optional: true },
-                      max_spot_price_as_percentage_of_optimal_on_demand_price: {
-                        valueType: "number",
-                        optional: true,
-                      },
-                      on_demand_max_price_percentage_over_lowest_price: {
-                        valueType: "number",
-                        optional: true,
-                      },
-                      require_hibernate_support: {
-                        valueType: "bool",
-                        optional: true,
-                      },
-                      spot_max_price_percentage_over_lowest_price: {
-                        valueType: "number",
-                        optional: true,
+                  alarm_specification: block.single(
+                    {
+                      attributes: {
+                        alarms: attr.list().optional(),
                       },
                     },
-                    blocks: {
-                      accelerator_count: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      accelerator_total_memory_mib: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      baseline_ebs_bandwidth_mbps: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      memory_gib_per_vcpu: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      memory_mib: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      network_bandwidth_gbps: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      network_interface_count: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      total_local_storage_gb: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                      vcpu_count: {
-                        nestingMode: "single",
-                        maxItems: 1,
-                        attributes: {
-                          max: { valueType: "number", optional: true },
-                          min: { valueType: "number", optional: true },
-                        },
-                      },
-                    },
-                  },
-                  launch_template_specification: {
-                    nestingMode: "single",
-                    maxItems: 1,
-                    attributes: {
-                      launch_template_id: {
-                        valueType: "string",
-                        optional: true,
-                        computed: true,
-                      },
-                      launch_template_name: {
-                        valueType: "string",
-                        optional: true,
-                        computed: true,
-                      },
-                      version: {
-                        valueType: "string",
-                        optional: true,
-                        computed: true,
-                      },
-                    },
-                  },
+                    { maxItems: 1 },
+                  ),
                 },
               },
-            },
+              { maxItems: 1 },
+            ),
           },
         },
-      },
-      tag: {
-        nestingMode: "set",
-        attributes: {
-          key: { valueType: "string", required: true },
-          propagate_at_launch: { valueType: "bool", required: true },
-          value: { valueType: "string", required: true },
-        },
-      },
-      timeouts: {
-        nestingMode: "single",
-        attributes: {
-          delete: { valueType: "string", optional: true },
-          update: { valueType: "string", optional: true },
-        },
-      },
-      traffic_source: {
-        nestingMode: "set",
-        attributes: {
-          identifier: { valueType: "string", required: true },
-          type: { valueType: "string", optional: true },
-        },
-      },
-      warm_pool: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          max_group_prepared_capacity: { valueType: "number", optional: true },
-          min_size: { valueType: "number", optional: true },
-          pool_state: { valueType: "string", optional: true },
-        },
-        blocks: {
-          instance_reuse_policy: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              reuse_on_scale_in: { valueType: "bool", optional: true },
-            },
+        { maxItems: 1 },
+      ),
+      launch_template: block.single(
+        {
+          attributes: {
+            id: attr.string().optional().computed(),
+            name: attr.string().optional().computed(),
+            version: attr.string().optional().computed(),
           },
         },
-      },
+        { maxItems: 1 },
+      ),
+      mixed_instances_policy: block.single(
+        {
+          attributes: {},
+          blocks: {
+            instances_distribution: block.single(
+              {
+                attributes: {
+                  on_demand_allocation_strategy: attr
+                    .string()
+                    .optional()
+                    .computed(),
+                  on_demand_base_capacity: attr.number().optional().computed(),
+                  on_demand_percentage_above_base_capacity: attr
+                    .number()
+                    .optional()
+                    .computed(),
+                  spot_allocation_strategy: attr.string().optional().computed(),
+                  spot_instance_pools: attr.number().optional().computed(),
+                  spot_max_price: attr.string().optional(),
+                },
+              },
+              { maxItems: 1 },
+            ),
+            launch_template: block.single(
+              {
+                attributes: {},
+                blocks: {
+                  launch_template_specification: block.single(
+                    {
+                      attributes: {
+                        launch_template_id: attr.string().optional().computed(),
+                        launch_template_name: attr
+                          .string()
+                          .optional()
+                          .computed(),
+                        version: attr.string().optional().computed(),
+                      },
+                    },
+                    { minItems: 1, maxItems: 1 },
+                  ),
+                  override: block.list({
+                    attributes: {
+                      instance_type: attr.string().optional(),
+                      weighted_capacity: attr.string().optional(),
+                    },
+                    blocks: {
+                      instance_requirements: block.single(
+                        {
+                          attributes: {
+                            accelerator_manufacturers: attr.set().optional(),
+                            accelerator_names: attr.set().optional(),
+                            accelerator_types: attr.set().optional(),
+                            allowed_instance_types: attr.set().optional(),
+                            bare_metal: attr.string().optional(),
+                            burstable_performance: attr.string().optional(),
+                            cpu_manufacturers: attr.set().optional(),
+                            excluded_instance_types: attr.set().optional(),
+                            instance_generations: attr.set().optional(),
+                            local_storage: attr.string().optional(),
+                            local_storage_types: attr.set().optional(),
+                            max_spot_price_as_percentage_of_optimal_on_demand_price:
+                              attr.number().optional(),
+                            on_demand_max_price_percentage_over_lowest_price:
+                              attr.number().optional(),
+                            require_hibernate_support: attr.bool().optional(),
+                            spot_max_price_percentage_over_lowest_price: attr
+                              .number()
+                              .optional(),
+                          },
+                          blocks: {
+                            accelerator_count: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            accelerator_total_memory_mib: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            baseline_ebs_bandwidth_mbps: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            memory_gib_per_vcpu: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            memory_mib: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            network_bandwidth_gbps: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            network_interface_count: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            total_local_storage_gb: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                            vcpu_count: block.single(
+                              {
+                                attributes: {
+                                  max: attr.number().optional(),
+                                  min: attr.number().optional(),
+                                },
+                              },
+                              { maxItems: 1 },
+                            ),
+                          },
+                        },
+                        { maxItems: 1 },
+                      ),
+                      launch_template_specification: block.single(
+                        {
+                          attributes: {
+                            launch_template_id: attr
+                              .string()
+                              .optional()
+                              .computed(),
+                            launch_template_name: attr
+                              .string()
+                              .optional()
+                              .computed(),
+                            version: attr.string().optional().computed(),
+                          },
+                        },
+                        { maxItems: 1 },
+                      ),
+                    },
+                  }),
+                },
+              },
+              { minItems: 1, maxItems: 1 },
+            ),
+          },
+        },
+        { maxItems: 1 },
+      ),
+      tag: block.set({
+        attributes: {
+          key: attr.string().required(),
+          propagate_at_launch: attr.bool().required(),
+          value: attr.string().required(),
+        },
+      }),
+      timeouts: block.single({
+        attributes: {
+          delete: attr.string().optional(),
+          update: attr.string().optional(),
+        },
+      }),
+      traffic_source: block.set({
+        attributes: {
+          identifier: attr.string().required(),
+          type: attr.string().optional(),
+        },
+      }),
+      warm_pool: block.single(
+        {
+          attributes: {
+            max_group_prepared_capacity: attr.number().optional(),
+            min_size: attr.number().optional(),
+            pool_state: attr.string().optional(),
+          },
+          blocks: {
+            instance_reuse_policy: block.single(
+              {
+                attributes: {
+                  reuse_on_scale_in: attr.bool().optional(),
+                },
+              },
+              { maxItems: 1 },
+            ),
+          },
+        },
+        { maxItems: 1 },
+      ),
     },
   },
 );

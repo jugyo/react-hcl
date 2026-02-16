@@ -1,45 +1,42 @@
-import { data } from "../../dsl";
+import { attr, block, data } from "../../dsl";
 
 export const awsVpcDataSchema = data("aws_vpc", {
   attributes: {
-    arn: { valueType: "string", computed: true },
-    cidr_block: { valueType: "string", optional: true, computed: true },
-    default: { valueType: "bool", optional: true, computed: true },
-    dhcp_options_id: { valueType: "string", optional: true, computed: true },
-    enable_dns_hostnames: { valueType: "bool", computed: true },
-    enable_dns_support: { valueType: "bool", computed: true },
-    enable_network_address_usage_metrics: { valueType: "bool", computed: true },
-    id: { valueType: "string", optional: true, computed: true },
-    instance_tenancy: { valueType: "string", computed: true },
-    ipv6_association_id: { valueType: "string", computed: true },
-    ipv6_cidr_block: { valueType: "string", computed: true },
-    main_route_table_id: { valueType: "string", computed: true },
-    owner_id: { valueType: "string", computed: true },
-    region: { valueType: "string", optional: true, computed: true },
-    state: { valueType: "string", optional: true, computed: true },
-    tags: { valueType: "map", optional: true, computed: true },
+    arn: attr.string().computed(),
+    cidr_block: attr.string().optional().computed(),
+    default: attr.bool().optional().computed(),
+    dhcp_options_id: attr.string().optional().computed(),
+    enable_dns_hostnames: attr.bool().computed(),
+    enable_dns_support: attr.bool().computed(),
+    enable_network_address_usage_metrics: attr.bool().computed(),
+    id: attr.string().optional().computed(),
+    instance_tenancy: attr.string().computed(),
+    ipv6_association_id: attr.string().computed(),
+    ipv6_cidr_block: attr.string().computed(),
+    main_route_table_id: attr.string().computed(),
+    owner_id: attr.string().computed(),
+    region: attr.string().optional().computed(),
+    state: attr.string().optional().computed(),
+    tags: attr.map().optional().computed(),
   },
   blocks: {
-    cidr_block_associations: {
-      nestingMode: "list",
+    cidr_block_associations: block.list({
       attributes: {
-        association_id: { valueType: "string", optional: true },
-        cidr_block: { valueType: "string", optional: true },
-        state: { valueType: "string", optional: true },
+        association_id: attr.string().optional(),
+        cidr_block: attr.string().optional(),
+        state: attr.string().optional(),
       },
-    },
-    filter: {
-      nestingMode: "set",
+    }),
+    filter: block.set({
       attributes: {
-        name: { valueType: "string", required: true },
-        values: { valueType: "set", required: true },
+        name: attr.string().required(),
+        values: attr.set().required(),
       },
-    },
-    timeouts: {
-      nestingMode: "single",
+    }),
+    timeouts: block.single({
       attributes: {
-        read: { valueType: "string", optional: true },
+        read: attr.string().optional(),
       },
-    },
+    }),
   },
 });

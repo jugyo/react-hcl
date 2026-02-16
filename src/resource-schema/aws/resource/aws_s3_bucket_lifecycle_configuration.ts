@@ -1,4 +1,4 @@
-import { resource } from "../../dsl";
+import { attr, block, resource } from "../../dsl";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 export const awsS3BucketLifecycleConfigurationResourceSchema = resource(
@@ -6,132 +6,87 @@ export const awsS3BucketLifecycleConfigurationResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      bucket: { valueType: "string", required: true },
-      expected_bucket_owner: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
-      id: { valueType: "string", computed: true },
-      region: { valueType: "string", optional: true, computed: true },
-      transition_default_minimum_object_size: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
+      bucket: attr.string().required(),
+      expected_bucket_owner: attr.string().optional().computed(),
+      id: attr.string().computed(),
+      region: attr.string().optional().computed(),
+      transition_default_minimum_object_size: attr
+        .string()
+        .optional()
+        .computed(),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
-      rule: {
-        nestingMode: "list",
+      rule: block.list({
         attributes: {
-          id: { valueType: "string", required: true },
-          prefix: { valueType: "string", optional: true, computed: true },
-          status: { valueType: "string", required: true },
+          id: attr.string().required(),
+          prefix: attr.string().optional().computed(),
+          status: attr.string().required(),
         },
         blocks: {
-          abort_incomplete_multipart_upload: {
-            nestingMode: "list",
+          abort_incomplete_multipart_upload: block.list({
             attributes: {
-              days_after_initiation: { valueType: "number", optional: true },
+              days_after_initiation: attr.number().optional(),
             },
-          },
-          expiration: {
-            nestingMode: "list",
+          }),
+          expiration: block.list({
             attributes: {
-              date: { valueType: "string", optional: true },
-              days: { valueType: "number", optional: true, computed: true },
-              expired_object_delete_marker: {
-                valueType: "bool",
-                optional: true,
-                computed: true,
-              },
+              date: attr.string().optional(),
+              days: attr.number().optional().computed(),
+              expired_object_delete_marker: attr.bool().optional().computed(),
             },
-          },
-          filter: {
-            nestingMode: "list",
+          }),
+          filter: block.list({
             attributes: {
-              object_size_greater_than: {
-                valueType: "number",
-                optional: true,
-                computed: true,
-              },
-              object_size_less_than: {
-                valueType: "number",
-                optional: true,
-                computed: true,
-              },
-              prefix: { valueType: "string", optional: true, computed: true },
+              object_size_greater_than: attr.number().optional().computed(),
+              object_size_less_than: attr.number().optional().computed(),
+              prefix: attr.string().optional().computed(),
             },
             blocks: {
-              and: {
-                nestingMode: "list",
+              and: block.list({
                 attributes: {
-                  object_size_greater_than: {
-                    valueType: "number",
-                    optional: true,
-                    computed: true,
-                  },
-                  object_size_less_than: {
-                    valueType: "number",
-                    optional: true,
-                    computed: true,
-                  },
-                  prefix: {
-                    valueType: "string",
-                    optional: true,
-                    computed: true,
-                  },
-                  tags: { valueType: "map", optional: true },
+                  object_size_greater_than: attr.number().optional().computed(),
+                  object_size_less_than: attr.number().optional().computed(),
+                  prefix: attr.string().optional().computed(),
+                  tags: attr.map().optional(),
                 },
-              },
-              tag: {
-                nestingMode: "list",
+              }),
+              tag: block.list({
                 attributes: {
-                  key: { valueType: "string", required: true },
-                  value: { valueType: "string", required: true },
+                  key: attr.string().required(),
+                  value: attr.string().required(),
                 },
-              },
+              }),
             },
-          },
-          noncurrent_version_expiration: {
-            nestingMode: "list",
+          }),
+          noncurrent_version_expiration: block.list({
             attributes: {
-              newer_noncurrent_versions: {
-                valueType: "number",
-                optional: true,
-              },
-              noncurrent_days: { valueType: "number", required: true },
+              newer_noncurrent_versions: attr.number().optional(),
+              noncurrent_days: attr.number().required(),
             },
-          },
-          noncurrent_version_transition: {
-            nestingMode: "set",
+          }),
+          noncurrent_version_transition: block.set({
             attributes: {
-              newer_noncurrent_versions: {
-                valueType: "number",
-                optional: true,
-              },
-              noncurrent_days: { valueType: "number", required: true },
-              storage_class: { valueType: "string", required: true },
+              newer_noncurrent_versions: attr.number().optional(),
+              noncurrent_days: attr.number().required(),
+              storage_class: attr.string().required(),
             },
-          },
-          transition: {
-            nestingMode: "set",
+          }),
+          transition: block.set({
             attributes: {
-              date: { valueType: "string", optional: true },
-              days: { valueType: "number", optional: true, computed: true },
-              storage_class: { valueType: "string", required: true },
+              date: attr.string().optional(),
+              days: attr.number().optional().computed(),
+              storage_class: attr.string().required(),
             },
-          },
+          }),
         },
-      },
-      timeouts: {
-        nestingMode: "single",
+      }),
+      timeouts: block.single({
         attributes: {
-          create: { valueType: "string", optional: true },
-          update: { valueType: "string", optional: true },
+          create: attr.string().optional(),
+          update: attr.string().optional(),
         },
-      },
+      }),
     },
   },
 );

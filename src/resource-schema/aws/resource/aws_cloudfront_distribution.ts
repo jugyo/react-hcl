@@ -1,4 +1,4 @@
-import { resource } from "../../dsl";
+import { attr, block, resource } from "../../dsl";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 export const awsCloudfrontDistributionResourceSchema = resource(
@@ -6,372 +6,352 @@ export const awsCloudfrontDistributionResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      aliases: { valueType: "set", optional: true },
-      anycast_ip_list_id: { valueType: "string", optional: true },
-      arn: { valueType: "string", computed: true },
-      caller_reference: { valueType: "string", computed: true },
-      comment: { valueType: "string", optional: true },
-      continuous_deployment_policy_id: {
-        valueType: "string",
-        optional: true,
-        computed: true,
-      },
-      default_root_object: { valueType: "string", optional: true },
-      domain_name: { valueType: "string", computed: true },
-      enabled: { valueType: "bool", required: true },
-      etag: { valueType: "string", computed: true },
-      hosted_zone_id: { valueType: "string", computed: true },
-      http_version: { valueType: "string", optional: true },
-      id: { valueType: "string", optional: true, computed: true },
-      in_progress_validation_batches: { valueType: "number", computed: true },
-      is_ipv6_enabled: { valueType: "bool", optional: true },
-      last_modified_time: { valueType: "string", computed: true },
-      logging_v1_enabled: { valueType: "bool", computed: true },
-      price_class: { valueType: "string", optional: true },
-      retain_on_delete: { valueType: "bool", optional: true },
-      staging: { valueType: "bool", optional: true },
-      status: { valueType: "string", computed: true },
-      tags: { valueType: "map", optional: true },
-      tags_all: { valueType: "map", optional: true, computed: true },
-      wait_for_deployment: { valueType: "bool", optional: true },
-      web_acl_id: { valueType: "string", optional: true },
+      aliases: attr.set().optional(),
+      anycast_ip_list_id: attr.string().optional(),
+      arn: attr.string().computed(),
+      caller_reference: attr.string().computed(),
+      comment: attr.string().optional(),
+      continuous_deployment_policy_id: attr.string().optional().computed(),
+      default_root_object: attr.string().optional(),
+      domain_name: attr.string().computed(),
+      enabled: attr.bool().required(),
+      etag: attr.string().computed(),
+      hosted_zone_id: attr.string().computed(),
+      http_version: attr.string().optional(),
+      id: attr.string().optional().computed(),
+      in_progress_validation_batches: attr.number().computed(),
+      is_ipv6_enabled: attr.bool().optional(),
+      last_modified_time: attr.string().computed(),
+      logging_v1_enabled: attr.bool().computed(),
+      price_class: attr.string().optional(),
+      retain_on_delete: attr.bool().optional(),
+      staging: attr.bool().optional(),
+      status: attr.string().computed(),
+      tags: attr.map().optional(),
+      tags_all: attr.map().optional().computed(),
+      wait_for_deployment: attr.bool().optional(),
+      web_acl_id: attr.string().optional(),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
-      connection_function_association: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          id: { valueType: "string", required: true },
-        },
-      },
-      custom_error_response: {
-        nestingMode: "set",
-        attributes: {
-          error_caching_min_ttl: { valueType: "number", optional: true },
-          error_code: { valueType: "number", required: true },
-          response_code: { valueType: "number", optional: true },
-          response_page_path: { valueType: "string", optional: true },
-        },
-      },
-      default_cache_behavior: {
-        nestingMode: "single",
-        minItems: 1,
-        maxItems: 1,
-        attributes: {
-          allowed_methods: { valueType: "set", required: true },
-          cache_policy_id: { valueType: "string", optional: true },
-          cached_methods: { valueType: "set", required: true },
-          compress: { valueType: "bool", optional: true },
-          default_ttl: { valueType: "number", optional: true, computed: true },
-          field_level_encryption_id: { valueType: "string", optional: true },
-          max_ttl: { valueType: "number", optional: true, computed: true },
-          min_ttl: { valueType: "number", optional: true },
-          origin_request_policy_id: { valueType: "string", optional: true },
-          realtime_log_config_arn: { valueType: "string", optional: true },
-          response_headers_policy_id: { valueType: "string", optional: true },
-          smooth_streaming: { valueType: "bool", optional: true },
-          target_origin_id: { valueType: "string", required: true },
-          trusted_key_groups: {
-            valueType: "list",
-            optional: true,
-            computed: true,
+      connection_function_association: block.single(
+        {
+          attributes: {
+            id: attr.string().required(),
           },
-          trusted_signers: {
-            valueType: "list",
-            optional: true,
-            computed: true,
+        },
+        { maxItems: 1 },
+      ),
+      custom_error_response: block.set({
+        attributes: {
+          error_caching_min_ttl: attr.number().optional(),
+          error_code: attr.number().required(),
+          response_code: attr.number().optional(),
+          response_page_path: attr.string().optional(),
+        },
+      }),
+      default_cache_behavior: block.single(
+        {
+          attributes: {
+            allowed_methods: attr.set().required(),
+            cache_policy_id: attr.string().optional(),
+            cached_methods: attr.set().required(),
+            compress: attr.bool().optional(),
+            default_ttl: attr.number().optional().computed(),
+            field_level_encryption_id: attr.string().optional(),
+            max_ttl: attr.number().optional().computed(),
+            min_ttl: attr.number().optional(),
+            origin_request_policy_id: attr.string().optional(),
+            realtime_log_config_arn: attr.string().optional(),
+            response_headers_policy_id: attr.string().optional(),
+            smooth_streaming: attr.bool().optional(),
+            target_origin_id: attr.string().required(),
+            trusted_key_groups: attr.list().optional().computed(),
+            trusted_signers: attr.list().optional().computed(),
+            viewer_protocol_policy: attr.string().required(),
           },
-          viewer_protocol_policy: { valueType: "string", required: true },
+          blocks: {
+            forwarded_values: block.single(
+              {
+                attributes: {
+                  headers: attr.set().optional().computed(),
+                  query_string: attr.bool().required(),
+                  query_string_cache_keys: attr.list().optional().computed(),
+                },
+                blocks: {
+                  cookies: block.single(
+                    {
+                      attributes: {
+                        forward: attr.string().required(),
+                        whitelisted_names: attr.set().optional().computed(),
+                      },
+                    },
+                    { minItems: 1, maxItems: 1 },
+                  ),
+                },
+              },
+              { maxItems: 1 },
+            ),
+            function_association: block.set(
+              {
+                attributes: {
+                  event_type: attr.string().required(),
+                  function_arn: attr.string().required(),
+                },
+              },
+              { maxItems: 2 },
+            ),
+            grpc_config: block.single(
+              {
+                attributes: {
+                  enabled: attr.bool().optional().computed(),
+                },
+              },
+              { maxItems: 1 },
+            ),
+            lambda_function_association: block.set(
+              {
+                attributes: {
+                  event_type: attr.string().required(),
+                  include_body: attr.bool().optional(),
+                  lambda_arn: attr.string().required(),
+                },
+              },
+              { maxItems: 4 },
+            ),
+          },
+        },
+        { minItems: 1, maxItems: 1 },
+      ),
+      logging_config: block.single(
+        {
+          attributes: {
+            bucket: attr.string().optional(),
+            include_cookies: attr.bool().optional(),
+            prefix: attr.string().optional(),
+          },
+        },
+        { maxItems: 1 },
+      ),
+      ordered_cache_behavior: block.list({
+        attributes: {
+          allowed_methods: attr.set().required(),
+          cache_policy_id: attr.string().optional(),
+          cached_methods: attr.set().required(),
+          compress: attr.bool().optional(),
+          default_ttl: attr.number().optional().computed(),
+          field_level_encryption_id: attr.string().optional(),
+          max_ttl: attr.number().optional().computed(),
+          min_ttl: attr.number().optional(),
+          origin_request_policy_id: attr.string().optional(),
+          path_pattern: attr.string().required(),
+          realtime_log_config_arn: attr.string().optional(),
+          response_headers_policy_id: attr.string().optional(),
+          smooth_streaming: attr.bool().optional(),
+          target_origin_id: attr.string().required(),
+          trusted_key_groups: attr.list().optional(),
+          trusted_signers: attr.list().optional(),
+          viewer_protocol_policy: attr.string().required(),
         },
         blocks: {
-          forwarded_values: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              headers: { valueType: "set", optional: true, computed: true },
-              query_string: { valueType: "bool", required: true },
-              query_string_cache_keys: {
-                valueType: "list",
-                optional: true,
-                computed: true,
+          forwarded_values: block.single(
+            {
+              attributes: {
+                headers: attr.set().optional().computed(),
+                query_string: attr.bool().required(),
+                query_string_cache_keys: attr.list().optional().computed(),
               },
-            },
-            blocks: {
-              cookies: {
-                nestingMode: "single",
-                minItems: 1,
-                maxItems: 1,
-                attributes: {
-                  forward: { valueType: "string", required: true },
-                  whitelisted_names: {
-                    valueType: "set",
-                    optional: true,
-                    computed: true,
+              blocks: {
+                cookies: block.single(
+                  {
+                    attributes: {
+                      forward: attr.string().required(),
+                      whitelisted_names: attr.set().optional(),
+                    },
                   },
-                },
+                  { minItems: 1, maxItems: 1 },
+                ),
               },
             },
-          },
-          function_association: {
-            nestingMode: "set",
-            maxItems: 2,
-            attributes: {
-              event_type: { valueType: "string", required: true },
-              function_arn: { valueType: "string", required: true },
-            },
-          },
-          grpc_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              enabled: { valueType: "bool", optional: true, computed: true },
-            },
-          },
-          lambda_function_association: {
-            nestingMode: "set",
-            maxItems: 4,
-            attributes: {
-              event_type: { valueType: "string", required: true },
-              include_body: { valueType: "bool", optional: true },
-              lambda_arn: { valueType: "string", required: true },
-            },
-          },
-        },
-      },
-      logging_config: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          bucket: { valueType: "string", optional: true },
-          include_cookies: { valueType: "bool", optional: true },
-          prefix: { valueType: "string", optional: true },
-        },
-      },
-      ordered_cache_behavior: {
-        nestingMode: "list",
-        attributes: {
-          allowed_methods: { valueType: "set", required: true },
-          cache_policy_id: { valueType: "string", optional: true },
-          cached_methods: { valueType: "set", required: true },
-          compress: { valueType: "bool", optional: true },
-          default_ttl: { valueType: "number", optional: true, computed: true },
-          field_level_encryption_id: { valueType: "string", optional: true },
-          max_ttl: { valueType: "number", optional: true, computed: true },
-          min_ttl: { valueType: "number", optional: true },
-          origin_request_policy_id: { valueType: "string", optional: true },
-          path_pattern: { valueType: "string", required: true },
-          realtime_log_config_arn: { valueType: "string", optional: true },
-          response_headers_policy_id: { valueType: "string", optional: true },
-          smooth_streaming: { valueType: "bool", optional: true },
-          target_origin_id: { valueType: "string", required: true },
-          trusted_key_groups: { valueType: "list", optional: true },
-          trusted_signers: { valueType: "list", optional: true },
-          viewer_protocol_policy: { valueType: "string", required: true },
-        },
-        blocks: {
-          forwarded_values: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              headers: { valueType: "set", optional: true, computed: true },
-              query_string: { valueType: "bool", required: true },
-              query_string_cache_keys: {
-                valueType: "list",
-                optional: true,
-                computed: true,
+            { maxItems: 1 },
+          ),
+          function_association: block.set(
+            {
+              attributes: {
+                event_type: attr.string().required(),
+                function_arn: attr.string().required(),
               },
             },
-            blocks: {
-              cookies: {
-                nestingMode: "single",
-                minItems: 1,
-                maxItems: 1,
+            { maxItems: 2 },
+          ),
+          grpc_config: block.single(
+            {
+              attributes: {
+                enabled: attr.bool().optional().computed(),
+              },
+            },
+            { maxItems: 1 },
+          ),
+          lambda_function_association: block.set(
+            {
+              attributes: {
+                event_type: attr.string().required(),
+                include_body: attr.bool().optional(),
+                lambda_arn: attr.string().required(),
+              },
+            },
+            { maxItems: 4 },
+          ),
+        },
+      }),
+      origin: block.set(
+        {
+          attributes: {
+            connection_attempts: attr.number().optional(),
+            connection_timeout: attr.number().optional(),
+            domain_name: attr.string().required(),
+            origin_access_control_id: attr.string().optional(),
+            origin_id: attr.string().required(),
+            origin_path: attr.string().optional(),
+            response_completion_timeout: attr.number().optional().computed(),
+          },
+          blocks: {
+            custom_header: block.set({
+              attributes: {
+                name: attr.string().required(),
+                value: attr.string().required(),
+              },
+            }),
+            custom_origin_config: block.single(
+              {
                 attributes: {
-                  forward: { valueType: "string", required: true },
-                  whitelisted_names: { valueType: "set", optional: true },
+                  http_port: attr.number().required(),
+                  https_port: attr.number().required(),
+                  ip_address_type: attr.string().optional(),
+                  origin_keepalive_timeout: attr.number().optional(),
+                  origin_protocol_policy: attr.string().required(),
+                  origin_read_timeout: attr.number().optional(),
+                  origin_ssl_protocols: attr.set().required(),
                 },
               },
-            },
-          },
-          function_association: {
-            nestingMode: "set",
-            maxItems: 2,
-            attributes: {
-              event_type: { valueType: "string", required: true },
-              function_arn: { valueType: "string", required: true },
-            },
-          },
-          grpc_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              enabled: { valueType: "bool", optional: true, computed: true },
-            },
-          },
-          lambda_function_association: {
-            nestingMode: "set",
-            maxItems: 4,
-            attributes: {
-              event_type: { valueType: "string", required: true },
-              include_body: { valueType: "bool", optional: true },
-              lambda_arn: { valueType: "string", required: true },
-            },
-          },
-        },
-      },
-      origin: {
-        nestingMode: "set",
-        minItems: 1,
-        attributes: {
-          connection_attempts: { valueType: "number", optional: true },
-          connection_timeout: { valueType: "number", optional: true },
-          domain_name: { valueType: "string", required: true },
-          origin_access_control_id: { valueType: "string", optional: true },
-          origin_id: { valueType: "string", required: true },
-          origin_path: { valueType: "string", optional: true },
-          response_completion_timeout: {
-            valueType: "number",
-            optional: true,
-            computed: true,
-          },
-        },
-        blocks: {
-          custom_header: {
-            nestingMode: "set",
-            attributes: {
-              name: { valueType: "string", required: true },
-              value: { valueType: "string", required: true },
-            },
-          },
-          custom_origin_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              http_port: { valueType: "number", required: true },
-              https_port: { valueType: "number", required: true },
-              ip_address_type: { valueType: "string", optional: true },
-              origin_keepalive_timeout: { valueType: "number", optional: true },
-              origin_protocol_policy: { valueType: "string", required: true },
-              origin_read_timeout: { valueType: "number", optional: true },
-              origin_ssl_protocols: { valueType: "set", required: true },
-            },
-          },
-          origin_shield: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              enabled: { valueType: "bool", required: true },
-              origin_shield_region: { valueType: "string", optional: true },
-            },
-          },
-          s3_origin_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              origin_access_identity: { valueType: "string", required: true },
-            },
-          },
-          vpc_origin_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              origin_keepalive_timeout: { valueType: "number", optional: true },
-              origin_read_timeout: { valueType: "number", optional: true },
-              owner_account_id: { valueType: "string", optional: true },
-              vpc_origin_id: { valueType: "string", required: true },
-            },
-          },
-        },
-      },
-      origin_group: {
-        nestingMode: "set",
-        attributes: {
-          origin_id: { valueType: "string", required: true },
-        },
-        blocks: {
-          failover_criteria: {
-            nestingMode: "single",
-            minItems: 1,
-            maxItems: 1,
-            attributes: {
-              status_codes: { valueType: "set", required: true },
-            },
-          },
-          member: {
-            nestingMode: "list",
-            minItems: 2,
-            maxItems: 2,
-            attributes: {
-              origin_id: { valueType: "string", required: true },
-            },
-          },
-        },
-      },
-      restrictions: {
-        nestingMode: "single",
-        minItems: 1,
-        maxItems: 1,
-        attributes: {},
-        blocks: {
-          geo_restriction: {
-            nestingMode: "single",
-            minItems: 1,
-            maxItems: 1,
-            attributes: {
-              locations: { valueType: "set", optional: true, computed: true },
-              restriction_type: { valueType: "string", required: true },
-            },
-          },
-        },
-      },
-      trusted_key_groups: {
-        nestingMode: "list",
-        attributes: {
-          enabled: { valueType: "bool", optional: true },
-          items: { valueType: "list", optional: true },
-        },
-      },
-      trusted_signers: {
-        nestingMode: "list",
-        attributes: {
-          enabled: { valueType: "bool", optional: true },
-          items: { valueType: "list", optional: true },
-        },
-      },
-      viewer_certificate: {
-        nestingMode: "single",
-        minItems: 1,
-        maxItems: 1,
-        attributes: {
-          acm_certificate_arn: { valueType: "string", optional: true },
-          cloudfront_default_certificate: { valueType: "bool", optional: true },
-          iam_certificate_id: { valueType: "string", optional: true },
-          minimum_protocol_version: { valueType: "string", optional: true },
-          ssl_support_method: { valueType: "string", optional: true },
-        },
-      },
-      viewer_mtls_config: {
-        nestingMode: "single",
-        maxItems: 1,
-        attributes: {
-          mode: { valueType: "string", optional: true },
-        },
-        blocks: {
-          trust_store_config: {
-            nestingMode: "single",
-            maxItems: 1,
-            attributes: {
-              advertise_trust_store_ca_names: {
-                valueType: "bool",
-                optional: true,
+              { maxItems: 1 },
+            ),
+            origin_shield: block.single(
+              {
+                attributes: {
+                  enabled: attr.bool().required(),
+                  origin_shield_region: attr.string().optional(),
+                },
               },
-              ignore_certificate_expiry: { valueType: "bool", optional: true },
-              trust_store_id: { valueType: "string", required: true },
-            },
+              { maxItems: 1 },
+            ),
+            s3_origin_config: block.single(
+              {
+                attributes: {
+                  origin_access_identity: attr.string().required(),
+                },
+              },
+              { maxItems: 1 },
+            ),
+            vpc_origin_config: block.single(
+              {
+                attributes: {
+                  origin_keepalive_timeout: attr.number().optional(),
+                  origin_read_timeout: attr.number().optional(),
+                  owner_account_id: attr.string().optional(),
+                  vpc_origin_id: attr.string().required(),
+                },
+              },
+              { maxItems: 1 },
+            ),
           },
         },
-      },
+        { minItems: 1 },
+      ),
+      origin_group: block.set({
+        attributes: {
+          origin_id: attr.string().required(),
+        },
+        blocks: {
+          failover_criteria: block.single(
+            {
+              attributes: {
+                status_codes: attr.set().required(),
+              },
+            },
+            { minItems: 1, maxItems: 1 },
+          ),
+          member: block.list(
+            {
+              attributes: {
+                origin_id: attr.string().required(),
+              },
+            },
+            { minItems: 2, maxItems: 2 },
+          ),
+        },
+      }),
+      restrictions: block.single(
+        {
+          attributes: {},
+          blocks: {
+            geo_restriction: block.single(
+              {
+                attributes: {
+                  locations: attr.set().optional().computed(),
+                  restriction_type: attr.string().required(),
+                },
+              },
+              { minItems: 1, maxItems: 1 },
+            ),
+          },
+        },
+        { minItems: 1, maxItems: 1 },
+      ),
+      trusted_key_groups: block.list({
+        attributes: {
+          enabled: attr.bool().optional(),
+          items: attr.list().optional(),
+        },
+      }),
+      trusted_signers: block.list({
+        attributes: {
+          enabled: attr.bool().optional(),
+          items: attr.list().optional(),
+        },
+      }),
+      viewer_certificate: block.single(
+        {
+          attributes: {
+            acm_certificate_arn: attr.string().optional(),
+            cloudfront_default_certificate: attr.bool().optional(),
+            iam_certificate_id: attr.string().optional(),
+            minimum_protocol_version: attr.string().optional(),
+            ssl_support_method: attr.string().optional(),
+          },
+        },
+        { minItems: 1, maxItems: 1 },
+      ),
+      viewer_mtls_config: block.single(
+        {
+          attributes: {
+            mode: attr.string().optional(),
+          },
+          blocks: {
+            trust_store_config: block.single(
+              {
+                attributes: {
+                  advertise_trust_store_ca_names: attr.bool().optional(),
+                  ignore_certificate_expiry: attr.bool().optional(),
+                  trust_store_id: attr.string().required(),
+                },
+              },
+              { maxItems: 1 },
+            ),
+          },
+        },
+        { maxItems: 1 },
+      ),
     },
   },
 );

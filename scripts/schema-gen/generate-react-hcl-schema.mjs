@@ -129,46 +129,98 @@ function renderAttribute(schema) {
   return `{ ${parts.join(", ")} }`;
 }
 
-function renderAttributes(attributes, indent) {
+function renderAttributeDsl(schema) {
+  const valueType = mapValueType(schema.type);
+  const hasRequired = schema.required === true;
+  const hasOptional = schema.optional === true;
+  const hasComputed = schema.computed === true;
+  const hasSensitive = schema.sensitive === true;
+
+  // Fall back to raw object when Terraform schema flags conflict with DSL constraints.
+  if (hasRequired && (hasOptional || hasComputed)) {
+    return renderAttribute(schema);
+  }
+
+  let expression = `attr.${valueType}()`;
+  if (hasRequired) {
+    expression += ".required()";
+  } else {
+    if (hasOptional) expression += ".optional()";
+    if (hasComputed) expression += ".computed()";
+  }
+  if (hasSensitive) expression += ".sensitive()";
+  return expression;
+}
+
+function renderAttributes(attributes, indent, options = { useDsl: true }) {
   const lines = [];
   const entries = Object.entries(attributes ?? {}).sort(([a], [b]) =>
     a.localeCompare(b),
   );
   for (const [name, schema] of entries) {
-    lines.push(`${indent}${name}: ${renderAttribute(schema)},`);
+    lines.push(
+      `${indent}${name}: ${options.useDsl ? renderAttributeDsl(schema) : renderAttribute(schema)},`,
+    );
   }
   return lines;
 }
 
-function renderBlockSchema(block, indent) {
+function renderBlockField(name, blockType, indent) {
+  const mode = mapNestingModeWithConstraints(
+    blockType.nesting_mode,
+    blockType.max_items,
+  );
   const lines = [];
-  lines.push(`${indent}attributes: {`);
-  lines.push(...renderAttributes(block.attributes, `${indent}  `));
-  lines.push(`${indent}},`);
+  lines.push(`${indent}${name}: block.${mode}(`);
+  lines.push(`${indent}  {`);
+  lines.push(`${indent}    attributes: {`);
+  lines.push(
+    ...renderAttributes(blockType.block.attributes, `${indent}      `, {
+      useDsl: true,
+    }),
+  );
+  lines.push(`${indent}    },`);
 
-  const blockEntries = Object.entries(block.block_types ?? {}).sort(
+  const nestedEntries = Object.entries(blockType.block.block_types ?? {}).sort(
     ([a], [b]) => a.localeCompare(b),
   );
-  if (blockEntries.length > 0) {
-    lines.push(`${indent}blocks: {`);
-    for (const [blockName, blockType] of blockEntries) {
-      lines.push(`${indent}  ${blockName}: {`);
+  if (nestedEntries.length > 0) {
+    lines.push(`${indent}    blocks: {`);
+    for (const [nestedName, nestedType] of nestedEntries) {
       lines.push(
-        `${indent}    nestingMode: "${mapNestingModeWithConstraints(blockType.nesting_mode, blockType.max_items)}",`,
+        ...renderBlockField(nestedName, nestedType, `${indent}      `),
       );
-      if (typeof blockType.min_items === "number") {
-        lines.push(`${indent}    minItems: ${blockType.min_items},`);
-      }
-      if (typeof blockType.max_items === "number") {
-        lines.push(`${indent}    maxItems: ${blockType.max_items},`);
-      }
-      lines.push(...renderBlockSchema(blockType.block, `${indent}    `));
-      lines.push(`${indent}  },`);
     }
-    lines.push(`${indent}},`);
+    lines.push(`${indent}    },`);
   }
 
+  lines.push(`${indent}  },`);
+
+  const optionParts = [];
+  if (typeof blockType.min_items === "number") {
+    optionParts.push(`minItems: ${blockType.min_items}`);
+  }
+  if (typeof blockType.max_items === "number") {
+    optionParts.push(`maxItems: ${blockType.max_items}`);
+  }
+  if (optionParts.length > 0) {
+    lines.push(`${indent}  { ${optionParts.join(", ")} },`);
+  }
+
+  lines.push(`${indent}),`);
   return lines;
+}
+
+function hasAttributesInBlockTypes(blockTypes) {
+  for (const blockType of Object.values(blockTypes ?? {})) {
+    if (Object.keys(blockType.block.attributes ?? {}).length > 0) {
+      return true;
+    }
+    if (hasAttributesInBlockTypes(blockType.block.block_types)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function renderTypeSchema({
@@ -205,9 +257,16 @@ function renderTypeSchema({
       'import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";',
     );
   }
-  lines.push(
-    `import { ${kind === "resource" ? "resource" : "data"} } from "../../dsl";`,
-  );
+  const hasGeneratedAttributes = Object.keys(normalizedAttributes).length > 0;
+  const hasGeneratedBlocks = Object.keys(normalizedBlockTypes).length > 0;
+  const hasAnyDslAttributes =
+    hasGeneratedAttributes || hasAttributesInBlockTypes(normalizedBlockTypes);
+  const dslImports = [
+    ...(hasAnyDslAttributes ? ["attr"] : []),
+    ...(hasGeneratedBlocks ? ["block"] : []),
+    kind === "resource" ? "resource" : "data",
+  ];
+  lines.push(`import { ${dslImports.join(", ")} } from "../../dsl";`);
   lines.push("");
   lines.push(
     `export const ${exportName} = ${kind === "resource" ? "resource" : "data"}(`,
@@ -218,7 +277,9 @@ function renderTypeSchema({
   if (kind === "resource" && includeCommon) {
     lines.push("      ...COMMON_RESOURCE_ATTRIBUTES,");
   }
-  lines.push(...renderAttributes(normalizedAttributes, "      "));
+  lines.push(
+    ...renderAttributes(normalizedAttributes, "      ", { useDsl: true }),
+  );
   lines.push("    },");
   lines.push("    blocks: {");
   if (kind === "resource" && includeCommon) {
@@ -229,18 +290,7 @@ function renderTypeSchema({
     a.localeCompare(b),
   );
   for (const [blockName, blockType] of blocks) {
-    lines.push(`      ${blockName}: {`);
-    lines.push(
-      `        nestingMode: "${mapNestingModeWithConstraints(blockType.nesting_mode, blockType.max_items)}",`,
-    );
-    if (typeof blockType.min_items === "number") {
-      lines.push(`        minItems: ${blockType.min_items},`);
-    }
-    if (typeof blockType.max_items === "number") {
-      lines.push(`        maxItems: ${blockType.max_items},`);
-    }
-    lines.push(...renderBlockSchema(blockType.block, "        "));
-    lines.push("      },");
+    lines.push(...renderBlockField(blockName, blockType, "      "));
   }
 
   lines.push("    },");
