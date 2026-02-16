@@ -6,84 +6,93 @@ export const awsCloudfrontDistributionResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      aliases: attr.set().optional(),
-      anycast_ip_list_id: attr.string().optional(),
-      arn: attr.string().computed(),
-      caller_reference: attr.string().computed(),
-      comment: attr.string().optional(),
-      continuous_deployment_policy_id: attr.string().optional().computed(),
-      default_root_object: attr.string().optional(),
-      domain_name: attr.string().computed(),
-      enabled: attr.bool().required(),
-      etag: attr.string().computed(),
-      hosted_zone_id: attr.string().computed(),
-      http_version: attr.string().optional(),
-      id: attr.string().optional().computed(),
-      in_progress_validation_batches: attr.number().computed(),
-      is_ipv6_enabled: attr.bool().optional(),
-      last_modified_time: attr.string().computed(),
-      logging_v1_enabled: attr.bool().computed(),
-      price_class: attr.string().optional(),
-      retain_on_delete: attr.bool().optional(),
-      staging: attr.bool().optional(),
-      status: attr.string().computed(),
-      tags: attr.map().optional(),
-      tags_all: attr.map().optional().computed(),
-      wait_for_deployment: attr.bool().optional(),
-      web_acl_id: attr.string().optional(),
+      aliases: attr.set({ optional: true }),
+      anycast_ip_list_id: attr.string({ optional: true }),
+      arn: attr.string({ computed: true }),
+      caller_reference: attr.string({ computed: true }),
+      comment: attr.string({ optional: true }),
+      continuous_deployment_policy_id: attr.string({
+        optional: true,
+        computed: true,
+      }),
+      default_root_object: attr.string({ optional: true }),
+      domain_name: attr.string({ computed: true }),
+      enabled: attr.bool({ required: true }),
+      etag: attr.string({ computed: true }),
+      hosted_zone_id: attr.string({ computed: true }),
+      http_version: attr.string({ optional: true }),
+      id: attr.string({ optional: true, computed: true }),
+      in_progress_validation_batches: attr.number({ computed: true }),
+      is_ipv6_enabled: attr.bool({ optional: true }),
+      last_modified_time: attr.string({ computed: true }),
+      logging_v1_enabled: attr.bool({ computed: true }),
+      price_class: attr.string({ optional: true }),
+      retain_on_delete: attr.bool({ optional: true }),
+      staging: attr.bool({ optional: true }),
+      status: attr.string({ computed: true }),
+      tags: attr.map({ optional: true }),
+      tags_all: attr.map({ optional: true, computed: true }),
+      wait_for_deployment: attr.bool({ optional: true }),
+      web_acl_id: attr.string({ optional: true }),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
       connection_function_association: block.single(
         {
           attributes: {
-            id: attr.string().required(),
+            id: attr.string({ required: true }),
           },
         },
         { maxItems: 1 },
       ),
       custom_error_response: block.set({
         attributes: {
-          error_caching_min_ttl: attr.number().optional(),
-          error_code: attr.number().required(),
-          response_code: attr.number().optional(),
-          response_page_path: attr.string().optional(),
+          error_caching_min_ttl: attr.number({ optional: true }),
+          error_code: attr.number({ required: true }),
+          response_code: attr.number({ optional: true }),
+          response_page_path: attr.string({ optional: true }),
         },
       }),
       default_cache_behavior: block.single(
         {
           attributes: {
-            allowed_methods: attr.set().required(),
-            cache_policy_id: attr.string().optional(),
-            cached_methods: attr.set().required(),
-            compress: attr.bool().optional(),
-            default_ttl: attr.number().optional().computed(),
-            field_level_encryption_id: attr.string().optional(),
-            max_ttl: attr.number().optional().computed(),
-            min_ttl: attr.number().optional(),
-            origin_request_policy_id: attr.string().optional(),
-            realtime_log_config_arn: attr.string().optional(),
-            response_headers_policy_id: attr.string().optional(),
-            smooth_streaming: attr.bool().optional(),
-            target_origin_id: attr.string().required(),
-            trusted_key_groups: attr.list().optional().computed(),
-            trusted_signers: attr.list().optional().computed(),
-            viewer_protocol_policy: attr.string().required(),
+            allowed_methods: attr.set({ required: true }),
+            cache_policy_id: attr.string({ optional: true }),
+            cached_methods: attr.set({ required: true }),
+            compress: attr.bool({ optional: true }),
+            default_ttl: attr.number({ optional: true, computed: true }),
+            field_level_encryption_id: attr.string({ optional: true }),
+            max_ttl: attr.number({ optional: true, computed: true }),
+            min_ttl: attr.number({ optional: true }),
+            origin_request_policy_id: attr.string({ optional: true }),
+            realtime_log_config_arn: attr.string({ optional: true }),
+            response_headers_policy_id: attr.string({ optional: true }),
+            smooth_streaming: attr.bool({ optional: true }),
+            target_origin_id: attr.string({ required: true }),
+            trusted_key_groups: attr.list({ optional: true, computed: true }),
+            trusted_signers: attr.list({ optional: true, computed: true }),
+            viewer_protocol_policy: attr.string({ required: true }),
           },
           blocks: {
             forwarded_values: block.single(
               {
                 attributes: {
-                  headers: attr.set().optional().computed(),
-                  query_string: attr.bool().required(),
-                  query_string_cache_keys: attr.list().optional().computed(),
+                  headers: attr.set({ optional: true, computed: true }),
+                  query_string: attr.bool({ required: true }),
+                  query_string_cache_keys: attr.list({
+                    optional: true,
+                    computed: true,
+                  }),
                 },
                 blocks: {
                   cookies: block.single(
                     {
                       attributes: {
-                        forward: attr.string().required(),
-                        whitelisted_names: attr.set().optional().computed(),
+                        forward: attr.string({ required: true }),
+                        whitelisted_names: attr.set({
+                          optional: true,
+                          computed: true,
+                        }),
                       },
                     },
                     { minItems: 1, maxItems: 1 },
@@ -95,8 +104,8 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             function_association: block.set(
               {
                 attributes: {
-                  event_type: attr.string().required(),
-                  function_arn: attr.string().required(),
+                  event_type: attr.string({ required: true }),
+                  function_arn: attr.string({ required: true }),
                 },
               },
               { maxItems: 2 },
@@ -104,7 +113,7 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             grpc_config: block.single(
               {
                 attributes: {
-                  enabled: attr.bool().optional().computed(),
+                  enabled: attr.bool({ optional: true, computed: true }),
                 },
               },
               { maxItems: 1 },
@@ -112,9 +121,9 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             lambda_function_association: block.set(
               {
                 attributes: {
-                  event_type: attr.string().required(),
-                  include_body: attr.bool().optional(),
-                  lambda_arn: attr.string().required(),
+                  event_type: attr.string({ required: true }),
+                  include_body: attr.bool({ optional: true }),
+                  lambda_arn: attr.string({ required: true }),
                 },
               },
               { maxItems: 4 },
@@ -126,47 +135,50 @@ export const awsCloudfrontDistributionResourceSchema = resource(
       logging_config: block.single(
         {
           attributes: {
-            bucket: attr.string().optional(),
-            include_cookies: attr.bool().optional(),
-            prefix: attr.string().optional(),
+            bucket: attr.string({ optional: true }),
+            include_cookies: attr.bool({ optional: true }),
+            prefix: attr.string({ optional: true }),
           },
         },
         { maxItems: 1 },
       ),
       ordered_cache_behavior: block.list({
         attributes: {
-          allowed_methods: attr.set().required(),
-          cache_policy_id: attr.string().optional(),
-          cached_methods: attr.set().required(),
-          compress: attr.bool().optional(),
-          default_ttl: attr.number().optional().computed(),
-          field_level_encryption_id: attr.string().optional(),
-          max_ttl: attr.number().optional().computed(),
-          min_ttl: attr.number().optional(),
-          origin_request_policy_id: attr.string().optional(),
-          path_pattern: attr.string().required(),
-          realtime_log_config_arn: attr.string().optional(),
-          response_headers_policy_id: attr.string().optional(),
-          smooth_streaming: attr.bool().optional(),
-          target_origin_id: attr.string().required(),
-          trusted_key_groups: attr.list().optional(),
-          trusted_signers: attr.list().optional(),
-          viewer_protocol_policy: attr.string().required(),
+          allowed_methods: attr.set({ required: true }),
+          cache_policy_id: attr.string({ optional: true }),
+          cached_methods: attr.set({ required: true }),
+          compress: attr.bool({ optional: true }),
+          default_ttl: attr.number({ optional: true, computed: true }),
+          field_level_encryption_id: attr.string({ optional: true }),
+          max_ttl: attr.number({ optional: true, computed: true }),
+          min_ttl: attr.number({ optional: true }),
+          origin_request_policy_id: attr.string({ optional: true }),
+          path_pattern: attr.string({ required: true }),
+          realtime_log_config_arn: attr.string({ optional: true }),
+          response_headers_policy_id: attr.string({ optional: true }),
+          smooth_streaming: attr.bool({ optional: true }),
+          target_origin_id: attr.string({ required: true }),
+          trusted_key_groups: attr.list({ optional: true }),
+          trusted_signers: attr.list({ optional: true }),
+          viewer_protocol_policy: attr.string({ required: true }),
         },
         blocks: {
           forwarded_values: block.single(
             {
               attributes: {
-                headers: attr.set().optional().computed(),
-                query_string: attr.bool().required(),
-                query_string_cache_keys: attr.list().optional().computed(),
+                headers: attr.set({ optional: true, computed: true }),
+                query_string: attr.bool({ required: true }),
+                query_string_cache_keys: attr.list({
+                  optional: true,
+                  computed: true,
+                }),
               },
               blocks: {
                 cookies: block.single(
                   {
                     attributes: {
-                      forward: attr.string().required(),
-                      whitelisted_names: attr.set().optional(),
+                      forward: attr.string({ required: true }),
+                      whitelisted_names: attr.set({ optional: true }),
                     },
                   },
                   { minItems: 1, maxItems: 1 },
@@ -178,8 +190,8 @@ export const awsCloudfrontDistributionResourceSchema = resource(
           function_association: block.set(
             {
               attributes: {
-                event_type: attr.string().required(),
-                function_arn: attr.string().required(),
+                event_type: attr.string({ required: true }),
+                function_arn: attr.string({ required: true }),
               },
             },
             { maxItems: 2 },
@@ -187,7 +199,7 @@ export const awsCloudfrontDistributionResourceSchema = resource(
           grpc_config: block.single(
             {
               attributes: {
-                enabled: attr.bool().optional().computed(),
+                enabled: attr.bool({ optional: true, computed: true }),
               },
             },
             { maxItems: 1 },
@@ -195,9 +207,9 @@ export const awsCloudfrontDistributionResourceSchema = resource(
           lambda_function_association: block.set(
             {
               attributes: {
-                event_type: attr.string().required(),
-                include_body: attr.bool().optional(),
-                lambda_arn: attr.string().required(),
+                event_type: attr.string({ required: true }),
+                include_body: attr.bool({ optional: true }),
+                lambda_arn: attr.string({ required: true }),
               },
             },
             { maxItems: 4 },
@@ -207,31 +219,34 @@ export const awsCloudfrontDistributionResourceSchema = resource(
       origin: block.set(
         {
           attributes: {
-            connection_attempts: attr.number().optional(),
-            connection_timeout: attr.number().optional(),
-            domain_name: attr.string().required(),
-            origin_access_control_id: attr.string().optional(),
-            origin_id: attr.string().required(),
-            origin_path: attr.string().optional(),
-            response_completion_timeout: attr.number().optional().computed(),
+            connection_attempts: attr.number({ optional: true }),
+            connection_timeout: attr.number({ optional: true }),
+            domain_name: attr.string({ required: true }),
+            origin_access_control_id: attr.string({ optional: true }),
+            origin_id: attr.string({ required: true }),
+            origin_path: attr.string({ optional: true }),
+            response_completion_timeout: attr.number({
+              optional: true,
+              computed: true,
+            }),
           },
           blocks: {
             custom_header: block.set({
               attributes: {
-                name: attr.string().required(),
-                value: attr.string().required(),
+                name: attr.string({ required: true }),
+                value: attr.string({ required: true }),
               },
             }),
             custom_origin_config: block.single(
               {
                 attributes: {
-                  http_port: attr.number().required(),
-                  https_port: attr.number().required(),
-                  ip_address_type: attr.string().optional(),
-                  origin_keepalive_timeout: attr.number().optional(),
-                  origin_protocol_policy: attr.string().required(),
-                  origin_read_timeout: attr.number().optional(),
-                  origin_ssl_protocols: attr.set().required(),
+                  http_port: attr.number({ required: true }),
+                  https_port: attr.number({ required: true }),
+                  ip_address_type: attr.string({ optional: true }),
+                  origin_keepalive_timeout: attr.number({ optional: true }),
+                  origin_protocol_policy: attr.string({ required: true }),
+                  origin_read_timeout: attr.number({ optional: true }),
+                  origin_ssl_protocols: attr.set({ required: true }),
                 },
               },
               { maxItems: 1 },
@@ -239,8 +254,8 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             origin_shield: block.single(
               {
                 attributes: {
-                  enabled: attr.bool().required(),
-                  origin_shield_region: attr.string().optional(),
+                  enabled: attr.bool({ required: true }),
+                  origin_shield_region: attr.string({ optional: true }),
                 },
               },
               { maxItems: 1 },
@@ -248,7 +263,7 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             s3_origin_config: block.single(
               {
                 attributes: {
-                  origin_access_identity: attr.string().required(),
+                  origin_access_identity: attr.string({ required: true }),
                 },
               },
               { maxItems: 1 },
@@ -256,10 +271,10 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             vpc_origin_config: block.single(
               {
                 attributes: {
-                  origin_keepalive_timeout: attr.number().optional(),
-                  origin_read_timeout: attr.number().optional(),
-                  owner_account_id: attr.string().optional(),
-                  vpc_origin_id: attr.string().required(),
+                  origin_keepalive_timeout: attr.number({ optional: true }),
+                  origin_read_timeout: attr.number({ optional: true }),
+                  owner_account_id: attr.string({ optional: true }),
+                  vpc_origin_id: attr.string({ required: true }),
                 },
               },
               { maxItems: 1 },
@@ -270,13 +285,13 @@ export const awsCloudfrontDistributionResourceSchema = resource(
       ),
       origin_group: block.set({
         attributes: {
-          origin_id: attr.string().required(),
+          origin_id: attr.string({ required: true }),
         },
         blocks: {
           failover_criteria: block.single(
             {
               attributes: {
-                status_codes: attr.set().required(),
+                status_codes: attr.set({ required: true }),
               },
             },
             { minItems: 1, maxItems: 1 },
@@ -284,7 +299,7 @@ export const awsCloudfrontDistributionResourceSchema = resource(
           member: block.list(
             {
               attributes: {
-                origin_id: attr.string().required(),
+                origin_id: attr.string({ required: true }),
               },
             },
             { minItems: 2, maxItems: 2 },
@@ -298,8 +313,8 @@ export const awsCloudfrontDistributionResourceSchema = resource(
             geo_restriction: block.single(
               {
                 attributes: {
-                  locations: attr.set().optional().computed(),
-                  restriction_type: attr.string().required(),
+                  locations: attr.set({ optional: true, computed: true }),
+                  restriction_type: attr.string({ required: true }),
                 },
               },
               { minItems: 1, maxItems: 1 },
@@ -310,24 +325,24 @@ export const awsCloudfrontDistributionResourceSchema = resource(
       ),
       trusted_key_groups: block.list({
         attributes: {
-          enabled: attr.bool().optional(),
-          items: attr.list().optional(),
+          enabled: attr.bool({ optional: true }),
+          items: attr.list({ optional: true }),
         },
       }),
       trusted_signers: block.list({
         attributes: {
-          enabled: attr.bool().optional(),
-          items: attr.list().optional(),
+          enabled: attr.bool({ optional: true }),
+          items: attr.list({ optional: true }),
         },
       }),
       viewer_certificate: block.single(
         {
           attributes: {
-            acm_certificate_arn: attr.string().optional(),
-            cloudfront_default_certificate: attr.bool().optional(),
-            iam_certificate_id: attr.string().optional(),
-            minimum_protocol_version: attr.string().optional(),
-            ssl_support_method: attr.string().optional(),
+            acm_certificate_arn: attr.string({ optional: true }),
+            cloudfront_default_certificate: attr.bool({ optional: true }),
+            iam_certificate_id: attr.string({ optional: true }),
+            minimum_protocol_version: attr.string({ optional: true }),
+            ssl_support_method: attr.string({ optional: true }),
           },
         },
         { minItems: 1, maxItems: 1 },
@@ -335,15 +350,15 @@ export const awsCloudfrontDistributionResourceSchema = resource(
       viewer_mtls_config: block.single(
         {
           attributes: {
-            mode: attr.string().optional(),
+            mode: attr.string({ optional: true }),
           },
           blocks: {
             trust_store_config: block.single(
               {
                 attributes: {
-                  advertise_trust_store_ca_names: attr.bool().optional(),
-                  ignore_certificate_expiry: attr.bool().optional(),
-                  trust_store_id: attr.string().required(),
+                  advertise_trust_store_ca_names: attr.bool({ optional: true }),
+                  ignore_certificate_expiry: attr.bool({ optional: true }),
+                  trust_store_id: attr.string({ required: true }),
                 },
               },
               { maxItems: 1 },

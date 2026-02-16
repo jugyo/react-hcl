@@ -1,29 +1,29 @@
 import { attr, block } from "../../dsl";
 
 export const COMMON_RESOURCE_ATTRIBUTES = {
-  count: attr.number().optional(),
-  depends_on: attr.list().optional(),
-  for_each: attr.any().optional(),
-  provider: attr.string().optional(),
+  count: attr.number({ optional: true }),
+  depends_on: attr.list({ optional: true }),
+  for_each: attr.any({ optional: true }),
+  provider: attr.string({ optional: true }),
 } as const;
 
 const LIFECYCLE_BLOCK = block.single({
   attributes: {
-    create_before_destroy: attr.bool().optional(),
-    prevent_destroy: attr.bool().optional(),
-    replace_triggered_by: attr.list().optional(),
+    create_before_destroy: attr.bool({ optional: true }),
+    prevent_destroy: attr.bool({ optional: true }),
+    replace_triggered_by: attr.list({ optional: true }),
   },
   blocks: {
     precondition: block.list({
       attributes: {
-        condition: attr.any().required(),
-        error_message: attr.string().required(),
+        condition: attr.any({ required: true }),
+        error_message: attr.string({ required: true }),
       },
     }),
     postcondition: block.list({
       attributes: {
-        condition: attr.any().required(),
-        error_message: attr.string().required(),
+        condition: attr.any({ required: true }),
+        error_message: attr.string({ required: true }),
       },
     }),
   },
@@ -31,18 +31,18 @@ const LIFECYCLE_BLOCK = block.single({
 
 const PROVISIONER_BLOCK = block.list({
   attributes: {
-    when: attr.string().optional(),
-    on_failure: attr.string().optional(),
+    when: attr.string({ optional: true }),
+    on_failure: attr.string({ optional: true }),
   },
   blocks: {
     connection: block.single({
       attributes: {
-        host: attr.string().optional(),
-        type: attr.string().optional(),
-        user: attr.string().optional(),
-        password: attr.string().optional(),
-        private_key: attr.string().optional(),
-        timeout: attr.string().optional(),
+        host: attr.string({ optional: true }),
+        type: attr.string({ optional: true }),
+        user: attr.string({ optional: true }),
+        password: attr.string({ optional: true }),
+        private_key: attr.string({ optional: true }),
+        timeout: attr.string({ optional: true }),
       },
     }),
   },
@@ -50,13 +50,13 @@ const PROVISIONER_BLOCK = block.list({
 
 const CONNECTION_BLOCK = block.single({
   attributes: {
-    host: attr.string().optional(),
-    type: attr.string().optional(),
-    user: attr.string().optional(),
-    password: attr.string().optional(),
-    private_key: attr.string().optional(),
-    timeout: attr.string().optional(),
-    agent: attr.bool().optional(),
+    host: attr.string({ optional: true }),
+    type: attr.string({ optional: true }),
+    user: attr.string({ optional: true }),
+    password: attr.string({ optional: true }),
+    private_key: attr.string({ optional: true }),
+    timeout: attr.string({ optional: true }),
+    agent: attr.bool({ optional: true }),
   },
 });
 

@@ -6,49 +6,49 @@ export const awsAutoscalingGroupResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      arn: attr.string().computed(),
-      availability_zones: attr.set().optional().computed(),
-      capacity_rebalance: attr.bool().optional(),
-      context: attr.string().optional(),
-      default_cooldown: attr.number().optional().computed(),
-      default_instance_warmup: attr.number().optional(),
-      desired_capacity: attr.number().optional().computed(),
-      desired_capacity_type: attr.string().optional(),
-      enabled_metrics: attr.set().optional(),
-      force_delete: attr.bool().optional(),
-      force_delete_warm_pool: attr.bool().optional(),
-      health_check_grace_period: attr.number().optional(),
-      health_check_type: attr.string().optional().computed(),
-      id: attr.string().optional().computed(),
-      ignore_failed_scaling_activities: attr.bool().optional(),
-      launch_configuration: attr.string().optional(),
-      load_balancers: attr.set().optional().computed(),
-      max_instance_lifetime: attr.number().optional(),
-      max_size: attr.number().required(),
-      metrics_granularity: attr.string().optional(),
-      min_elb_capacity: attr.number().optional(),
-      min_size: attr.number().required(),
-      name: attr.string().optional().computed(),
-      name_prefix: attr.string().optional().computed(),
-      placement_group: attr.string().optional(),
-      predicted_capacity: attr.number().computed(),
-      protect_from_scale_in: attr.bool().optional(),
-      region: attr.string().optional().computed(),
-      service_linked_role_arn: attr.string().optional().computed(),
-      suspended_processes: attr.set().optional(),
-      target_group_arns: attr.set().optional().computed(),
-      termination_policies: attr.list().optional(),
-      vpc_zone_identifier: attr.set().optional().computed(),
-      wait_for_capacity_timeout: attr.string().optional(),
-      wait_for_elb_capacity: attr.number().optional(),
-      warm_pool_size: attr.number().computed(),
+      arn: attr.string({ computed: true }),
+      availability_zones: attr.set({ optional: true, computed: true }),
+      capacity_rebalance: attr.bool({ optional: true }),
+      context: attr.string({ optional: true }),
+      default_cooldown: attr.number({ optional: true, computed: true }),
+      default_instance_warmup: attr.number({ optional: true }),
+      desired_capacity: attr.number({ optional: true, computed: true }),
+      desired_capacity_type: attr.string({ optional: true }),
+      enabled_metrics: attr.set({ optional: true }),
+      force_delete: attr.bool({ optional: true }),
+      force_delete_warm_pool: attr.bool({ optional: true }),
+      health_check_grace_period: attr.number({ optional: true }),
+      health_check_type: attr.string({ optional: true, computed: true }),
+      id: attr.string({ optional: true, computed: true }),
+      ignore_failed_scaling_activities: attr.bool({ optional: true }),
+      launch_configuration: attr.string({ optional: true }),
+      load_balancers: attr.set({ optional: true, computed: true }),
+      max_instance_lifetime: attr.number({ optional: true }),
+      max_size: attr.number({ required: true }),
+      metrics_granularity: attr.string({ optional: true }),
+      min_elb_capacity: attr.number({ optional: true }),
+      min_size: attr.number({ required: true }),
+      name: attr.string({ optional: true, computed: true }),
+      name_prefix: attr.string({ optional: true, computed: true }),
+      placement_group: attr.string({ optional: true }),
+      predicted_capacity: attr.number({ computed: true }),
+      protect_from_scale_in: attr.bool({ optional: true }),
+      region: attr.string({ optional: true, computed: true }),
+      service_linked_role_arn: attr.string({ optional: true, computed: true }),
+      suspended_processes: attr.set({ optional: true }),
+      target_group_arns: attr.set({ optional: true, computed: true }),
+      termination_policies: attr.list({ optional: true }),
+      vpc_zone_identifier: attr.set({ optional: true, computed: true }),
+      wait_for_capacity_timeout: attr.string({ optional: true }),
+      wait_for_elb_capacity: attr.number({ optional: true }),
+      warm_pool_size: attr.number({ computed: true }),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
       availability_zone_distribution: block.single(
         {
           attributes: {
-            capacity_distribution_strategy: attr.string().optional(),
+            capacity_distribution_strategy: attr.string({ optional: true }),
           },
         },
         { maxItems: 1 },
@@ -56,19 +56,19 @@ export const awsAutoscalingGroupResourceSchema = resource(
       capacity_reservation_specification: block.single(
         {
           attributes: {
-            capacity_reservation_preference: attr
-              .string()
-              .optional()
-              .computed(),
+            capacity_reservation_preference: attr.string({
+              optional: true,
+              computed: true,
+            }),
           },
           blocks: {
             capacity_reservation_target: block.single(
               {
                 attributes: {
-                  capacity_reservation_ids: attr.list().optional(),
-                  capacity_reservation_resource_group_arns: attr
-                    .list()
-                    .optional(),
+                  capacity_reservation_ids: attr.list({ optional: true }),
+                  capacity_reservation_resource_group_arns: attr.list({
+                    optional: true,
+                  }),
                 },
               },
               { maxItems: 1 },
@@ -79,20 +79,20 @@ export const awsAutoscalingGroupResourceSchema = resource(
       ),
       initial_lifecycle_hook: block.set({
         attributes: {
-          default_result: attr.string().optional().computed(),
-          heartbeat_timeout: attr.number().optional(),
-          lifecycle_transition: attr.string().required(),
-          name: attr.string().required(),
-          notification_metadata: attr.string().optional(),
-          notification_target_arn: attr.string().optional(),
-          role_arn: attr.string().optional(),
+          default_result: attr.string({ optional: true, computed: true }),
+          heartbeat_timeout: attr.number({ optional: true }),
+          lifecycle_transition: attr.string({ required: true }),
+          name: attr.string({ required: true }),
+          notification_metadata: attr.string({ optional: true }),
+          notification_target_arn: attr.string({ optional: true }),
+          role_arn: attr.string({ optional: true }),
         },
       }),
       instance_maintenance_policy: block.single(
         {
           attributes: {
-            max_healthy_percentage: attr.number().required(),
-            min_healthy_percentage: attr.number().required(),
+            max_healthy_percentage: attr.number({ required: true }),
+            min_healthy_percentage: attr.number({ required: true }),
           },
         },
         { maxItems: 1 },
@@ -100,28 +100,28 @@ export const awsAutoscalingGroupResourceSchema = resource(
       instance_refresh: block.single(
         {
           attributes: {
-            strategy: attr.string().required(),
-            triggers: attr.set().optional(),
+            strategy: attr.string({ required: true }),
+            triggers: attr.set({ optional: true }),
           },
           blocks: {
             preferences: block.single(
               {
                 attributes: {
-                  auto_rollback: attr.bool().optional(),
-                  checkpoint_delay: attr.string().optional(),
-                  checkpoint_percentages: attr.list().optional(),
-                  instance_warmup: attr.string().optional(),
-                  max_healthy_percentage: attr.number().optional(),
-                  min_healthy_percentage: attr.number().optional(),
-                  scale_in_protected_instances: attr.string().optional(),
-                  skip_matching: attr.bool().optional(),
-                  standby_instances: attr.string().optional(),
+                  auto_rollback: attr.bool({ optional: true }),
+                  checkpoint_delay: attr.string({ optional: true }),
+                  checkpoint_percentages: attr.list({ optional: true }),
+                  instance_warmup: attr.string({ optional: true }),
+                  max_healthy_percentage: attr.number({ optional: true }),
+                  min_healthy_percentage: attr.number({ optional: true }),
+                  scale_in_protected_instances: attr.string({ optional: true }),
+                  skip_matching: attr.bool({ optional: true }),
+                  standby_instances: attr.string({ optional: true }),
                 },
                 blocks: {
                   alarm_specification: block.single(
                     {
                       attributes: {
-                        alarms: attr.list().optional(),
+                        alarms: attr.list({ optional: true }),
                       },
                     },
                     { maxItems: 1 },
@@ -137,9 +137,9 @@ export const awsAutoscalingGroupResourceSchema = resource(
       launch_template: block.single(
         {
           attributes: {
-            id: attr.string().optional().computed(),
-            name: attr.string().optional().computed(),
-            version: attr.string().optional().computed(),
+            id: attr.string({ optional: true, computed: true }),
+            name: attr.string({ optional: true, computed: true }),
+            version: attr.string({ optional: true, computed: true }),
           },
         },
         { maxItems: 1 },
@@ -151,18 +151,27 @@ export const awsAutoscalingGroupResourceSchema = resource(
             instances_distribution: block.single(
               {
                 attributes: {
-                  on_demand_allocation_strategy: attr
-                    .string()
-                    .optional()
-                    .computed(),
-                  on_demand_base_capacity: attr.number().optional().computed(),
-                  on_demand_percentage_above_base_capacity: attr
-                    .number()
-                    .optional()
-                    .computed(),
-                  spot_allocation_strategy: attr.string().optional().computed(),
-                  spot_instance_pools: attr.number().optional().computed(),
-                  spot_max_price: attr.string().optional(),
+                  on_demand_allocation_strategy: attr.string({
+                    optional: true,
+                    computed: true,
+                  }),
+                  on_demand_base_capacity: attr.number({
+                    optional: true,
+                    computed: true,
+                  }),
+                  on_demand_percentage_above_base_capacity: attr.number({
+                    optional: true,
+                    computed: true,
+                  }),
+                  spot_allocation_strategy: attr.string({
+                    optional: true,
+                    computed: true,
+                  }),
+                  spot_instance_pools: attr.number({
+                    optional: true,
+                    computed: true,
+                  }),
+                  spot_max_price: attr.string({ optional: true }),
                 },
               },
               { maxItems: 1 },
@@ -174,51 +183,66 @@ export const awsAutoscalingGroupResourceSchema = resource(
                   launch_template_specification: block.single(
                     {
                       attributes: {
-                        launch_template_id: attr.string().optional().computed(),
-                        launch_template_name: attr
-                          .string()
-                          .optional()
-                          .computed(),
-                        version: attr.string().optional().computed(),
+                        launch_template_id: attr.string({
+                          optional: true,
+                          computed: true,
+                        }),
+                        launch_template_name: attr.string({
+                          optional: true,
+                          computed: true,
+                        }),
+                        version: attr.string({
+                          optional: true,
+                          computed: true,
+                        }),
                       },
                     },
                     { minItems: 1, maxItems: 1 },
                   ),
                   override: block.list({
                     attributes: {
-                      instance_type: attr.string().optional(),
-                      weighted_capacity: attr.string().optional(),
+                      instance_type: attr.string({ optional: true }),
+                      weighted_capacity: attr.string({ optional: true }),
                     },
                     blocks: {
                       instance_requirements: block.single(
                         {
                           attributes: {
-                            accelerator_manufacturers: attr.set().optional(),
-                            accelerator_names: attr.set().optional(),
-                            accelerator_types: attr.set().optional(),
-                            allowed_instance_types: attr.set().optional(),
-                            bare_metal: attr.string().optional(),
-                            burstable_performance: attr.string().optional(),
-                            cpu_manufacturers: attr.set().optional(),
-                            excluded_instance_types: attr.set().optional(),
-                            instance_generations: attr.set().optional(),
-                            local_storage: attr.string().optional(),
-                            local_storage_types: attr.set().optional(),
+                            accelerator_manufacturers: attr.set({
+                              optional: true,
+                            }),
+                            accelerator_names: attr.set({ optional: true }),
+                            accelerator_types: attr.set({ optional: true }),
+                            allowed_instance_types: attr.set({
+                              optional: true,
+                            }),
+                            bare_metal: attr.string({ optional: true }),
+                            burstable_performance: attr.string({
+                              optional: true,
+                            }),
+                            cpu_manufacturers: attr.set({ optional: true }),
+                            excluded_instance_types: attr.set({
+                              optional: true,
+                            }),
+                            instance_generations: attr.set({ optional: true }),
+                            local_storage: attr.string({ optional: true }),
+                            local_storage_types: attr.set({ optional: true }),
                             max_spot_price_as_percentage_of_optimal_on_demand_price:
-                              attr.number().optional(),
+                              attr.number({ optional: true }),
                             on_demand_max_price_percentage_over_lowest_price:
-                              attr.number().optional(),
-                            require_hibernate_support: attr.bool().optional(),
-                            spot_max_price_percentage_over_lowest_price: attr
-                              .number()
-                              .optional(),
+                              attr.number({ optional: true }),
+                            require_hibernate_support: attr.bool({
+                              optional: true,
+                            }),
+                            spot_max_price_percentage_over_lowest_price:
+                              attr.number({ optional: true }),
                           },
                           blocks: {
                             accelerator_count: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -226,8 +250,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             accelerator_total_memory_mib: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -235,8 +259,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             baseline_ebs_bandwidth_mbps: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -244,8 +268,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             memory_gib_per_vcpu: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -253,8 +277,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             memory_mib: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -262,8 +286,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             network_bandwidth_gbps: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -271,8 +295,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             network_interface_count: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -280,8 +304,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             total_local_storage_gb: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -289,8 +313,8 @@ export const awsAutoscalingGroupResourceSchema = resource(
                             vcpu_count: block.single(
                               {
                                 attributes: {
-                                  max: attr.number().optional(),
-                                  min: attr.number().optional(),
+                                  max: attr.number({ optional: true }),
+                                  min: attr.number({ optional: true }),
                                 },
                               },
                               { maxItems: 1 },
@@ -302,15 +326,18 @@ export const awsAutoscalingGroupResourceSchema = resource(
                       launch_template_specification: block.single(
                         {
                           attributes: {
-                            launch_template_id: attr
-                              .string()
-                              .optional()
-                              .computed(),
-                            launch_template_name: attr
-                              .string()
-                              .optional()
-                              .computed(),
-                            version: attr.string().optional().computed(),
+                            launch_template_id: attr.string({
+                              optional: true,
+                              computed: true,
+                            }),
+                            launch_template_name: attr.string({
+                              optional: true,
+                              computed: true,
+                            }),
+                            version: attr.string({
+                              optional: true,
+                              computed: true,
+                            }),
                           },
                         },
                         { maxItems: 1 },
@@ -327,35 +354,35 @@ export const awsAutoscalingGroupResourceSchema = resource(
       ),
       tag: block.set({
         attributes: {
-          key: attr.string().required(),
-          propagate_at_launch: attr.bool().required(),
-          value: attr.string().required(),
+          key: attr.string({ required: true }),
+          propagate_at_launch: attr.bool({ required: true }),
+          value: attr.string({ required: true }),
         },
       }),
       timeouts: block.single({
         attributes: {
-          delete: attr.string().optional(),
-          update: attr.string().optional(),
+          delete: attr.string({ optional: true }),
+          update: attr.string({ optional: true }),
         },
       }),
       traffic_source: block.set({
         attributes: {
-          identifier: attr.string().required(),
-          type: attr.string().optional(),
+          identifier: attr.string({ required: true }),
+          type: attr.string({ optional: true }),
         },
       }),
       warm_pool: block.single(
         {
           attributes: {
-            max_group_prepared_capacity: attr.number().optional(),
-            min_size: attr.number().optional(),
-            pool_state: attr.string().optional(),
+            max_group_prepared_capacity: attr.number({ optional: true }),
+            min_size: attr.number({ optional: true }),
+            pool_state: attr.string({ optional: true }),
           },
           blocks: {
             instance_reuse_policy: block.single(
               {
                 attributes: {
-                  reuse_on_scale_in: attr.bool().optional(),
+                  reuse_on_scale_in: attr.bool({ optional: true }),
                 },
               },
               { maxItems: 1 },

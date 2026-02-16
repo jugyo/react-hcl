@@ -5,15 +5,15 @@ describe("resource schema DSL", () => {
   it("builds a data schema with attribute modifiers", () => {
     const schema = data("aws_ami", {
       attributes: {
-        owners: attr.list().required(),
-        most_recent: attr.bool().optional(),
-        name: attr.string().computed(),
+        owners: attr.list({ required: true }),
+        most_recent: attr.bool({ optional: true }),
+        name: attr.string({ computed: true }),
       },
       blocks: {
         filter: block.set({
           attributes: {
-            name: attr.string().required(),
-            values: attr.set().required(),
+            name: attr.string({ required: true }),
+            values: attr.set({ required: true }),
           },
         }),
       },
@@ -39,8 +39,8 @@ describe("resource schema DSL", () => {
   it("builds nested blocks with min/max options", () => {
     const schema = resource("aws_autoscaling_group", {
       attributes: {
-        max_size: attr.number().required(),
-        min_size: attr.number().required(),
+        max_size: attr.number({ required: true }),
+        min_size: attr.number({ required: true }),
       },
       blocks: {
         launch_template: block.list(
@@ -49,7 +49,7 @@ describe("resource schema DSL", () => {
             blocks: {
               launch_template_specification: block.single({
                 attributes: {
-                  id: attr.string().optional(),
+                  id: attr.string({ optional: true }),
                 },
               }),
             },

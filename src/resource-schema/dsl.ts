@@ -9,25 +9,10 @@ import type {
 /**
  * Internal DSL for Terraform schema definitions.
  *
- * Goal:
- * - Reduce handwritten schema noise in `src/resource-schema/aws/**`.
- * - Keep provider schema information (`required`/`optional`/`computed`) explicit.
- * - Preserve literal types so `StrictResourceProps` can infer input constraints.
- *
  * Core API:
- * - Attribute builder: `attr.string().required()`, `attr.bool().computed()`
+ * - Attribute builder: `attr.string({ required: true })`
  * - Block builder: `block.single(...)`, `block.list(..., { minItems, maxItems })`
  * - Type builder: `resource("aws_xxx", { ... })`, `data("aws_xxx", { ... })`
- *
- * Modifier rules:
- * - `required` cannot be combined with `optional` or `computed`.
- * - `optional` can be combined with `computed`.
- * - `sensitive` can be added once.
- *
- * Notes:
- * - Builders are normalized into plain `AttributeSchema` / `NestedBlockSchema`
- *   objects before export.
- * - Raw schema objects are still accepted where needed for gradual migration.
  */
 type AttrFlags = {
   required?: true;
@@ -37,36 +22,36 @@ type AttrFlags = {
 };
 type EmptyObject = Record<never, never>;
 
-export type AttrBuilder<
+type FlagIfTrue<
+  T extends { [K in P]?: unknown },
+  P extends keyof T,
+> = T[P] extends true ? { [K in P]: true } : EmptyObject;
+
+export type AttrDef<
   V extends ValueType = ValueType,
   F extends AttrFlags = EmptyObject,
-> = Readonly<{
-  valueType: V;
-  readonly __dslAttr: true;
-  readonly __flags: F;
-  required: F extends
-    | { required: true }
-    | { optional: true }
-    | { computed: true }
-    ? never
-    : () => AttrBuilder<V, F & { required: true }>;
-  optional: F extends { required: true } | { optional: true }
-    ? never
-    : () => AttrBuilder<V, F & { optional: true }>;
-  computed: F extends { required: true } | { computed: true }
-    ? never
-    : () => AttrBuilder<V, F & { computed: true }>;
-  sensitive: F extends { sensitive: true }
-    ? never
-    : () => AttrBuilder<V, F & { sensitive: true }>;
-}>;
+> = Readonly<
+  {
+    valueType: V;
+  } & FlagIfTrue<F, "required"> &
+    FlagIfTrue<F, "optional"> &
+    FlagIfTrue<F, "computed"> &
+    FlagIfTrue<F, "sensitive">
+>;
 
-type AttributeInput = AttributeSchema | Readonly<AttributeSchema> | AttrBuilder;
+type AttributeInput =
+  | AttributeSchema
+  | Readonly<AttributeSchema>
+  | AttrDef<ValueType, AttrFlags>;
 
-type NormalizeAttribute<A extends AttributeInput> =
-  A extends AttrBuilder<infer V, infer F extends AttrFlags>
-    ? Readonly<{ valueType: V } & F>
-    : A;
+type NormalizeAttribute<A extends AttributeInput> = Readonly<
+  {
+    valueType: A["valueType"];
+  } & FlagIfTrue<A, "required"> &
+    FlagIfTrue<A, "optional"> &
+    FlagIfTrue<A, "computed"> &
+    FlagIfTrue<A, "sensitive">
+>;
 
 type NormalizeAttributes<A extends Readonly<Record<string, AttributeInput>>> = {
   [K in keyof A]: NormalizeAttribute<A[K]>;
@@ -135,66 +120,7 @@ type TypeSchema<
   blocks: NormalizeBlocks<B>;
 }>;
 
-function createAttrBuilder<V extends ValueType, F extends AttrFlags>(
-  valueType: V,
-  flags: F,
-): AttrBuilder<V, F> {
-  const hasRequired = flags.required === true;
-  const hasOptional = flags.optional === true;
-  const hasComputed = flags.computed === true;
-  const hasSensitive = flags.sensitive === true;
-
-  const base = {
-    valueType,
-    __dslAttr: true as const,
-    __flags: flags,
-  } as AttrBuilder<V, F>;
-
-  const next = <NF extends AttrFlags>(nextFlags: NF) =>
-    createAttrBuilder(valueType, nextFlags);
-
-  return Object.assign(base, {
-    required: () => {
-      if (hasRequired || hasOptional || hasComputed) {
-        throw new Error(
-          "attr.required() cannot be combined with optional/computed",
-        );
-      }
-      return next({ ...flags, required: true } as F & { required: true });
-    },
-    optional: () => {
-      if (hasRequired || hasOptional) {
-        throw new Error("attr.optional() cannot be combined with required");
-      }
-      return next({ ...flags, optional: true } as F & { optional: true });
-    },
-    computed: () => {
-      if (hasRequired || hasComputed) {
-        throw new Error("attr.computed() cannot be combined with required");
-      }
-      return next({ ...flags, computed: true } as F & { computed: true });
-    },
-    sensitive: () => {
-      if (hasSensitive) {
-        throw new Error("attr.sensitive() cannot be set twice");
-      }
-      return next({ ...flags, sensitive: true } as F & { sensitive: true });
-    },
-  }) as AttrBuilder<V, F>;
-}
-
 function normalizeAttribute(attribute: AttributeInput): AttributeSchema {
-  if ("__dslAttr" in attribute && attribute.__dslAttr === true) {
-    const flags = attribute.__flags as AttrFlags;
-    return {
-      valueType: attribute.valueType,
-      ...(flags.required === true ? { required: true } : {}),
-      ...(flags.optional === true ? { optional: true } : {}),
-      ...(flags.computed === true ? { computed: true } : {}),
-      ...(flags.sensitive === true ? { sensitive: true } : {}),
-    };
-  }
-
   return {
     valueType: attribute.valueType,
     ...(attribute.required === true ? { required: true } : {}),
@@ -278,15 +204,37 @@ function createBlock<
   }>;
 }
 
+function createAttribute<const V extends ValueType, const F extends AttrFlags>(
+  valueType: V,
+  flags?: F,
+): AttrDef<V, F> {
+  const normalizedFlags = flags ?? ({} as F);
+  return {
+    valueType,
+    ...(normalizedFlags.required === true ? { required: true } : {}),
+    ...(normalizedFlags.optional === true ? { optional: true } : {}),
+    ...(normalizedFlags.computed === true ? { computed: true } : {}),
+    ...(normalizedFlags.sensitive === true ? { sensitive: true } : {}),
+  } as AttrDef<V, F>;
+}
+
 export const attr = {
-  string: () => createAttrBuilder("string", {}),
-  number: () => createAttrBuilder("number", {}),
-  bool: () => createAttrBuilder("bool", {}),
-  list: () => createAttrBuilder("list", {}),
-  set: () => createAttrBuilder("set", {}),
-  map: () => createAttrBuilder("map", {}),
-  object: () => createAttrBuilder("object", {}),
-  any: () => createAttrBuilder("any", {}),
+  string: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("string", flags),
+  number: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("number", flags),
+  bool: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("bool", flags),
+  list: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("list", flags),
+  set: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("set", flags),
+  map: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("map", flags),
+  object: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("object", flags),
+  any: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
+    createAttribute("any", flags),
 } as const;
 
 export const block = {

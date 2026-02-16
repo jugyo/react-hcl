@@ -5,25 +5,25 @@ export const awsS3BucketServerSideEncryptionConfigurationResourceSchema =
   resource("aws_s3_bucket_server_side_encryption_configuration", {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      bucket: attr.string().required(),
-      expected_bucket_owner: attr.string().optional(),
-      id: attr.string().optional().computed(),
-      region: attr.string().optional().computed(),
+      bucket: attr.string({ required: true }),
+      expected_bucket_owner: attr.string({ optional: true }),
+      id: attr.string({ optional: true, computed: true }),
+      region: attr.string({ optional: true, computed: true }),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
       rule: block.set(
         {
           attributes: {
-            blocked_encryption_types: attr.list().optional(),
-            bucket_key_enabled: attr.bool().optional(),
+            blocked_encryption_types: attr.list({ optional: true }),
+            bucket_key_enabled: attr.bool({ optional: true }),
           },
           blocks: {
             apply_server_side_encryption_by_default: block.single(
               {
                 attributes: {
-                  kms_master_key_id: attr.string().optional(),
-                  sse_algorithm: attr.string().required(),
+                  kms_master_key_id: attr.string({ optional: true }),
+                  sse_algorithm: attr.string({ required: true }),
                 },
               },
               { maxItems: 1 },

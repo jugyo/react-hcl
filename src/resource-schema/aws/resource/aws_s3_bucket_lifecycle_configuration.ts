@@ -6,85 +6,100 @@ export const awsS3BucketLifecycleConfigurationResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      bucket: attr.string().required(),
-      expected_bucket_owner: attr.string().optional().computed(),
-      id: attr.string().computed(),
-      region: attr.string().optional().computed(),
-      transition_default_minimum_object_size: attr
-        .string()
-        .optional()
-        .computed(),
+      bucket: attr.string({ required: true }),
+      expected_bucket_owner: attr.string({ optional: true, computed: true }),
+      id: attr.string({ computed: true }),
+      region: attr.string({ optional: true, computed: true }),
+      transition_default_minimum_object_size: attr.string({
+        optional: true,
+        computed: true,
+      }),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
       rule: block.list({
         attributes: {
-          id: attr.string().required(),
-          prefix: attr.string().optional().computed(),
-          status: attr.string().required(),
+          id: attr.string({ required: true }),
+          prefix: attr.string({ optional: true, computed: true }),
+          status: attr.string({ required: true }),
         },
         blocks: {
           abort_incomplete_multipart_upload: block.list({
             attributes: {
-              days_after_initiation: attr.number().optional(),
+              days_after_initiation: attr.number({ optional: true }),
             },
           }),
           expiration: block.list({
             attributes: {
-              date: attr.string().optional(),
-              days: attr.number().optional().computed(),
-              expired_object_delete_marker: attr.bool().optional().computed(),
+              date: attr.string({ optional: true }),
+              days: attr.number({ optional: true, computed: true }),
+              expired_object_delete_marker: attr.bool({
+                optional: true,
+                computed: true,
+              }),
             },
           }),
           filter: block.list({
             attributes: {
-              object_size_greater_than: attr.number().optional().computed(),
-              object_size_less_than: attr.number().optional().computed(),
-              prefix: attr.string().optional().computed(),
+              object_size_greater_than: attr.number({
+                optional: true,
+                computed: true,
+              }),
+              object_size_less_than: attr.number({
+                optional: true,
+                computed: true,
+              }),
+              prefix: attr.string({ optional: true, computed: true }),
             },
             blocks: {
               and: block.list({
                 attributes: {
-                  object_size_greater_than: attr.number().optional().computed(),
-                  object_size_less_than: attr.number().optional().computed(),
-                  prefix: attr.string().optional().computed(),
-                  tags: attr.map().optional(),
+                  object_size_greater_than: attr.number({
+                    optional: true,
+                    computed: true,
+                  }),
+                  object_size_less_than: attr.number({
+                    optional: true,
+                    computed: true,
+                  }),
+                  prefix: attr.string({ optional: true, computed: true }),
+                  tags: attr.map({ optional: true }),
                 },
               }),
               tag: block.list({
                 attributes: {
-                  key: attr.string().required(),
-                  value: attr.string().required(),
+                  key: attr.string({ required: true }),
+                  value: attr.string({ required: true }),
                 },
               }),
             },
           }),
           noncurrent_version_expiration: block.list({
             attributes: {
-              newer_noncurrent_versions: attr.number().optional(),
-              noncurrent_days: attr.number().required(),
+              newer_noncurrent_versions: attr.number({ optional: true }),
+              noncurrent_days: attr.number({ required: true }),
             },
           }),
           noncurrent_version_transition: block.set({
             attributes: {
-              newer_noncurrent_versions: attr.number().optional(),
-              noncurrent_days: attr.number().required(),
-              storage_class: attr.string().required(),
+              newer_noncurrent_versions: attr.number({ optional: true }),
+              noncurrent_days: attr.number({ required: true }),
+              storage_class: attr.string({ required: true }),
             },
           }),
           transition: block.set({
             attributes: {
-              date: attr.string().optional(),
-              days: attr.number().optional().computed(),
-              storage_class: attr.string().required(),
+              date: attr.string({ optional: true }),
+              days: attr.number({ optional: true, computed: true }),
+              storage_class: attr.string({ required: true }),
             },
           }),
         },
       }),
       timeouts: block.single({
         attributes: {
-          create: attr.string().optional(),
-          update: attr.string().optional(),
+          create: attr.string({ optional: true }),
+          update: attr.string({ optional: true }),
         },
       }),
     },

@@ -136,20 +136,16 @@ function renderAttributeDsl(schema) {
   const hasComputed = schema.computed === true;
   const hasSensitive = schema.sensitive === true;
 
-  // Fall back to raw object when Terraform schema flags conflict with DSL constraints.
-  if (hasRequired && (hasOptional || hasComputed)) {
-    return renderAttribute(schema);
-  }
+  const optionParts = [];
+  if (hasRequired) optionParts.push("required: true");
+  if (hasOptional) optionParts.push("optional: true");
+  if (hasComputed) optionParts.push("computed: true");
+  if (hasSensitive) optionParts.push("sensitive: true");
 
-  let expression = `attr.${valueType}()`;
-  if (hasRequired) {
-    expression += ".required()";
-  } else {
-    if (hasOptional) expression += ".optional()";
-    if (hasComputed) expression += ".computed()";
+  if (optionParts.length === 0) {
+    return `attr.${valueType}()`;
   }
-  if (hasSensitive) expression += ".sensitive()";
-  return expression;
+  return `attr.${valueType}({ ${optionParts.join(", ")} })`;
 }
 
 function renderAttributes(attributes, indent, options = { useDsl: true }) {

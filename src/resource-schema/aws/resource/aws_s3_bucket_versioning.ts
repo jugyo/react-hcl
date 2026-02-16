@@ -6,19 +6,19 @@ export const awsS3BucketVersioningResourceSchema = resource(
   {
     attributes: {
       ...COMMON_RESOURCE_ATTRIBUTES,
-      bucket: attr.string().required(),
-      expected_bucket_owner: attr.string().optional(),
-      id: attr.string().optional().computed(),
-      mfa: attr.string().optional(),
-      region: attr.string().optional().computed(),
+      bucket: attr.string({ required: true }),
+      expected_bucket_owner: attr.string({ optional: true }),
+      id: attr.string({ optional: true, computed: true }),
+      mfa: attr.string({ optional: true }),
+      region: attr.string({ optional: true, computed: true }),
     },
     blocks: {
       ...COMMON_RESOURCE_BLOCKS,
       versioning_configuration: block.single(
         {
           attributes: {
-            mfa_delete: attr.string().optional().computed(),
-            status: attr.string().required(),
+            mfa_delete: attr.string({ optional: true, computed: true }),
+            status: attr.string({ required: true }),
           },
         },
         { minItems: 1, maxItems: 1 },
