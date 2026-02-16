@@ -17,10 +17,13 @@ export type AttrFlags = {
 export type EmptyObject = Record<never, never>;
 
 /** Adds `{ prop: true }` only when the target property is literally `true`. */
-export type FlagIfTrue<
-  T extends { [K in P]?: unknown },
-  P extends keyof T,
-> = T[P] extends true ? { [K in P]: true } : EmptyObject;
+export type FlagIfTrue<T, P extends PropertyKey> = T extends {
+  [K in P]?: infer V;
+}
+  ? V extends true
+    ? { [K in P]: true }
+    : EmptyObject
+  : EmptyObject;
 
 /** Normalized attribute definition shape used by the DSL. */
 export type AttrDef<
@@ -29,6 +32,10 @@ export type AttrDef<
 > = Readonly<
   {
     valueType: V;
+    required?: true;
+    optional?: true;
+    computed?: true;
+    sensitive?: true;
   } & FlagIfTrue<F, "required"> &
     FlagIfTrue<F, "optional"> &
     FlagIfTrue<F, "computed"> &

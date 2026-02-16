@@ -16,12 +16,15 @@ import type {
 } from "./types";
 
 export function normalizeAttribute(attribute: AttributeInput): AttributeSchema {
+  const flags = attribute as Partial<
+    Pick<AttributeSchema, "required" | "optional" | "computed" | "sensitive">
+  >;
   return {
     valueType: attribute.valueType,
-    ...(attribute.required === true ? { required: true } : {}),
-    ...(attribute.optional === true ? { optional: true } : {}),
-    ...(attribute.computed === true ? { computed: true } : {}),
-    ...(attribute.sensitive === true ? { sensitive: true } : {}),
+    ...(flags.required === true ? { required: true } : {}),
+    ...(flags.optional === true ? { optional: true } : {}),
+    ...(flags.computed === true ? { computed: true } : {}),
+    ...(flags.sensitive === true ? { sensitive: true } : {}),
   };
 }
 
