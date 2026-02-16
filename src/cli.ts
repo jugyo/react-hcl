@@ -25,6 +25,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import parseArgv from "arg";
 import * as esbuild from "esbuild";
 import { detectConflicts } from "./conflict";
 import { generate } from "./generator";
@@ -33,24 +34,47 @@ import { render } from "./renderer";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-function parseArgs(argv: string[]): { inputFile: string; output?: string } {
-  const args = argv.slice(2);
-  let inputFile: string | undefined;
-  let output: string | undefined;
+function parseArgs(argv: string[]): {
+  inputFile: string;
+  output?: string;
+  help: boolean;
+} {
+  const args = parseArgv(
+    {
+      "--help": Boolean,
+      "--output": String,
+      "-h": "--help",
+      "-o": "--output",
+    },
+    { argv: argv.slice(2), permissive: true },
+  );
 
-  for (let i = 0; i < args.length; i++) {
-    if ((args[i] === "-o" || args[i] === "--output") && i + 1 < args.length) {
-      output = args[++i];
-    } else if (!inputFile) {
-      inputFile = args[i];
-    }
-  }
-
-  return { inputFile: inputFile ?? "", output };
+  return {
+    inputFile: args._[0] ?? "",
+    output: args["--output"],
+    help: Boolean(args["--help"]),
+  };
 }
 
 function printUsage() {
   console.error("Usage: react-hcl <input.tsx|-> [-o <file>]");
+}
+
+function printHelp() {
+  process.stdout.write(
+    [
+      "react-hcl - Convert TSX to Terraform HCL",
+      "",
+      "Usage:",
+      "  react-hcl <input.tsx|-> [-o <file>]",
+      "  cat input.tsx | react-hcl [-o <file>]",
+      "",
+      "Options:",
+      "  -o, --output <file>  Write output to file instead of stdout",
+      "  -h, --help           Show help",
+      "",
+    ].join("\n"),
+  );
 }
 
 async function readStdin(): Promise<string> {
@@ -62,7 +86,21 @@ async function readStdin(): Promise<string> {
 }
 
 async function main() {
-  const { inputFile, output } = parseArgs(process.argv);
+  let parsedArgs: ReturnType<typeof parseArgs>;
+  try {
+    parsedArgs = parseArgs(process.argv);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(message);
+    printUsage();
+    process.exit(1);
+  }
+
+  const { inputFile, output, help } = parsedArgs;
+  if (help) {
+    printHelp();
+    return;
+  }
   const stdinContents = process.stdin.isTTY ? "" : await readStdin();
   const hasStdin = stdinContents.trim().length > 0;
   const wantsStdin = inputFile === "-" || (!inputFile && hasStdin);

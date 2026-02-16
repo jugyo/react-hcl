@@ -2,6 +2,18 @@ import { describe, expect, it } from "bun:test";
 import { $, type ShellError } from "bun";
 
 describe("CLI E2E", () => {
+  it("--help prints help text", async () => {
+    const result = await $`bun run src/cli.ts --help`.text();
+    expect(result).toContain("Usage:");
+    expect(result).toContain("react-hcl <input.tsx|-> [-o <file>]");
+  });
+
+  it("-h prints help text", async () => {
+    const result = await $`bun run src/cli.ts -h`.text();
+    expect(result).toContain("Usage:");
+    expect(result).toContain("Options:");
+  });
+
   it("basic.tsx → matches expected HCL snapshot", async () => {
     const result = await $`bun run src/cli.ts tests/fixtures/basic.tsx`.text();
     const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
