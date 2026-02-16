@@ -33,11 +33,7 @@ type RequiredAttributeKeys<A extends Record<string, AttributeSchema>> = {
 }[keyof A];
 
 type OptionalAttributeKeys<A extends Record<string, AttributeSchema>> = {
-  [K in keyof A]: A[K]["computed"] extends true
-    ? never
-    : A[K]["required"] extends true
-      ? never
-      : K;
+  [K in keyof A]: A[K]["required"] extends true ? never : K;
 }[keyof A];
 
 type AttributeProps<A extends Record<string, AttributeSchema>> = {
@@ -91,11 +87,22 @@ type ApplyMetaAttributeOverrides<T> = Omit<
 export type StrictResourceAttributes<T extends AwsResourceType> =
   ApplyMetaAttributeOverrides<AwsResourcePropsMap[T]>;
 
-export type StrictResourceProps<T extends AwsResourceType> =
+type StrictResourcePropsWithoutInnerText<T extends AwsResourceType> =
   ResourceCoreProps & {
     type: T;
     attributes?: Partial<StrictResourceAttributes<T>>;
   } & StrictResourceAttributes<T>;
+
+type StrictResourcePropsWithInnerText<T extends AwsResourceType> =
+  ResourceCoreProps & {
+    type: T;
+    children: string | string[];
+    attributes?: Partial<StrictResourceAttributes<T>>;
+  } & Partial<StrictResourceAttributes<T>>;
+
+export type StrictResourceProps<T extends AwsResourceType> =
+  | StrictResourcePropsWithoutInnerText<T>
+  | StrictResourcePropsWithInnerText<T>;
 
 type NonAwsResourceType<T extends string> = T extends AwsResourceType
   ? never
