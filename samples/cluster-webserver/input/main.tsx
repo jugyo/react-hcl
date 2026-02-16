@@ -47,12 +47,14 @@ function ClusterWebServer() {
         type="aws_security_group"
         name="instance"
         ref={instanceSgRef}
-        ingress={{
-          from_port: tf.var("server_port"),
-          to_port: tf.var("server_port"),
-          protocol: "tcp",
-          cidr_blocks: ["0.0.0.0/0"],
-        }}
+        ingress={[
+          {
+            from_port: tf.var("server_port"),
+            to_port: tf.var("server_port"),
+            protocol: "tcp",
+            cidr_blocks: ["0.0.0.0/0"],
+          },
+        ]}
         lifecycle={{ create_before_destroy: true }}
       />
 
@@ -60,18 +62,22 @@ function ClusterWebServer() {
         type="aws_security_group"
         name="elb"
         ref={elbSgRef}
-        ingress={{
-          from_port: 80,
-          to_port: 80,
-          protocol: "tcp",
-          cidr_blocks: ["0.0.0.0/0"],
-        }}
-        egress={{
-          from_port: 0,
-          to_port: 0,
-          protocol: "-1",
-          cidr_blocks: ["0.0.0.0/0"],
-        }}
+        ingress={[
+          {
+            from_port: 80,
+            to_port: 80,
+            protocol: "tcp",
+            cidr_blocks: ["0.0.0.0/0"],
+          },
+        ]}
+        egress={[
+          {
+            from_port: 0,
+            to_port: 0,
+            protocol: "-1",
+            cidr_blocks: ["0.0.0.0/0"],
+          },
+        ]}
       />
 
       <Resource
@@ -105,11 +111,13 @@ function ClusterWebServer() {
         health_check_type="ELB"
         min_size={2}
         max_size={10}
-        tag={{
-          key: "Name",
-          value: "terraform-asg-example",
-          propagate_at_launch: true,
-        }}
+        tag={[
+          {
+            key: "Name",
+            value: "terraform-asg-example",
+            propagate_at_launch: true,
+          },
+        ]}
       />
 
       <Resource type="aws_elb" name="example" ref={elbRef}>

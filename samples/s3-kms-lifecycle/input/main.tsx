@@ -40,12 +40,10 @@ function Main({ region }: { region: string }) {
         bucket={bucketRef.id}
         rule={[
           {
-            apply_server_side_encryption_by_default: [
-              {
-                kms_master_key_id: keyRef.arn,
-                sse_algorithm: "aws:kms",
-              },
-            ],
+            apply_server_side_encryption_by_default: {
+              kms_master_key_id: keyRef.arn,
+              sse_algorithm: "aws:kms",
+            },
             bucket_key_enabled: true,
           },
         ]}
@@ -55,11 +53,9 @@ function Main({ region }: { region: string }) {
         type="aws_s3_bucket_versioning"
         name="archive"
         bucket={bucketRef.id}
-        versioning_configuration={[
-          {
-            status: "Enabled",
-          },
-        ]}
+        versioning_configuration={{
+          status: "Enabled",
+        }}
       />
 
       <Resource
