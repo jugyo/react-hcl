@@ -1,4 +1,4 @@
-import { Resource, raw, useRef } from "react-hcl";
+import { Resource, tf, useRef } from "react-hcl";
 
 export function Network({
   vpcRef,
@@ -29,8 +29,8 @@ export function Network({
           name={`private_${i}`}
           ref={ref}
           vpc_id={vpcRef.id}
-          cidr_block={raw(`cidrsubnet("${vpcCidr}", 8, ${i})`)}
-          availability_zone={raw(`${azRef.names}[${i}]`)}
+          cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${i})`)}
+          availability_zone={tf.raw(`${azRef.names}[${i}]`)}
         />
       ))}
 
@@ -40,8 +40,8 @@ export function Network({
           name={`public_${i}`}
           ref={ref}
           vpc_id={vpcRef.id}
-          cidr_block={raw(`cidrsubnet("${vpcCidr}", 8, ${azCount + i})`)}
-          availability_zone={raw(`${azRef.names}[${i}]`)}
+          cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${azCount + i})`)}
+          availability_zone={tf.raw(`${azRef.names}[${i}]`)}
           map_public_ip_on_launch={true}
         />
       ))}
@@ -56,7 +56,7 @@ export function Network({
       <Resource
         type="aws_route"
         name="internet_access"
-        route_table_id={raw(`${vpcRef.main_route_table_id}`)}
+        route_table_id={tf.raw(`${vpcRef.main_route_table_id}`)}
         destination_cidr_block="0.0.0.0/0"
         gateway_id={igwRef.id}
       />

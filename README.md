@@ -24,7 +24,7 @@ react-hcl infra.tsx -o ./tf/main.tf   # write to file
 `main.tsx` — A VPC with a web server, using a verified module and a custom component:
 
 ```tsx
-import { DataSource, Module, Output, Provider, raw, useRef } from "react-hcl";
+import { DataSource, Module, Output, Provider, tf, useRef } from "react-hcl";
 import { WebServer } from "./web-server";
 
 function Main({ region, instanceType }) {
@@ -41,14 +41,14 @@ function Main({ region, instanceType }) {
         ref={vpcRef}
         source="terraform-aws-modules/vpc/aws"
         cidr="10.0.0.0/16"
-        azs={raw(`${azRef.names}`)}
+        azs={tf.raw(`${azRef.names}`)}
         public_subnets={["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]}
         enable_dns_hostnames={true}
       />
 
       <WebServer
         vpcId={vpcRef.vpc_id}
-        subnetId={raw(`${vpcRef.public_subnets}[0]`)}
+        subnetId={tf.raw(`${vpcRef.public_subnets}[0]`)}
         instanceType={instanceType}
       />
 
@@ -206,8 +206,8 @@ See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudF
 - `useRef()` - Create a reference to a resource/data source (`ref.id`, `ref.arn`, etc.)
 - `tf.var("name")` - Reference a variable (`var.name`)
 - `tf.local("name")` - Reference a local value (`local.name`)
-- `raw("...")` - Emit a Terraform expression as-is (no quote wrapping, no `${}` auto-wrapping)
-- `block({ ... })` - Force nested block syntax. Arrays of `block(...)` are emitted as repeated blocks.
+- `tf.raw("...")` - Emit a Terraform expression as-is (no quote wrapping, no `${}` auto-wrapping)
+- `tf.block({ ... })` - Force nested block syntax. Arrays of `tf.block(...)` are emitted as repeated blocks.
 
 ## Installation
 

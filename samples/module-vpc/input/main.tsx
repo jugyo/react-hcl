@@ -9,8 +9,8 @@ import {
   Output,
   Provider,
   Resource,
-  raw,
   Terraform,
+  tf,
   useRef,
 } from "react-hcl";
 
@@ -50,7 +50,7 @@ function Main() {
         name="app"
         ami="ami-0c55b159cbfafe1f0"
         instance_type="t3.micro"
-        subnet_id={raw(`${vpc.private_subnets}[0]`)}
+        subnet_id={tf.raw(`${vpc.private_subnets}[0]`)}
         tags={{ Name: "app-server" }}
       />
 

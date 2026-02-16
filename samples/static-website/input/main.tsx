@@ -10,7 +10,6 @@ import {
   Output,
   Provider,
   Resource,
-  raw,
   Terraform,
   tf,
   useRef,
@@ -55,7 +54,7 @@ function Main({ region }: { region: string }) {
       />
 
       {/* biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation */}
-      <Locals s3_origin_id={raw('"${var.domain_name}-origin-id"')} />
+      <Locals s3_origin_id={tf.raw('"${var.domain_name}-origin-id"')} />
 
       {/* S3 Bucket */}
       <Resource

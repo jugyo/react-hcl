@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { isRawHCL, serializeHCLAttributes } from "../src/hcl-serializer";
+import {
+  isBlockHCL,
+  isRawHCL,
+  serializeHCLAttributes,
+} from "../src/hcl-serializer";
 import { tf } from "../src/helpers/tf";
 
 describe("tf helper", () => {
@@ -13,6 +17,22 @@ describe("tf helper", () => {
     it("handles underscore names", () => {
       const result = tf.var("vpc_config");
       expect(result.value).toBe("var.vpc_config");
+    });
+  });
+
+  describe("tf.raw", () => {
+    it("returns RawHCL with raw value", () => {
+      const result = tf.raw("aws_vpc.main.id");
+      expect(isRawHCL(result)).toBe(true);
+      expect(result.value).toBe("aws_vpc.main.id");
+    });
+  });
+
+  describe("tf.block", () => {
+    it("returns BlockHCL marker", () => {
+      const result = tf.block({ name: "example" });
+      expect(isBlockHCL(result)).toBe(true);
+      expect(result.value.name).toBe("example");
     });
   });
 

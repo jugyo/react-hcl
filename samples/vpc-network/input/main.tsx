@@ -9,7 +9,6 @@ import {
   Output,
   Provider,
   Resource,
-  raw,
   Terraform,
   tf,
   useRef,
@@ -192,10 +191,13 @@ function Main({ region }: { region: string }) {
 
       {/* Outputs */}
       <Output name="vpc_id" value={vpcRef.id} />
-      <Output name="public_subnet_ids" value={raw("aws_subnet.public[*].id")} />
+      <Output
+        name="public_subnet_ids"
+        value={tf.raw("aws_subnet.public[*].id")}
+      />
       <Output
         name="private_subnet_ids"
-        value={raw("aws_subnet.private[*].id")}
+        value={tf.raw("aws_subnet.private[*].id")}
       />
     </>
   );

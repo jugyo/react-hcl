@@ -18,9 +18,19 @@
  *     tags          = local.common_tags
  *   }
  */
-import { type RawHCL, raw } from "../hcl-serializer";
+import { type BlockHCL, block, type RawHCL, raw } from "../hcl-serializer";
 
 export const tf = {
+  /** tf.raw("expr") → expr (unquoted HCL expression) */
+  raw(value: string): RawHCL {
+    return raw(value);
+  },
+
+  /** tf.block({...}) → explicit nested block marker */
+  block(value: Record<string, any>): BlockHCL {
+    return block(value);
+  },
+
   /** tf.var("name") → var.name */
   var(name: string): RawHCL {
     return raw(`var.${name}`);

@@ -9,7 +9,6 @@ import {
   Output,
   Provider,
   Resource,
-  raw,
   Terraform,
   tf,
   useRef,
@@ -111,7 +110,7 @@ function Main({ region }: { region: string }) {
       <Resource
         type="aws_route"
         name="internet_access"
-        route_table_id={raw(`${vpcRef.main_route_table_id}`)}
+        route_table_id={tf.raw(`${vpcRef.main_route_table_id}`)}
         destination_cidr_block="0.0.0.0/0"
         gateway_id={igwRef.id}
       />

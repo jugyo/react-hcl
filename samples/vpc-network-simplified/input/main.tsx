@@ -10,8 +10,8 @@ import {
   Output,
   Provider,
   Resource,
-  raw,
   Terraform,
+  tf,
   useRef,
 } from "react-hcl";
 import { PrivateNetwork } from "./private-network";
@@ -65,8 +65,8 @@ function Main({
         name="public_0"
         ref={natSubnetRef}
         vpc_id={vpcRef.id}
-        cidr_block={raw(`cidrsubnet("${vpcCidr}", 8, 0)`)}
-        availability_zone={raw(`${azRef.names}[0]`)}
+        cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, 0)`)}
+        availability_zone={tf.raw(`${azRef.names}[0]`)}
         map_public_ip_on_launch={true}
         tags={{ Name: `${projectName}-public-0` }}
       />

@@ -1,4 +1,4 @@
-import { Output, Resource, raw, useRef } from "react-hcl";
+import { Output, Resource, tf, useRef } from "react-hcl";
 
 export function PrivateNetwork({
   vpcRef,
@@ -30,8 +30,8 @@ export function PrivateNetwork({
           name={`private_${i}`}
           ref={ref}
           vpc_id={vpcRef.id}
-          cidr_block={raw(`cidrsubnet("${vpcCidr}", 8, ${i + 100})`)}
-          availability_zone={raw(`${azRef.names}[${i}]`)}
+          cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${i + 100})`)}
+          availability_zone={tf.raw(`${azRef.names}[${i}]`)}
           tags={{ Name: `${projectName}-private-${i}` }}
         />
       ))}
@@ -81,7 +81,7 @@ export function PrivateNetwork({
 
       <Output
         name="private_subnet_ids"
-        value={raw(`[${subnetRefs.map((r) => r.id).join(", ")}]`)}
+        value={tf.raw(`[${subnetRefs.map((r) => r.id).join(", ")}]`)}
       />
     </>
   );

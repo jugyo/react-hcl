@@ -1,4 +1,4 @@
-import { Output, Resource, raw, useRef } from "react-hcl";
+import { Output, Resource, tf, useRef } from "react-hcl";
 
 export function PublicNetwork({
   vpcRef,
@@ -29,8 +29,8 @@ export function PublicNetwork({
           name={`public_${i + 1}`}
           ref={ref}
           vpc_id={vpcRef.id}
-          cidr_block={raw(`cidrsubnet("${vpcCidr}", 8, ${i + 1})`)}
-          availability_zone={raw(`${azRef.names}[${i + 1}]`)}
+          cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${i + 1})`)}
+          availability_zone={tf.raw(`${azRef.names}[${i + 1}]`)}
           map_public_ip_on_launch={true}
           tags={{ Name: `${projectName}-public-${i + 1}` }}
         />
@@ -71,7 +71,7 @@ export function PublicNetwork({
 
       <Output
         name="public_subnet_ids"
-        value={raw(`[${allSubnetRefs.map((r) => r.id).join(", ")}]`)}
+        value={tf.raw(`[${allSubnetRefs.map((r) => r.id).join(", ")}]`)}
       />
     </>
   );
