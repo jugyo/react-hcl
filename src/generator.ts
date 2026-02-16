@@ -54,7 +54,7 @@ function blockHeader(block: Block): string {
 
 /**
  * Type guard to check if a block carries an innerText field.
- * ResourceBlock, DataSourceBlock, TerraformBlock, and ModuleBlock can have innerText.
+ * ResourceBlock, DataBlock, TerraformBlock, and ModuleBlock can have innerText.
  */
 function hasInnerText(block: Block): block is Block & { innerText: string } {
   return "innerText" in block && typeof block.innerText === "string";

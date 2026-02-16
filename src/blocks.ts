@@ -15,7 +15,7 @@
  *
  * Supported HCL output forms:
  *   resource "type" "name" { ... }   — ResourceBlock
- *   data "type" "name" { ... }       — DataSourceBlock
+ *   data "type" "name" { ... }       — DataBlock
  *   variable "name" { ... }          — VariableBlock
  *   output "name" { ... }            — OutputBlock
  *   locals { ... }                   — LocalsBlock (no name label)
@@ -48,7 +48,7 @@ export type ResourceBlock = {
  *   { blockType: "data", type: "aws_ami", name: "latest", attributes: { most_recent: true } }
  *   → data "aws_ami" "latest" { most_recent = true }
  */
-export type DataSourceBlock = {
+export type DataBlock = {
   blockType: "data";
   type: string; // Data source type, e.g. "aws_ami", "aws_availability_zones"
   name: string; // Logical name, e.g. "latest", "available"
@@ -133,7 +133,7 @@ export type ModuleBlock = {
  */
 export type Block =
   | ResourceBlock
-  | DataSourceBlock
+  | DataBlock
   | VariableBlock
   | OutputBlock
   | LocalsBlock

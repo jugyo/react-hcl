@@ -8,7 +8,7 @@ describe("Data component", () => {
     resetHookState(true);
   });
 
-  it("returns a DataSourceBlock with attributes", () => {
+  it("returns a DataBlock with attributes", () => {
     const block = Data({
       type: "aws_ami",
       name: "latest",

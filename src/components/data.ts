@@ -1,5 +1,5 @@
 /**
- * Data component — produces a DataSourceBlock for the Block[] IR pipeline.
+ * Data component — produces a DataBlock for the Block[] IR pipeline.
  *
  * Extracts `type` and `name` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
@@ -10,7 +10,7 @@
  *   <Data type="aws_ami" name="latest" most_recent={true} />
  *   → data "aws_ami" "latest" { most_recent = true }
  */
-import type { DataSourceBlock } from "../blocks";
+import type { DataBlock } from "../blocks";
 import { adjustIndent, raw } from "../hcl-serializer";
 import type {
   AwsDataType,
@@ -21,11 +21,9 @@ import type {
 
 export function Data<T extends AwsDataType>(
   props: StrictDataProps<T>,
-): DataSourceBlock;
-export function Data<T extends string>(
-  props: LooseDataProps<T>,
-): DataSourceBlock;
-export function Data<T extends string>(props: DataProps<T>): DataSourceBlock {
+): DataBlock;
+export function Data<T extends string>(props: LooseDataProps<T>): DataBlock;
+export function Data<T extends string>(props: DataProps<T>): DataBlock {
   const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
   const attributes = { ...rest, ...extraAttrs };
 
