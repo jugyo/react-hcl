@@ -15,6 +15,7 @@ import type {
   TypeSchema,
 } from "./types";
 
+/** Attribute builders keyed by Terraform value type. */
 export const attr = {
   string: <const F extends AttrFlags = EmptyObject>(flags?: F) =>
     createAttribute("string", flags),
@@ -34,6 +35,7 @@ export const attr = {
     createAttribute("any", flags),
 } as const;
 
+/** Nested block builders for each Terraform nesting mode. */
 export const block = {
   single: <
     const A extends Readonly<Record<string, AttributeInput>>,
@@ -58,6 +60,7 @@ export const block = {
   ) => createBlock("set", definition, options),
 } as const;
 
+/** Defines a resource schema with normalized attributes and blocks. */
 export function resource<
   const T extends string,
   const A extends Readonly<Record<string, AttributeInput>>,
@@ -76,6 +79,7 @@ export function resource<
   } as TypeSchema<"resource", T, A, B>;
 }
 
+/** Defines a data source schema with normalized attributes and blocks. */
 export function data<
   const T extends string,
   const A extends Readonly<Record<string, AttributeInput>>,

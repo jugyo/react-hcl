@@ -15,7 +15,9 @@ import type {
   NormalizeBlocks,
 } from "./types";
 
+/** Normalizes one attribute while preserving only explicit `true` flags. */
 export function normalizeAttribute(attribute: AttributeInput): AttributeSchema {
+  /** Flag fields are optional on some `AttributeInput` variants. */
   const flags = attribute as Partial<
     Pick<AttributeSchema, "required" | "optional" | "computed" | "sensitive">
   >;
@@ -28,6 +30,7 @@ export function normalizeAttribute(attribute: AttributeInput): AttributeSchema {
   };
 }
 
+/** Normalizes all attributes in a record. */
 export function normalizeAttributes(
   attributes: Readonly<Record<string, AttributeInput>>,
 ): Record<string, AttributeSchema> {
@@ -38,6 +41,7 @@ export function normalizeAttributes(
   return normalized;
 }
 
+/** Recursively normalizes nested block records. */
 export function normalizeBlocks(
   blocks?: Readonly<Record<string, BlockInput>>,
 ): Record<string, NestedBlockSchema> {
@@ -60,6 +64,7 @@ export function normalizeBlocks(
   return normalized;
 }
 
+/** Builds one normalized block from DSL input and optional item limits. */
 export function createBlock<
   const M extends NestedBlockNestingMode,
   const A extends Readonly<Record<string, AttributeInput>>,
@@ -102,6 +107,7 @@ export function createBlock<
   }>;
 }
 
+/** Builds one normalized attribute from value type and optional flags. */
 export function createAttribute<
   const V extends ValueType,
   const F extends AttrFlags,
