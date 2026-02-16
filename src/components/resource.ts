@@ -11,13 +11,13 @@
  *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
 import type { ResourceBlock } from "../blocks";
-import { adjustIndent, raw } from "../hcl-serializer";
 import type {
   AwsResourceType,
   LooseResourceProps,
   ResourceProps,
   StrictResourceProps,
-} from "./resource-props";
+} from "../component-props/resource-props";
+import { adjustIndent, raw } from "../hcl-serializer";
 
 export function Resource<T extends AwsResourceType>(
   props: StrictResourceProps<T>,

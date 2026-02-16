@@ -11,13 +11,13 @@
  *   → data "aws_ami" "latest" { most_recent = true }
  */
 import type { DataBlock } from "../blocks";
-import { adjustIndent, raw } from "../hcl-serializer";
 import type {
   AwsDataType,
   DataProps,
   LooseDataProps,
   StrictDataProps,
-} from "./data-props";
+} from "../component-props/data-props";
+import { adjustIndent, raw } from "../hcl-serializer";
 
 export function Data<T extends AwsDataType>(
   props: StrictDataProps<T>,
