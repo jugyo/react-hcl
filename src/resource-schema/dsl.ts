@@ -61,14 +61,14 @@ export type AttrBuilder<
     : () => AttrBuilder<V, F & { sensitive: true }>;
 }>;
 
-type AttributeInput = AttributeSchema | AttrBuilder;
+type AttributeInput = AttributeSchema | Readonly<AttributeSchema> | AttrBuilder;
 
 type NormalizeAttribute<A extends AttributeInput> =
   A extends AttrBuilder<infer V, infer F extends AttrFlags>
     ? Readonly<{ valueType: V } & F>
     : A;
 
-type NormalizeAttributes<A extends Record<string, AttributeInput>> = {
+type NormalizeAttributes<A extends Readonly<Record<string, AttributeInput>>> = {
   [K in keyof A]: NormalizeAttribute<A[K]>;
 };
 
@@ -76,13 +76,13 @@ type BlockInput = {
   nestingMode: NestedBlockNestingMode;
   minItems?: number;
   maxItems?: number;
-  attributes: Record<string, AttributeInput>;
-  blocks?: Record<string, BlockInput>;
+  attributes: Readonly<Record<string, AttributeInput>>;
+  blocks?: Readonly<Record<string, BlockInput>>;
 };
 
 type BlockDef<
-  A extends Record<string, AttributeInput>,
-  B extends Record<string, BlockInput> = EmptyObject,
+  A extends Readonly<Record<string, AttributeInput>>,
+  B extends Readonly<Record<string, BlockInput>> = EmptyObject,
 > = {
   attributes: A;
   blocks?: B;
@@ -100,12 +100,15 @@ type MaybeMax<B extends { maxItems?: number }> = B extends {
   ? { maxItems: M }
   : EmptyObject;
 
-type MaybeBlocks<B extends { blocks?: Record<string, BlockInput> }> =
-  B extends {
-    blocks: infer BB extends Record<string, BlockInput>;
-  }
-    ? { blocks: NormalizeBlocks<BB> }
-    : EmptyObject;
+type BlockEntries<T> =
+  NonNullable<T> extends Readonly<Record<string, BlockInput>>
+    ? NonNullable<T>
+    : never;
+
+type MaybeBlocks<B extends { blocks?: Readonly<Record<string, BlockInput>> }> =
+  [keyof BlockEntries<B["blocks"]>] extends [never]
+    ? EmptyObject
+    : { blocks: NormalizeBlocks<BlockEntries<B["blocks"]>> };
 
 type NormalizeBlock<B extends BlockInput> = Readonly<
   {
@@ -116,15 +119,15 @@ type NormalizeBlock<B extends BlockInput> = Readonly<
     MaybeBlocks<B>
 >;
 
-type NormalizeBlocks<B extends Record<string, BlockInput>> = {
+type NormalizeBlocks<B extends Readonly<Record<string, BlockInput>>> = {
   [K in keyof B]: NormalizeBlock<B[K]>;
 };
 
 type TypeSchema<
   K extends SchemaKind,
   T extends string,
-  A extends Record<string, AttributeInput>,
-  B extends Record<string, BlockInput>,
+  A extends Readonly<Record<string, AttributeInput>>,
+  B extends Readonly<Record<string, BlockInput>>,
 > = Readonly<{
   kind: K;
   type: T;
@@ -202,7 +205,7 @@ function normalizeAttribute(attribute: AttributeInput): AttributeSchema {
 }
 
 function normalizeAttributes(
-  attributes: Record<string, AttributeInput>,
+  attributes: Readonly<Record<string, AttributeInput>>,
 ): Record<string, AttributeSchema> {
   const normalized: Record<string, AttributeSchema> = {};
   for (const [name, attribute] of Object.entries(attributes)) {
@@ -212,7 +215,7 @@ function normalizeAttributes(
 }
 
 function normalizeBlocks(
-  blocks?: Record<string, BlockInput>,
+  blocks?: Readonly<Record<string, BlockInput>>,
 ): Record<string, NestedBlockSchema> {
   if (!blocks) return {};
 
@@ -235,8 +238,8 @@ function normalizeBlocks(
 
 function createBlock<
   const M extends NestedBlockNestingMode,
-  const A extends Record<string, AttributeInput>,
-  const B extends Record<string, BlockInput> = EmptyObject,
+  const A extends Readonly<Record<string, AttributeInput>>,
+  const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
 >(
   nestingMode: M,
   definition: BlockDef<A, B>,
@@ -288,22 +291,22 @@ export const attr = {
 
 export const block = {
   single: <
-    const A extends Record<string, AttributeInput>,
-    const B extends Record<string, BlockInput> = EmptyObject,
+    const A extends Readonly<Record<string, AttributeInput>>,
+    const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
   >(
     definition: BlockDef<A, B>,
     options?: { minItems?: number; maxItems?: number },
   ) => createBlock("single", definition, options),
   list: <
-    const A extends Record<string, AttributeInput>,
-    const B extends Record<string, BlockInput> = EmptyObject,
+    const A extends Readonly<Record<string, AttributeInput>>,
+    const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
   >(
     definition: BlockDef<A, B>,
     options?: { minItems?: number; maxItems?: number },
   ) => createBlock("list", definition, options),
   set: <
-    const A extends Record<string, AttributeInput>,
-    const B extends Record<string, BlockInput> = EmptyObject,
+    const A extends Readonly<Record<string, AttributeInput>>,
+    const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
   >(
     definition: BlockDef<A, B>,
     options?: { minItems?: number; maxItems?: number },
@@ -312,8 +315,8 @@ export const block = {
 
 export function resource<
   const T extends string,
-  const A extends Record<string, AttributeInput>,
-  const B extends Record<string, BlockInput> = EmptyObject,
+  const A extends Readonly<Record<string, AttributeInput>>,
+  const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
 >(
   type: T,
   schema: { attributes: A; blocks?: B },
@@ -330,8 +333,8 @@ export function resource<
 
 export function data<
   const T extends string,
-  const A extends Record<string, AttributeInput>,
-  const B extends Record<string, BlockInput> = EmptyObject,
+  const A extends Readonly<Record<string, AttributeInput>>,
+  const B extends Readonly<Record<string, BlockInput>> = EmptyObject,
 >(type: T, schema: { attributes: A; blocks?: B }): TypeSchema<"data", T, A, B> {
   return {
     kind: "data",

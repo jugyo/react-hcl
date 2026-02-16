@@ -1,10 +1,5 @@
 import type { AttributeHCL, BlockHCL, RawHCL } from "../hcl-serializer";
-import type {
-  AttributeSchema,
-  NestedBlockSchema,
-  TerraformTypeSchema,
-  ValueType,
-} from "../resource-schema";
+import type { TerraformTypeSchema, ValueType } from "../resource-schema";
 
 type ValueFromSchema<V extends ValueType> = V extends "string"
   ? string | RawHCL
@@ -22,32 +17,58 @@ type ValueFromSchema<V extends ValueType> = V extends "string"
               ? Record<string, unknown> | RawHCL
               : unknown;
 
-type RequiredAttributeKeys<A extends Record<string, AttributeSchema>> = {
-  [K in keyof A]: A[K]["required"] extends true ? K : never;
-}[keyof A];
+type AttributeLike = Readonly<{
+  valueType: ValueType;
+  required?: boolean;
+  computed?: boolean;
+}>;
 
-type OptionalAttributeKeys<A extends Record<string, AttributeSchema>> = {
-  [K in keyof A]: A[K]["required"] extends true ? never : K;
-}[keyof A];
+type BlockLike = Readonly<{
+  nestingMode: "single" | "list" | "set";
+  attributes: Readonly<Record<string, AttributeLike>>;
+  blocks?: Readonly<Record<string, BlockLike>>;
+}>;
 
-type AttributeProps<A extends Record<string, AttributeSchema>> = {
+type RequiredAttributeKeys<A extends Readonly<Record<string, AttributeLike>>> =
+  {
+    [K in keyof A]: A[K]["required"] extends true
+      ? A[K]["computed"] extends true
+        ? never
+        : K
+      : never;
+  }[keyof A];
+
+type OptionalAttributeKeys<A extends Readonly<Record<string, AttributeLike>>> =
+  {
+    [K in keyof A]: A[K]["required"] extends true ? never : K;
+  }[keyof A];
+
+type AttributeProps<A extends Readonly<Record<string, AttributeLike>>> = {
   [K in RequiredAttributeKeys<A>]: ValueFromSchema<A[K]["valueType"]>;
 } & {
   [K in OptionalAttributeKeys<A>]?: ValueFromSchema<A[K]["valueType"]>;
 };
 
-type NestedBlockProp<B extends NestedBlockSchema> =
+type NestedBlockProp<B extends BlockLike> =
   | (B["nestingMode"] extends "single" ? BlockProps<B> : BlockProps<B>[])
   | BlockHCL
   | AttributeHCL;
 
-type BlockProps<B extends NestedBlockSchema> = AttributeProps<B["attributes"]> &
-  (B["blocks"] extends Record<string, NestedBlockSchema>
+type BlockProps<B extends BlockLike> = AttributeProps<B["attributes"]> &
+  (B["blocks"] extends Readonly<Record<string, BlockLike>>
     ? { [K in keyof B["blocks"]]?: NestedBlockProp<B["blocks"][K]> }
     : Record<never, never>);
 
+type SchemaAttributes<S extends TerraformTypeSchema> =
+  S["attributes"] extends Readonly<Record<string, AttributeLike>>
+    ? S["attributes"]
+    : never;
+
+type SchemaBlocks<S extends TerraformTypeSchema> =
+  S["blocks"] extends Readonly<Record<string, BlockLike>> ? S["blocks"] : never;
+
 export type SchemaProps<S extends TerraformTypeSchema> = AttributeProps<
-  S["attributes"]
+  SchemaAttributes<S>
 > & {
-  [K in keyof S["blocks"]]?: NestedBlockProp<S["blocks"][K]>;
+  [K in keyof SchemaBlocks<S>]?: NestedBlockProp<SchemaBlocks<S>[K]>;
 };
