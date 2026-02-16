@@ -250,7 +250,7 @@ describe("serializeHCLAttributes", () => {
           {
             id: "m1",
             return_data: true,
-            metric: [{ metric_name: "CPUUtilization", namespace: "AWS/EC2" }],
+            metric: { metric_name: "CPUUtilization", namespace: "AWS/EC2" },
           },
         ],
       },
