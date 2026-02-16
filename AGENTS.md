@@ -1,0 +1,4 @@
+- Use Bun instead of Node.js (`bun`, `bun test`, `bun install`, `bunx`)
+- Custom JSX runtime — not React. `jsxImportSource` is `"react-hcl"`
+- Design docs and implementation plan are in `docs/`
+- Write all code comments, test names, and commit messages in English
