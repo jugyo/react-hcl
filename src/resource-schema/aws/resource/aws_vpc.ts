@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/vpc
-export const awsVpcResourceSchema: TerraformTypeSchema = {
+export const awsVpcResourceSchema = {
   kind: "resource",
   type: "aws_vpc",
   attributes: {
@@ -44,4 +44,4 @@ export const awsVpcResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

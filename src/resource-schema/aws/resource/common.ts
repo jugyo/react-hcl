@@ -1,14 +1,14 @@
 import type { AttributeSchema, NestedBlockSchema } from "../../types";
 
-export const COMMON_RESOURCE_ATTRIBUTES: Record<string, AttributeSchema> = {
+export const COMMON_RESOURCE_ATTRIBUTES = {
   count: { valueType: "number", optional: true },
   depends_on: { valueType: "list", optional: true },
   for_each: { valueType: "any", optional: true },
   provider: { valueType: "string", optional: true },
-};
+} as const satisfies Record<string, AttributeSchema>;
 
 // Source: https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle
-const LIFECYCLE_BLOCK: NestedBlockSchema = {
+const LIFECYCLE_BLOCK = {
   nestingMode: "single",
   attributes: {
     create_before_destroy: { valueType: "bool", optional: true },
@@ -31,10 +31,10 @@ const LIFECYCLE_BLOCK: NestedBlockSchema = {
       },
     },
   },
-};
+} as const satisfies NestedBlockSchema;
 
 // Source: https://developer.hashicorp.com/terraform/language/resources/provisioners/syntax
-const PROVISIONER_BLOCK: NestedBlockSchema = {
+const PROVISIONER_BLOCK = {
   nestingMode: "list",
   attributes: {
     when: { valueType: "string", optional: true },
@@ -53,10 +53,10 @@ const PROVISIONER_BLOCK: NestedBlockSchema = {
       },
     },
   },
-};
+} as const satisfies NestedBlockSchema;
 
 // Source: https://developer.hashicorp.com/terraform/language/resources/provisioners/connection
-const CONNECTION_BLOCK: NestedBlockSchema = {
+const CONNECTION_BLOCK = {
   nestingMode: "single",
   attributes: {
     host: { valueType: "string", optional: true },
@@ -67,10 +67,10 @@ const CONNECTION_BLOCK: NestedBlockSchema = {
     timeout: { valueType: "string", optional: true },
     agent: { valueType: "bool", optional: true },
   },
-};
+} as const satisfies NestedBlockSchema;
 
-export const COMMON_RESOURCE_BLOCKS: Record<string, NestedBlockSchema> = {
+export const COMMON_RESOURCE_BLOCKS = {
   lifecycle: LIFECYCLE_BLOCK,
   provisioner: PROVISIONER_BLOCK,
   connection: CONNECTION_BLOCK,
-};
+} as const satisfies Record<string, NestedBlockSchema>;

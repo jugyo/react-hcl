@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/security_group
-export const awsSecurityGroupResourceSchema: TerraformTypeSchema = {
+export const awsSecurityGroupResourceSchema = {
   kind: "resource",
   type: "aws_security_group",
   attributes: {
@@ -54,4 +54,4 @@ export const awsSecurityGroupResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

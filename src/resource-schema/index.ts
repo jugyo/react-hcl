@@ -18,9 +18,13 @@ export function getTypeSchema(
   if (provider !== "aws") return undefined;
 
   if (context.blockType === "resource") {
-    return AWS_RESOURCE_SCHEMAS[context.type];
+    return (AWS_RESOURCE_SCHEMAS as Record<string, TerraformTypeSchema>)[
+      context.type
+    ];
   }
-  return AWS_DATA_SCHEMAS[context.type];
+  return (AWS_DATA_SCHEMAS as Record<string, TerraformTypeSchema>)[
+    context.type
+  ];
 }
 
 export function getNestedBlockSchema(

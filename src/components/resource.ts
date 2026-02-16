@@ -12,15 +12,22 @@
  */
 import type { ResourceBlock } from "../blocks";
 import { adjustIndent, raw } from "../hcl-serializer";
+import type {
+  AwsResourceType,
+  LooseResourceProps,
+  ResourceProps,
+  StrictResourceProps,
+} from "./resource-props";
 
-export function Resource(props: {
-  type: string;
-  name: string;
-  ref?: any;
-  children?: string | string[];
-  attributes?: Record<string, any>;
-  [key: string]: any;
-}): ResourceBlock {
+export function Resource<T extends AwsResourceType>(
+  props: StrictResourceProps<T>,
+): ResourceBlock;
+export function Resource<T extends string>(
+  props: LooseResourceProps<T>,
+): ResourceBlock;
+export function Resource<T extends string>(
+  props: ResourceProps<T>,
+): ResourceBlock {
   const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
   const attributes = { ...rest, ...extraAttrs };
 
@@ -30,8 +37,9 @@ export function Resource(props: {
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
-  if (attributes.provider?.__refMeta) {
-    const meta = attributes.provider.__refMeta;
+  const providerRef = attributes.provider as { __refMeta?: any } | undefined;
+  if (providerRef?.__refMeta) {
+    const meta = providerRef.__refMeta;
     attributes.provider = raw(`${meta.type}.${meta.alias || meta.name}`);
   }
 

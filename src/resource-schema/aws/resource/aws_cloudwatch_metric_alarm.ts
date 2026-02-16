@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm
-export const awsCloudwatchMetricAlarmResourceSchema: TerraformTypeSchema = {
+export const awsCloudwatchMetricAlarmResourceSchema = {
   kind: "resource",
   type: "aws_cloudwatch_metric_alarm",
   attributes: {
@@ -70,4 +70,4 @@ export const awsCloudwatchMetricAlarmResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

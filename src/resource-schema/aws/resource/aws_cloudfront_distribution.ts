@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/cloudfront_distribution
-export const awsCloudfrontDistributionResourceSchema: TerraformTypeSchema = {
+export const awsCloudfrontDistributionResourceSchema = {
   kind: "resource",
   type: "aws_cloudfront_distribution",
   attributes: {
@@ -207,4 +207,4 @@ export const awsCloudfrontDistributionResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/autoscaling_group
-export const awsAutoscalingGroupResourceSchema: TerraformTypeSchema = {
+export const awsAutoscalingGroupResourceSchema = {
   kind: "resource",
   type: "aws_autoscaling_group",
   attributes: {
@@ -118,4 +118,4 @@ export const awsAutoscalingGroupResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning
-export const awsS3BucketVersioningResourceSchema: TerraformTypeSchema = {
+export const awsS3BucketVersioningResourceSchema = {
   kind: "resource",
   type: "aws_s3_bucket_versioning",
   attributes: {
@@ -22,4 +22,4 @@ export const awsS3BucketVersioningResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

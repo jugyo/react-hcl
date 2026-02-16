@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/instance
-export const awsInstanceResourceSchema: TerraformTypeSchema = {
+export const awsInstanceResourceSchema = {
   kind: "resource",
   type: "aws_instance",
   attributes: {
@@ -178,4 +178,4 @@ export const awsInstanceResourceSchema: TerraformTypeSchema = {
       },
     },
   },
-};
+} as const satisfies TerraformTypeSchema;

@@ -18,34 +18,30 @@ import { awsVpcResourceSchema } from "./resource/aws_vpc";
 import { awsVpcSecurityGroupEgressRuleResourceSchema } from "./resource/aws_vpc_security_group_egress_rule";
 import { awsVpcSecurityGroupIngressRuleResourceSchema } from "./resource/aws_vpc_security_group_ingress_rule";
 
-function indexByType(
-  schemas: TerraformTypeSchema[],
-): Record<string, TerraformTypeSchema> {
-  return Object.fromEntries(schemas.map((schema) => [schema.type, schema]));
-}
-
-export const AWS_RESOURCE_SCHEMAS: Record<string, TerraformTypeSchema> =
-  indexByType([
-    awsInstanceResourceSchema,
-    awsSecurityGroupResourceSchema,
-    awsVpcResourceSchema,
-    awsSubnetResourceSchema,
-    awsAutoscalingGroupResourceSchema,
-    awsCloudfrontDistributionResourceSchema,
-    awsCloudwatchMetricAlarmResourceSchema,
+export const AWS_RESOURCE_SCHEMAS = {
+  aws_instance: awsInstanceResourceSchema,
+  aws_security_group: awsSecurityGroupResourceSchema,
+  aws_vpc: awsVpcResourceSchema,
+  aws_subnet: awsSubnetResourceSchema,
+  aws_autoscaling_group: awsAutoscalingGroupResourceSchema,
+  aws_cloudfront_distribution: awsCloudfrontDistributionResourceSchema,
+  aws_cloudwatch_metric_alarm: awsCloudwatchMetricAlarmResourceSchema,
+  aws_s3_bucket_server_side_encryption_configuration:
     awsS3BucketServerSideEncryptionConfigurationResourceSchema,
-    awsS3BucketVersioningResourceSchema,
+  aws_s3_bucket_versioning: awsS3BucketVersioningResourceSchema,
+  aws_s3_bucket_lifecycle_configuration:
     awsS3BucketLifecycleConfigurationResourceSchema,
-    awsDbInstanceResourceSchema,
-    awsDbSubnetGroupResourceSchema,
+  aws_db_instance: awsDbInstanceResourceSchema,
+  aws_db_subnet_group: awsDbSubnetGroupResourceSchema,
+  aws_vpc_security_group_ingress_rule:
     awsVpcSecurityGroupIngressRuleResourceSchema,
+  aws_vpc_security_group_egress_rule:
     awsVpcSecurityGroupEgressRuleResourceSchema,
-  ]);
+} as const satisfies Record<string, TerraformTypeSchema>;
 
-export const AWS_DATA_SCHEMAS: Record<string, TerraformTypeSchema> =
-  indexByType([
-    awsAmiDataSchema,
-    awsAvailabilityZonesDataSchema,
-    awsSubnetsDataSchema,
-    awsVpcDataSchema,
-  ]);
+export const AWS_DATA_SCHEMAS = {
+  aws_ami: awsAmiDataSchema,
+  aws_availability_zones: awsAvailabilityZonesDataSchema,
+  aws_subnets: awsSubnetsDataSchema,
+  aws_vpc: awsVpcDataSchema,
+} as const satisfies Record<string, TerraformTypeSchema>;

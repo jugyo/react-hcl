@@ -2,7 +2,7 @@ import type { TerraformTypeSchema } from "../../types";
 import { COMMON_RESOURCE_ATTRIBUTES, COMMON_RESOURCE_BLOCKS } from "./common";
 
 // Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/resources/db_subnet_group
-export const awsDbSubnetGroupResourceSchema: TerraformTypeSchema = {
+export const awsDbSubnetGroupResourceSchema = {
   kind: "resource",
   type: "aws_db_subnet_group",
   attributes: {
@@ -19,4 +19,4 @@ export const awsDbSubnetGroupResourceSchema: TerraformTypeSchema = {
   blocks: {
     ...COMMON_RESOURCE_BLOCKS,
   },
-};
+} as const satisfies TerraformTypeSchema;
