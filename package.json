@@ -1,6 +1,6 @@
 {
   "name": "react-hcl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JSX/TSX to Terraform (.tf) transpiler with a custom JSX runtime",
   "type": "module",
   "main": "dist/index.js",
