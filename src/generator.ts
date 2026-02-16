@@ -16,7 +16,7 @@
 import type { Block } from "./blocks";
 import { serializeHCLAttributes } from "./hcl-serializer";
 import { validateInnerTextHCL } from "./hcl-validator";
-import type { SerializationContext } from "./resource-schema";
+import type { SerializationContext } from "./provider-schema";
 
 /**
  * Produces the HCL block header string based on block type.

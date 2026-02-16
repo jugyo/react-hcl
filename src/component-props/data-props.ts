@@ -3,7 +3,7 @@ import type { SchemaProps } from "./schema-props";
 
 type RefLike = { __refMeta?: unknown };
 
-type AwsDataSchemas = typeof import("../resource-schema/aws").AWS_DATA_SCHEMAS;
+type AwsDataSchemas = typeof import("../provider-schema/aws").AWS_DATA_SCHEMAS;
 
 export type AwsDataType = keyof AwsDataSchemas;
 

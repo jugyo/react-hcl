@@ -4,7 +4,7 @@ import type { SchemaProps } from "./schema-props";
 type RefLike = { __refMeta?: unknown };
 
 type AwsResourceSchemas =
-  typeof import("../resource-schema/aws").AWS_RESOURCE_SCHEMAS;
+  typeof import("../provider-schema/aws").AWS_RESOURCE_SCHEMAS;
 
 export type AwsResourceType = keyof AwsResourceSchemas;
 

@@ -18,7 +18,7 @@ import {
   type NestedBlockSchema,
   type SerializationContext,
   type TerraformTypeSchema,
-} from "./resource-schema";
+} from "./provider-schema";
 
 const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 

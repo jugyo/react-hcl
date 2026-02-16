@@ -1,5 +1,5 @@
 import type { AttributeHCL, BlockHCL, RawHCL } from "../hcl-serializer";
-import type { TerraformTypeSchema, ValueType } from "../resource-schema";
+import type { TerraformTypeSchema, ValueType } from "../provider-schema";
 
 type ValueFromSchema<V extends ValueType> = V extends "string"
   ? string | RawHCL

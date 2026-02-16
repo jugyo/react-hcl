@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getTypeSchema } from "../src/resource-schema";
+import { getTypeSchema } from "../src/provider-schema";
 
 describe("resource schema lookup", () => {
   it("returns schema for known aws resource type", () => {

@@ -5,7 +5,7 @@ import {
   raw,
   serializeHCLAttributes,
 } from "../src/hcl-serializer";
-import type { SerializationContext } from "../src/resource-schema";
+import type { SerializationContext } from "../src/provider-schema";
 
 const AWS_INSTANCE_CONTEXT: SerializationContext = {
   blockType: "resource",

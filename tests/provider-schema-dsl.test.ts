@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { attr, block, data, resource } from "../src/resource-schema/dsl";
+import { attr, block, data, resource } from "../src/provider-schema/dsl";
 
 describe("resource schema DSL", () => {
   it("builds a data schema with attribute modifiers", () => {
