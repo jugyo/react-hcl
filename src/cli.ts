@@ -1,11 +1,11 @@
 /**
  * CLI entry point for react-hcl.
  *
- * Usage: bun src/cli.ts <input.tsx|-> [-o <file>]
- *        cat input.tsx | bun src/cli.ts [-o <file>]
+ * Usage: bun src/cli.ts <input.(j|t)sx|-> [-o <file>]
+ *        cat input.jsx | bun src/cli.ts [-o <file>]
  *
  * Pipeline:
- *   1. Takes a user-authored .tsx file as input
+ *   1. Takes a user-authored JSX/TSX file as input
  *   2. Transpiles and bundles it with esbuild (JSX → custom runtime calls)
  *   3. Writes the bundled ESM code to a temp file and dynamically imports it
  *   4. render() evaluates the JSXElement tree into Block[] IR
@@ -57,17 +57,17 @@ function parseArgs(argv: string[]): {
 }
 
 function printUsage() {
-  console.error("Usage: react-hcl <input.tsx|-> [-o <file>]");
+  console.error("Usage: react-hcl <input.(j|t)sx|-> [-o <file>]");
 }
 
 function printHelp() {
   process.stdout.write(
     [
-      "react-hcl - Convert TSX to Terraform HCL",
+      "react-hcl - Convert JSX/TSX to Terraform HCL",
       "",
       "Usage:",
-      "  react-hcl <input.tsx|-> [-o <file>]",
-      "  cat input.tsx | react-hcl [-o <file>]",
+      "  react-hcl <input.(j|t)sx|-> [-o <file>]",
+      "  cat input.jsx | react-hcl [-o <file>]",
       "",
       "Options:",
       "  -o, --output <file>  Write output to file instead of stdout",

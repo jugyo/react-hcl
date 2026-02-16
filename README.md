@@ -1,6 +1,6 @@
 # react-hcl
 
-A transpiler that converts TSX into Terraform `.tf` files. Write Terraform configurations using JSX/TSX syntax with a custom JSX runtime (no React dependency).
+A transpiler that converts JSX/TSX into Terraform `.tf` files. Write Terraform configurations using JSX/TSX syntax with a custom JSX runtime (no React dependency).
 
 ## Why React for IaC?
 

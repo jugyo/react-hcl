@@ -5,7 +5,7 @@ describe("CLI E2E", () => {
   it("--help prints help text", async () => {
     const result = await $`bun run src/cli.ts --help`.text();
     expect(result).toContain("Usage:");
-    expect(result).toContain("react-hcl <input.tsx|-> [-o <file>]");
+    expect(result).toContain("react-hcl <input.(j|t)sx|-> [-o <file>]");
   });
 
   it("-h prints help text", async () => {

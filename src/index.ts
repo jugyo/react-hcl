@@ -2,7 +2,7 @@
  * Public API entry point for the react-hcl package.
  *
  * This module re-exports all user-facing components and utilities.
- * Users import from "react-hcl" in their TSX files:
+ * Users import from "react-hcl" in their JSX/TSX files:
  *
  *   import { Resource, Fragment } from "react-hcl";
  *
