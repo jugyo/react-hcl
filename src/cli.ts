@@ -21,6 +21,7 @@
  *   - write: false — keep output in memory (outputFiles) instead of writing to disk
  */
 
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -33,6 +34,16 @@ import { render } from "./renderer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+function resolvePackageEntrypoint(candidates: string[]): string {
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return candidates[0];
+}
 
 function parseArgs(argv: string[]): {
   inputFile: string;
@@ -120,8 +131,14 @@ async function main() {
     jsxImportSource: "react-hcl",
     write: false,
     alias: {
-      "react-hcl/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
-      "react-hcl": resolve(__dirname, "../src/index.ts"),
+      "react-hcl/jsx-runtime": resolvePackageEntrypoint([
+        resolve(__dirname, "jsx-runtime.js"),
+        resolve(__dirname, "../src/jsx-runtime.ts"),
+      ]),
+      "react-hcl": resolvePackageEntrypoint([
+        resolve(__dirname, "index.js"),
+        resolve(__dirname, "../src/index.ts"),
+      ]),
     },
   };
 
