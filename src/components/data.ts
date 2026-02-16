@@ -12,15 +12,20 @@
  */
 import type { DataSourceBlock } from "../blocks";
 import { adjustIndent, raw } from "../hcl-serializer";
+import type {
+  AwsDataType,
+  DataProps,
+  LooseDataProps,
+  StrictDataProps,
+} from "./data-props";
 
-export function Data(props: {
-  type: string;
-  name: string;
-  ref?: any;
-  children?: string | string[];
-  attributes?: Record<string, any>;
-  [key: string]: any;
-}): DataSourceBlock {
+export function Data<T extends AwsDataType>(
+  props: StrictDataProps<T>,
+): DataSourceBlock;
+export function Data<T extends string>(
+  props: LooseDataProps<T>,
+): DataSourceBlock;
+export function Data<T extends string>(props: DataProps<T>): DataSourceBlock {
   const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
   const attributes = { ...rest, ...extraAttrs };
 
@@ -30,8 +35,9 @@ export function Data(props: {
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
-  if (attributes.provider?.__refMeta) {
-    const meta = attributes.provider.__refMeta;
+  const providerRef = attributes.provider as { __refMeta?: any } | undefined;
+  if (providerRef?.__refMeta) {
+    const meta = providerRef.__refMeta;
     attributes.provider = raw(`${meta.type}.${meta.alias || meta.name}`);
   }
 
