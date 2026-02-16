@@ -16,6 +16,7 @@
 import type { Block } from "./blocks";
 import { serializeHCLAttributes } from "./hcl-serializer";
 import { validateInnerTextHCL } from "./hcl-validator";
+import type { SerializationContext } from "./resource-schema";
 
 /**
  * Produces the HCL block header string based on block type.
@@ -73,7 +74,13 @@ function renderBlock(block: Block): string {
     validateInnerTextHCL(block.innerText);
     return `${header} {\n${block.innerText}\n}`;
   }
-  const body = serializeHCLAttributes(block.attributes);
+  let context: SerializationContext | undefined;
+  if (block.blockType === "resource") {
+    context = { blockType: "resource", type: block.type };
+  } else if (block.blockType === "data") {
+    context = { blockType: "data", type: block.type };
+  }
+  const body = serializeHCLAttributes(block.attributes, 2, context);
   if (body === "") {
     return `${header} {\n}`;
   }
