@@ -78,6 +78,48 @@ function mapNestingMode(mode) {
   return "list";
 }
 
+function mapNestingModeWithConstraints(mode, maxItems) {
+  const normalized = mapNestingMode(mode);
+  if ((normalized === "list" || normalized === "set") && maxItems === 1) {
+    return "single";
+  }
+  return normalized;
+}
+
+function synthesizeBlockTypeFromAttribute(attribute) {
+  const attrType = attribute.type;
+  if (!Array.isArray(attrType) || attrType.length < 2) return undefined;
+
+  const collectionKind = attrType[0];
+  const elementType = attrType[1];
+  if (collectionKind !== "list" && collectionKind !== "set") return undefined;
+  if (!Array.isArray(elementType) || elementType.length < 2) return undefined;
+  if (elementType[0] !== "object") return undefined;
+  if (
+    typeof elementType[1] !== "object" ||
+    elementType[1] === null ||
+    Array.isArray(elementType[1])
+  ) {
+    return undefined;
+  }
+
+  const objectFields = elementType[1];
+  const objectAttributes = {};
+  for (const [fieldName, fieldType] of Object.entries(objectFields)) {
+    objectAttributes[fieldName] = {
+      type: fieldType,
+      optional: true,
+    };
+  }
+
+  return {
+    nesting_mode: collectionKind,
+    block: {
+      attributes: objectAttributes,
+    },
+  };
+}
+
 function renderAttribute(schema) {
   const parts = [`valueType: "${mapValueType(schema.type)}"`];
   if (schema.required) parts.push("required: true");
@@ -112,7 +154,7 @@ function renderBlockSchema(block, indent) {
     for (const [blockName, blockType] of blockEntries) {
       lines.push(`${indent}  ${blockName}: {`);
       lines.push(
-        `${indent}    nestingMode: "${mapNestingMode(blockType.nesting_mode)}",`,
+        `${indent}    nestingMode: "${mapNestingModeWithConstraints(blockType.nesting_mode, blockType.max_items)}",`,
       );
       if (typeof blockType.min_items === "number") {
         lines.push(`${indent}    minItems: ${blockType.min_items},`);
@@ -137,6 +179,26 @@ function renderTypeSchema({
   includeCommon,
 }) {
   const lines = [];
+  const normalizedBlockTypes = {
+    ...(entry.block.block_types ?? {}),
+  };
+  const normalizedAttributes = {};
+
+  for (const [attrName, attrSchema] of Object.entries(
+    entry.block.attributes ?? {},
+  )) {
+    if (normalizedBlockTypes[attrName]) {
+      continue;
+    }
+
+    const synthesized = synthesizeBlockTypeFromAttribute(attrSchema);
+    if (synthesized) {
+      normalizedBlockTypes[attrName] = synthesized;
+      continue;
+    }
+
+    normalizedAttributes[attrName] = attrSchema;
+  }
 
   if (kind === "resource" && includeCommon) {
     lines.push(
@@ -156,20 +218,20 @@ function renderTypeSchema({
   if (kind === "resource" && includeCommon) {
     lines.push("      ...COMMON_RESOURCE_ATTRIBUTES,");
   }
-  lines.push(...renderAttributes(entry.block.attributes, "      "));
+  lines.push(...renderAttributes(normalizedAttributes, "      "));
   lines.push("    },");
   lines.push("    blocks: {");
   if (kind === "resource" && includeCommon) {
     lines.push("      ...COMMON_RESOURCE_BLOCKS,");
   }
 
-  const blocks = Object.entries(entry.block.block_types ?? {}).sort(
-    ([a], [b]) => a.localeCompare(b),
+  const blocks = Object.entries(normalizedBlockTypes).sort(([a], [b]) =>
+    a.localeCompare(b),
   );
   for (const [blockName, blockType] of blocks) {
     lines.push(`      ${blockName}: {`);
     lines.push(
-      `        nestingMode: "${mapNestingMode(blockType.nesting_mode)}",`,
+      `        nestingMode: "${mapNestingModeWithConstraints(blockType.nesting_mode, blockType.max_items)}",`,
     );
     if (typeof blockType.min_items === "number") {
       lines.push(`        minItems: ${blockType.min_items},`);
