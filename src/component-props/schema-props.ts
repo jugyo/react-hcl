@@ -29,10 +29,16 @@ type BlockLike = Readonly<{
   blocks?: Readonly<Record<string, BlockLike>>;
 }>;
 
+type IsExplicitTrue<T, K extends PropertyKey> = K extends keyof T
+  ? T[K] extends true
+    ? true
+    : false
+  : false;
+
 type RequiredAttributeKeys<A extends Readonly<Record<string, AttributeLike>>> =
   {
-    [K in keyof A]: A[K]["required"] extends true
-      ? A[K]["computed"] extends true
+    [K in keyof A]: IsExplicitTrue<A[K], "required"> extends true
+      ? IsExplicitTrue<A[K], "computed"> extends true
         ? never
         : K
       : never;
@@ -40,7 +46,7 @@ type RequiredAttributeKeys<A extends Readonly<Record<string, AttributeLike>>> =
 
 type OptionalAttributeKeys<A extends Readonly<Record<string, AttributeLike>>> =
   {
-    [K in keyof A]: A[K]["required"] extends true ? never : K;
+    [K in keyof A]: IsExplicitTrue<A[K], "required"> extends true ? never : K;
   }[keyof A];
 
 type AttributeProps<A extends Readonly<Record<string, AttributeLike>>> = {
