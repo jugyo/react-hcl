@@ -9,6 +9,7 @@ import { awsCloudwatchMetricAlarmResourceSchema } from "./resource/aws_cloudwatc
 import { awsDbInstanceResourceSchema } from "./resource/aws_db_instance";
 import { awsDbSubnetGroupResourceSchema } from "./resource/aws_db_subnet_group";
 import { awsInstanceResourceSchema } from "./resource/aws_instance";
+import { awsS3BucketResourceSchema } from "./resource/aws_s3_bucket";
 import { awsS3BucketLifecycleConfigurationResourceSchema } from "./resource/aws_s3_bucket_lifecycle_configuration";
 import { awsS3BucketServerSideEncryptionConfigurationResourceSchema } from "./resource/aws_s3_bucket_server_side_encryption_configuration";
 import { awsS3BucketVersioningResourceSchema } from "./resource/aws_s3_bucket_versioning";
@@ -26,6 +27,7 @@ export const AWS_RESOURCE_SCHEMAS = {
   aws_autoscaling_group: awsAutoscalingGroupResourceSchema,
   aws_cloudfront_distribution: awsCloudfrontDistributionResourceSchema,
   aws_cloudwatch_metric_alarm: awsCloudwatchMetricAlarmResourceSchema,
+  aws_s3_bucket: awsS3BucketResourceSchema,
   aws_s3_bucket_server_side_encryption_configuration:
     awsS3BucketServerSideEncryptionConfigurationResourceSchema,
   aws_s3_bucket_versioning: awsS3BucketVersioningResourceSchema,
