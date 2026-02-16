@@ -117,6 +117,10 @@ function serializeValue(value: unknown): string {
 
 type SerializationScope = TerraformTypeSchema | NestedBlockSchema | undefined;
 
+function isArrayOfBlockHCL(value: unknown[]): value is BlockHCL[] {
+  return value.every((item) => isBlockHCL(item));
+}
+
 export function serializeHCLAttributes(
   attrs: Record<string, any>,
   indent: number = 2,
@@ -176,6 +180,25 @@ export function serializeHCLAttributes(
       } else {
         blockEntries.push({ kind: "attribute", key, value: attribute(value) });
       }
+      continue;
+    }
+
+    if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      value.some((item) => isBlockHCL(item))
+    ) {
+      if (!isArrayOfBlockHCL(value)) {
+        throw new Error(
+          `Invalid mixed BlockHCL array for key "${key}": arrays must contain only block() values when using block arrays.`,
+        );
+      }
+      blockEntries.push({
+        kind: "repeated_block",
+        key,
+        value: value.map((item) => item.value),
+        schema: nestedBlockSchema ?? { nestingMode: "list", attributes: {} },
+      });
       continue;
     }
 

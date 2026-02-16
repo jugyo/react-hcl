@@ -17,6 +17,11 @@ const AWS_SECURITY_GROUP_CONTEXT: SerializationContext = {
   type: "aws_security_group",
 };
 
+const AWS_CLOUDWATCH_METRIC_ALARM_CONTEXT: SerializationContext = {
+  blockType: "resource",
+  type: "aws_cloudwatch_metric_alarm",
+};
+
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
     const result = serializeHCLAttributes({ cidr_block: "10.0.0.0/16" });
@@ -209,5 +214,51 @@ describe("serializeHCLAttributes", () => {
     );
     expect(result).toContain("root_block_device = [{ volume_size = 20 }]");
     expect(result).not.toContain("root_block_device {");
+  });
+
+  it("array<BlockHCL> emits repeated blocks", () => {
+    const result = serializeHCLAttributes({
+      metric_query: [
+        block({
+          id: "q1",
+          expression: "SELECT MAX(CPUUtilization)",
+        }),
+        block({
+          id: "q2",
+          expression: "SELECT AVG(CPUUtilization)",
+        }),
+      ],
+    });
+    expect(result).toContain("metric_query {");
+    expect(result).toContain('id         = "q1"');
+    expect(result).toContain('id         = "q2"');
+    expect(result).not.toContain("metric_query = [");
+  });
+
+  it("array with mixed BlockHCL and non-block values throws", () => {
+    expect(() =>
+      serializeHCLAttributes({
+        metric_query: [block({ id: "q1" }), raw("local.other")],
+      }),
+    ).toThrow(/mixed BlockHCL array/i);
+  });
+
+  it("metric_query is rendered as repeated blocks via schema", () => {
+    const result = serializeHCLAttributes(
+      {
+        metric_query: [
+          {
+            id: "m1",
+            return_data: true,
+            metric: [{ metric_name: "CPUUtilization", namespace: "AWS/EC2" }],
+          },
+        ],
+      },
+      2,
+      AWS_CLOUDWATCH_METRIC_ALARM_CONTEXT,
+    );
+    expect(result).toContain("metric_query {");
+    expect(result).toContain("metric {");
+    expect(result).not.toContain("metric_query = [");
   });
 });

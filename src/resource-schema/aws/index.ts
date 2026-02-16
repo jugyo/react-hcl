@@ -5,6 +5,7 @@ import { awsSubnetsDataSchema } from "./data/aws_subnets";
 import { awsVpcDataSchema } from "./data/aws_vpc";
 import { awsAutoscalingGroupResourceSchema } from "./resource/aws_autoscaling_group";
 import { awsCloudfrontDistributionResourceSchema } from "./resource/aws_cloudfront_distribution";
+import { awsCloudwatchMetricAlarmResourceSchema } from "./resource/aws_cloudwatch_metric_alarm";
 import { awsDbInstanceResourceSchema } from "./resource/aws_db_instance";
 import { awsDbSubnetGroupResourceSchema } from "./resource/aws_db_subnet_group";
 import { awsInstanceResourceSchema } from "./resource/aws_instance";
@@ -31,6 +32,7 @@ export const AWS_RESOURCE_SCHEMAS: Record<string, TerraformTypeSchema> =
     awsSubnetResourceSchema,
     awsAutoscalingGroupResourceSchema,
     awsCloudfrontDistributionResourceSchema,
+    awsCloudwatchMetricAlarmResourceSchema,
     awsS3BucketServerSideEncryptionConfigurationResourceSchema,
     awsS3BucketVersioningResourceSchema,
     awsS3BucketLifecycleConfigurationResourceSchema,

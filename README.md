@@ -206,6 +206,8 @@ See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudF
 - `useRef()` - Create a reference to a resource/data source (`ref.id`, `ref.arn`, etc.)
 - `tf.var("name")` - Reference a variable (`var.name`)
 - `tf.local("name")` - Reference a local value (`local.name`)
+- `raw("...")` - Emit a Terraform expression as-is (no quote wrapping, no `${}` auto-wrapping)
+- `block({ ... })` - Force nested block syntax. Arrays of `block(...)` are emitted as repeated blocks.
 
 ## Installation
 
