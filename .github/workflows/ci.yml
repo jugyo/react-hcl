@@ -20,6 +20,8 @@ jobs:
 
       - run: bun test
 
+      - run: bun run typecheck:samples
+
       - run: bun run build
 
       - run: bun pm pack --dry-run
