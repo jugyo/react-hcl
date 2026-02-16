@@ -7,7 +7,6 @@ export const COMMON_RESOURCE_ATTRIBUTES = {
   provider: { valueType: "string", optional: true },
 } as const satisfies Record<string, AttributeSchema>;
 
-// Source: https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle
 const LIFECYCLE_BLOCK = {
   nestingMode: "single",
   attributes: {
@@ -33,7 +32,6 @@ const LIFECYCLE_BLOCK = {
   },
 } as const satisfies NestedBlockSchema;
 
-// Source: https://developer.hashicorp.com/terraform/language/resources/provisioners/syntax
 const PROVISIONER_BLOCK = {
   nestingMode: "list",
   attributes: {
@@ -55,7 +53,6 @@ const PROVISIONER_BLOCK = {
   },
 } as const satisfies NestedBlockSchema;
 
-// Source: https://developer.hashicorp.com/terraform/language/resources/provisioners/connection
 const CONNECTION_BLOCK = {
   nestingMode: "single",
   attributes: {

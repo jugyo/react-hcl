@@ -1,13 +1,11 @@
-import type { TerraformTypeSchema } from "../../types";
+import { data } from "../../dsl";
 
-// Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/data-sources/subnets
-export const awsSubnetsDataSchema: TerraformTypeSchema = {
-  kind: "data",
-  type: "aws_subnets",
+export const awsSubnetsDataSchema = data("aws_subnets", {
   attributes: {
-    id: { valueType: "string", computed: true },
+    id: { valueType: "string", optional: true, computed: true },
     ids: { valueType: "list", computed: true },
-    tags: { valueType: "map", optional: true },
+    region: { valueType: "string", optional: true, computed: true },
+    tags: { valueType: "map", optional: true, computed: true },
   },
   blocks: {
     filter: {
@@ -17,5 +15,11 @@ export const awsSubnetsDataSchema: TerraformTypeSchema = {
         values: { valueType: "set", required: true },
       },
     },
+    timeouts: {
+      nestingMode: "single",
+      attributes: {
+        read: { valueType: "string", optional: true },
+      },
+    },
   },
-};
+});

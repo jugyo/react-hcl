@@ -1,40 +1,58 @@
-import type { TerraformTypeSchema } from "../../types";
+import { data } from "../../dsl";
 
-// Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/data-sources/ami
-export const awsAmiDataSchema: TerraformTypeSchema = {
-  kind: "data",
-  type: "aws_ami",
+export const awsAmiDataSchema = data("aws_ami", {
   attributes: {
+    allow_unsafe_filter: { valueType: "bool", optional: true },
     architecture: { valueType: "string", computed: true },
     arn: { valueType: "string", computed: true },
+    boot_mode: { valueType: "string", computed: true },
     creation_date: { valueType: "string", computed: true },
     deprecation_time: { valueType: "string", computed: true },
     description: { valueType: "string", computed: true },
+    ena_support: { valueType: "bool", computed: true },
     executable_users: { valueType: "list", optional: true },
     hypervisor: { valueType: "string", computed: true },
-    image_id: { valueType: "string", optional: true },
+    id: { valueType: "string", optional: true, computed: true },
+    image_id: { valueType: "string", computed: true },
     image_location: { valueType: "string", computed: true },
     image_owner_alias: { valueType: "string", computed: true },
     image_type: { valueType: "string", computed: true },
+    imds_support: { valueType: "string", computed: true },
     include_deprecated: { valueType: "bool", optional: true },
     kernel_id: { valueType: "string", computed: true },
+    last_launched_time: { valueType: "string", computed: true },
     most_recent: { valueType: "bool", optional: true },
     name: { valueType: "string", computed: true },
-    owners: { valueType: "list", required: true },
+    name_regex: { valueType: "string", optional: true },
+    owner_id: { valueType: "string", computed: true },
+    owners: { valueType: "list", optional: true },
+    platform: { valueType: "string", computed: true },
     platform_details: { valueType: "string", computed: true },
-    product_codes: { valueType: "set", computed: true },
     public: { valueType: "bool", computed: true },
+    ramdisk_id: { valueType: "string", computed: true },
+    region: { valueType: "string", optional: true, computed: true },
     root_device_name: { valueType: "string", computed: true },
     root_device_type: { valueType: "string", computed: true },
     root_snapshot_id: { valueType: "string", computed: true },
     sriov_net_support: { valueType: "string", computed: true },
     state: { valueType: "string", computed: true },
-    state_reason: { valueType: "string", computed: true },
-    tags: { valueType: "map", optional: true },
+    state_reason: { valueType: "map", computed: true },
+    tags: { valueType: "map", optional: true, computed: true },
+    tpm_support: { valueType: "string", computed: true },
+    uefi_data: { valueType: "string", optional: true },
     usage_operation: { valueType: "string", computed: true },
     virtualization_type: { valueType: "string", computed: true },
   },
   blocks: {
+    block_device_mappings: {
+      nestingMode: "set",
+      attributes: {
+        device_name: { valueType: "string", optional: true },
+        ebs: { valueType: "map", optional: true },
+        no_device: { valueType: "string", optional: true },
+        virtual_name: { valueType: "string", optional: true },
+      },
+    },
     filter: {
       nestingMode: "set",
       attributes: {
@@ -42,5 +60,18 @@ export const awsAmiDataSchema: TerraformTypeSchema = {
         values: { valueType: "set", required: true },
       },
     },
+    product_codes: {
+      nestingMode: "set",
+      attributes: {
+        product_code_id: { valueType: "string", optional: true },
+        product_code_type: { valueType: "string", optional: true },
+      },
+    },
+    timeouts: {
+      nestingMode: "single",
+      attributes: {
+        read: { valueType: "string", optional: true },
+      },
+    },
   },
-};
+});

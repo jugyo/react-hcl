@@ -1,16 +1,14 @@
-import type { TerraformTypeSchema } from "../../types";
+import { data } from "../../dsl";
 
-// Source: https://developer.hashicorp.com/terraform/providers/hashicorp/aws/latest/docs/data-sources/availability_zones
-export const awsAvailabilityZonesDataSchema: TerraformTypeSchema = {
-  kind: "data",
-  type: "aws_availability_zones",
+export const awsAvailabilityZonesDataSchema = data("aws_availability_zones", {
   attributes: {
     all_availability_zones: { valueType: "bool", optional: true },
     exclude_names: { valueType: "set", optional: true },
     exclude_zone_ids: { valueType: "set", optional: true },
-    group_names: { valueType: "list", computed: true },
-    id: { valueType: "string", computed: true },
+    group_names: { valueType: "set", computed: true },
+    id: { valueType: "string", optional: true, computed: true },
     names: { valueType: "list", computed: true },
+    region: { valueType: "string", optional: true, computed: true },
     state: { valueType: "string", optional: true },
     zone_ids: { valueType: "list", computed: true },
   },
@@ -22,5 +20,11 @@ export const awsAvailabilityZonesDataSchema: TerraformTypeSchema = {
         values: { valueType: "set", required: true },
       },
     },
+    timeouts: {
+      nestingMode: "single",
+      attributes: {
+        read: { valueType: "string", optional: true },
+      },
+    },
   },
-};
+});
