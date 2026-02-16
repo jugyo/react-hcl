@@ -151,7 +151,11 @@ async function main() {
     process.exit(1);
   }
 
-  const code = result.outputFiles[0].text;
+  const outputFile = result.outputFiles?.[0];
+  if (!outputFile) {
+    throw new Error("esbuild did not produce any output file.");
+  }
+  const code = outputFile.text;
 
   const tmpDir = await mkdtemp(join(tmpdir(), "react-hcl-"));
   const tmpFile = join(tmpDir, "bundle.mjs");
