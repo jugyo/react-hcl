@@ -24,7 +24,7 @@ react-hcl infra.tsx -o ./tf/main.tf   # write to file
 `main.tsx` — A VPC with a web server, using a verified module and a custom component:
 
 ```tsx
-import { DataSource, Module, Output, Provider, tf, useRef } from "react-hcl";
+import { Data, Module, Output, Provider, tf, useRef } from "react-hcl";
 import { WebServer } from "./web-server";
 
 function Main({ region, instanceType }) {
@@ -34,7 +34,7 @@ function Main({ region, instanceType }) {
   return (
     <>
       <Provider type="aws" region={region} />
-      <DataSource type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" name="available" ref={azRef} />
 
       <Module
         name="vpc"
@@ -65,7 +65,7 @@ export default <Main region="us-east-1" instanceType="t3.micro" />;
 Component implementation for AMI lookup, security group rules, and EC2 instance creation.
 
 ```tsx
-import { DataSource, Resource, useRef } from "react-hcl";
+import { Data, Resource, useRef } from "react-hcl";
 
 export function WebServer({ vpcId, subnetId, instanceType }) {
   const amiRef = useRef();
@@ -73,7 +73,7 @@ export function WebServer({ vpcId, subnetId, instanceType }) {
 
   return (
     <>
-      <DataSource
+      <Data
         type="aws_ami"
         name="ubuntu"
         ref={amiRef}
@@ -194,7 +194,7 @@ See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudF
 | Component | HCL block |
 |---|---|
 | `<Resource>` | `resource "type" "name" { ... }` |
-| `<DataSource>` | `data "type" "name" { ... }` |
+| `<Data>` | `data "type" "name" { ... }` |
 | `<Variable>` | `variable "name" { ... }` |
 | `<Output>` | `output "name" { ... }` |
 | `<Locals>` | `locals { ... }` |

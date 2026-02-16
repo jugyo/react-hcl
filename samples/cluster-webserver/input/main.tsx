@@ -5,7 +5,7 @@
  * Based on: https://github.com/alfonsof/terraform-aws-examples/tree/master/code/05-cluster-webserver
  */
 import {
-  DataSource,
+  Data,
   Output,
   Provider,
   Resource,
@@ -41,7 +41,7 @@ function ClusterWebServer() {
         default="8080"
       />
 
-      <DataSource type="aws_availability_zones" name="all" ref={azRef} />
+      <Data type="aws_availability_zones" name="all" ref={azRef} />
 
       <Resource
         type="aws_security_group"

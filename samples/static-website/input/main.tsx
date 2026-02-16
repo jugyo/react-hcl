@@ -5,7 +5,7 @@
  * Based on: https://github.com/joshuamkite/terraform-aws-static-website-s3-cloudfront-acm
  */
 import {
-  DataSource,
+  Data,
   Locals,
   Output,
   Provider,
@@ -141,7 +141,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* S3 Bucket Policy - allow CloudFront access */}
-      <DataSource type="aws_iam_policy_document" name="this" ref={policyDocRef}>
+      <Data type="aws_iam_policy_document" name="this" ref={policyDocRef}>
         {`
           statement {
             sid       = "AllowCloudFrontServicePrincipal"
@@ -160,7 +160,7 @@ function Main({ region }: { region: string }) {
             }
           }
         `}
-      </DataSource>
+      </Data>
 
       <Resource
         type="aws_s3_bucket_policy"

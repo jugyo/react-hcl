@@ -10,7 +10,7 @@
  * they should be exported from here.
  */
 
-export { DataSource } from "./components/data-source";
+export { Data } from "./components/data";
 export { Locals } from "./components/locals";
 export { Module } from "./components/module";
 export { Output } from "./components/output";

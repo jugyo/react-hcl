@@ -5,7 +5,7 @@
  *   vpc_id = aws_vpc.main.id
  *
  * useRef() returns a Proxy that:
- *   1. Stores metadata (__refMeta) set by Resource/DataSource/Provider/Module components
+ *   1. Stores metadata (__refMeta) set by Resource/Data/Provider/Module components
  *   2. Returns RawHCL values on property access (e.g. ref.id → raw("aws_vpc.main.id"))
  *   3. Supports nested access (ref.outputs.vpc_id → raw("data.terraform_remote_state.x.outputs.vpc_id"))
  *   4. Provides special __dependsOnValue (type.name format for depends_on)
@@ -33,7 +33,7 @@ const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
 /**
  * Metadata stored on a ref after a component registers it.
- * Set by Resource, DataSource, Provider, or Module when they receive a `ref` prop.
+ * Set by Resource, Data, Provider, or Module when they receive a `ref` prop.
  */
 export type RefMeta = {
   blockType: "resource" | "data" | "provider" | "module";

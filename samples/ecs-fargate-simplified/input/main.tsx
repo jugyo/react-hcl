@@ -5,14 +5,7 @@
  * instead of Terraform variables, TypeScript loops instead of count,
  * and composite components for each infrastructure concern.
  */
-import {
-  DataSource,
-  Output,
-  Provider,
-  Resource,
-  Terraform,
-  useRef,
-} from "react-hcl";
+import { Data, Output, Provider, Resource, Terraform, useRef } from "react-hcl";
 import { Alb } from "./alb";
 import { AlbListener } from "./alb-listener";
 import { EcsService } from "./ecs-service";
@@ -60,7 +53,7 @@ function Main({
       />
       <Provider type="aws" region={region} />
 
-      <DataSource type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" name="available" ref={azRef} />
 
       <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block={vpcCidr} />
 

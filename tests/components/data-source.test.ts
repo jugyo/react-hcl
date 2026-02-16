@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { DataSource } from "../../src/components/data-source";
+import { Data } from "../../src/components/data";
 import { isRawHCL } from "../../src/hcl-serializer";
 import { resetHookState, useRef } from "../../src/hooks/use-ref";
 
-describe("DataSource component", () => {
+describe("Data component", () => {
   beforeEach(() => {
     resetHookState(true);
   });
 
   it("returns a DataSourceBlock with attributes", () => {
-    const block = DataSource({
+    const block = Data({
       type: "aws_ami",
       name: "latest",
       most_recent: true,
@@ -21,7 +21,7 @@ describe("DataSource component", () => {
   });
 
   it("excludes ref and children from attributes", () => {
-    const block = DataSource({
+    const block = Data({
       type: "aws_ami",
       name: "latest",
       ref: {},
@@ -32,7 +32,7 @@ describe("DataSource component", () => {
   });
 
   it("unwraps children array and stores first element as innerText", () => {
-    const block = DataSource({
+    const block = Data({
       type: "aws_ami",
       name: "latest",
       children: ["hcl text"] as any,
@@ -41,7 +41,7 @@ describe("DataSource component", () => {
   });
 
   it("discards props and attributes when innerText is used", () => {
-    const block = DataSource({
+    const block = Data({
       type: "external",
       name: "config",
       attributes: { name: "my-config" },
@@ -52,13 +52,13 @@ describe("DataSource component", () => {
   });
 
   it("does not set innerText when children is undefined", () => {
-    const block = DataSource({ type: "aws_ami", name: "latest" });
+    const block = Data({ type: "aws_ami", name: "latest" });
     expect(block.innerText).toBeUndefined();
   });
 
   it("registers __refMeta on useRef proxy", () => {
     const ref = useRef();
-    DataSource({ type: "aws_ami", name: "latest", ref, most_recent: true });
+    Data({ type: "aws_ami", name: "latest", ref, most_recent: true });
     expect(ref.__refMeta).toEqual({
       blockType: "data",
       type: "aws_ami",
@@ -74,7 +74,7 @@ describe("DataSource component", () => {
       name: "virginia",
       alias: "virginia",
     };
-    const block = DataSource({
+    const block = Data({
       type: "aws_ami",
       name: "latest",
       provider: providerRef,
@@ -84,7 +84,7 @@ describe("DataSource component", () => {
   });
 
   it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
-    const block = DataSource({
+    const block = Data({
       type: "external",
       name: "config",
       attributes: { name: "my-config", type: "json" },
@@ -100,7 +100,7 @@ describe("DataSource component", () => {
   it("resolves depends_on refs to raw HCL array", () => {
     const vpcRef = useRef();
     vpcRef.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
-    const block = DataSource({
+    const block = Data({
       type: "aws_ami",
       name: "latest",
       depends_on: [vpcRef],

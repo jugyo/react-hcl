@@ -7,8 +7,8 @@
  *
  * Conflict rules (from design doc §5.2):
  *   - Resource: duplicate type + name → error
- *   - DataSource: duplicate type + name → error
- *   - Resource vs DataSource with same type + name → allowed
+ *   - Data: duplicate type + name → error
+ *   - Resource vs Data with same type + name → allowed
  *   - Variable: duplicate name → error
  *   - Output: duplicate name → error
  *   - Locals: multiple blocks → allowed

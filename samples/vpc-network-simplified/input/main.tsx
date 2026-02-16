@@ -6,7 +6,7 @@
  * Resources are grouped into composite components (PublicNetwork, PrivateNetwork).
  */
 import {
-  DataSource,
+  Data,
   Output,
   Provider,
   Resource,
@@ -48,7 +48,7 @@ function Main({
       />
       <Provider type="aws" region={region} />
 
-      <DataSource type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" name="available" ref={azRef} />
 
       <Resource
         type="aws_vpc"

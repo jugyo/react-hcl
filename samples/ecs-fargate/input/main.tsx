@@ -5,7 +5,7 @@
  * Based on: https://github.com/Oxalide/terraform-fargate-example
  */
 import {
-  DataSource,
+  Data,
   Output,
   Provider,
   Resource,
@@ -71,7 +71,7 @@ function Main({ region }: { region: string }) {
         default="512"
       />
 
-      <DataSource type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" name="available" ref={azRef} />
 
       {/* Network */}
       <Resource

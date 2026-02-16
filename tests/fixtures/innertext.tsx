@@ -1,4 +1,4 @@
-import { DataSource, Resource } from "react-hcl";
+import { Data, Resource } from "react-hcl";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
           }
         `}
       </Resource>
-      <DataSource type="aws_ami" name="latest">
+      <Data type="aws_ami" name="latest">
         {`most_recent = true
 owners      = ["amazon"]
 
@@ -21,7 +21,7 @@ filter {
   name   = "name"
   values = ["amzn2-ami-hvm-*"]
 }`}
-      </DataSource>
+      </Data>
     </>
   );
 }

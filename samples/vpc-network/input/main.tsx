@@ -5,7 +5,7 @@
  * Based on: https://github.com/hashicorp/microservices-architecture-on-aws
  */
 import {
-  DataSource,
+  Data,
   Output,
   Provider,
   Resource,
@@ -62,7 +62,7 @@ function Main({ region }: { region: string }) {
         description="Project name for resource tags"
       />
 
-      <DataSource type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" name="available" ref={azRef} />
 
       <Resource
         type="aws_vpc"

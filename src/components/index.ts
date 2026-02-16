@@ -1,4 +1,4 @@
-export { DataSource } from "./data-source";
+export { Data } from "./data";
 export { Locals } from "./locals";
 export { Module } from "./module";
 export { Output } from "./output";

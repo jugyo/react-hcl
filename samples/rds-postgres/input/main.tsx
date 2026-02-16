@@ -1,5 +1,5 @@
 import {
-  DataSource,
+  Data,
   Output,
   Provider,
   Resource,
@@ -36,13 +36,8 @@ function Main({ region }: { region: string }) {
         description="Master password for the PostgreSQL instance"
       />
 
-      <DataSource
-        type="aws_vpc"
-        name="default"
-        ref={defaultVpcRef}
-        default={true}
-      />
-      <DataSource
+      <Data type="aws_vpc" name="default" ref={defaultVpcRef} default={true} />
+      <Data
         type="aws_subnets"
         name="default"
         ref={defaultSubnetsRef}

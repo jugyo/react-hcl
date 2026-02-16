@@ -1,5 +1,5 @@
 /**
- * DataSource component — produces a DataSourceBlock for the Block[] IR pipeline.
+ * Data component — produces a DataSourceBlock for the Block[] IR pipeline.
  *
  * Extracts `type` and `name` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
@@ -7,13 +7,13 @@
  *   - `children`: if string, stored as `innerText`
  *
  * Usage in TSX:
- *   <DataSource type="aws_ami" name="latest" most_recent={true} />
+ *   <Data type="aws_ami" name="latest" most_recent={true} />
  *   → data "aws_ami" "latest" { most_recent = true }
  */
 import type { DataSourceBlock } from "../blocks";
 import { adjustIndent, raw } from "../hcl-serializer";
 
-export function DataSource(props: {
+export function Data(props: {
   type: string;
   name: string;
   ref?: any;
