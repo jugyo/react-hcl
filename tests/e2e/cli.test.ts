@@ -90,6 +90,20 @@ describe("CLI E2E", () => {
       await $`rm -rf ${tmpDir}`;
     }
   });
+
+  it("reads TSX from stdin when input is '-'", async () => {
+    const result =
+      await $`cat tests/fixtures/basic.tsx | bun run src/cli.ts -`.text();
+    const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+    expect(result).toBe(expected);
+  });
+
+  it("reads TSX from stdin when no input file argument is given", async () => {
+    const result =
+      await $`cat tests/fixtures/basic.tsx | bun run src/cli.ts`.text();
+    const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
+    expect(result).toBe(expected);
+  });
 });
 
 describe("CLI error handling", () => {
@@ -125,6 +139,19 @@ describe("CLI error handling", () => {
       expect(err.exitCode).not.toBe(0);
     } finally {
       await $`rm -rf ${tmpDir}`;
+    }
+  });
+
+  it("exits with error when input file and stdin are both provided", async () => {
+    try {
+      await $`cat tests/fixtures/basic.tsx | bun run src/cli.ts tests/fixtures/basic.tsx`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain(
+        "Cannot use stdin and input file together.",
+      );
     }
   });
 

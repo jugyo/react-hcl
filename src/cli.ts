@@ -1,7 +1,8 @@
 /**
  * CLI entry point for react-hcl.
  *
- * Usage: bun src/cli.ts <input.tsx> [-o <file>]
+ * Usage: bun src/cli.ts <input.tsx|-> [-o <file>]
+ *        cat input.tsx | bun src/cli.ts [-o <file>]
  *
  * Pipeline:
  *   1. Takes a user-authored .tsx file as input
@@ -45,20 +46,35 @@ function parseArgs(argv: string[]): { inputFile: string; output?: string } {
     }
   }
 
-  if (!inputFile) {
-    console.error("Usage: react-hcl <input.tsx> [-o <file>]");
-    process.exit(1);
-  }
+  return { inputFile: inputFile ?? "", output };
+}
 
-  return { inputFile: inputFile as string, output };
+function printUsage() {
+  console.error("Usage: react-hcl <input.tsx|-> [-o <file>]");
+}
+
+async function readStdin(): Promise<string> {
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 async function main() {
   const { inputFile, output } = parseArgs(process.argv);
-  const absoluteInput = resolve(inputFile);
+  const stdinContents = process.stdin.isTTY ? "" : await readStdin();
+  const hasStdin = stdinContents.trim().length > 0;
+  const wantsStdin = inputFile === "-" || (!inputFile && hasStdin);
+  const hasFileInput = Boolean(inputFile && inputFile !== "-");
 
-  const result = await esbuild.build({
-    entryPoints: [absoluteInput],
+  if (hasFileInput && hasStdin) {
+    console.error("Cannot use stdin and input file together.");
+    printUsage();
+    process.exit(1);
+  }
+
+  const buildBaseOptions: esbuild.BuildOptions = {
     bundle: true,
     format: "esm",
     platform: "node",
@@ -69,7 +85,33 @@ async function main() {
       "react-hcl/jsx-runtime": resolve(__dirname, "../src/jsx-runtime.ts"),
       "react-hcl": resolve(__dirname, "../src/index.ts"),
     },
-  });
+  };
+
+  let result: esbuild.BuildResult;
+  if (wantsStdin) {
+    if (!hasStdin) {
+      printUsage();
+      process.exit(1);
+    }
+    result = await esbuild.build({
+      ...buildBaseOptions,
+      stdin: {
+        contents: stdinContents,
+        loader: "tsx",
+        resolveDir: process.cwd(),
+        sourcefile: "stdin.tsx",
+      },
+    });
+  } else if (inputFile) {
+    const absoluteInput = resolve(inputFile);
+    result = await esbuild.build({
+      ...buildBaseOptions,
+      entryPoints: [absoluteInput],
+    });
+  } else {
+    printUsage();
+    process.exit(1);
+  }
 
   const code = result.outputFiles[0].text;
 
