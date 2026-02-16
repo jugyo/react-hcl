@@ -363,7 +363,7 @@ try {
   console.error(
     [
       "usage:",
-      "  generate-react-hcl-schema.mjs --schema-json /tmp/schema.json --kind resource --type aws_autoscaling_group --out src/resource-schema/aws/resource/aws_autoscaling_group.ts",
+      "  generate-react-hcl-schema.mjs --schema-json /tmp/schema.json --kind resource --type aws_autoscaling_group --out src/provider-schema/aws/resource/aws_autoscaling_group.ts",
     ].join("\n"),
   );
   process.exit(1);

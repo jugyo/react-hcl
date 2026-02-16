@@ -89,9 +89,9 @@ fi
 
 if [[ -z "$out" ]]; then
   if [[ "$kind" == "resource" ]]; then
-    out="src/resource-schema/aws/resource/${type_name}.ts"
+    out="src/provider-schema/aws/resource/${type_name}.ts"
   else
-    out="src/resource-schema/aws/data/${type_name}.ts"
+    out="src/provider-schema/aws/data/${type_name}.ts"
   fi
 fi
 
@@ -107,7 +107,7 @@ if [[ "$refresh_schema" == "true" || ! -f "$schema_json" ]]; then
 fi
 
 mkdir -p "$(dirname "$out")"
-node "$SCRIPT_DIR/generate-react-hcl-schema.mjs" \
+bun "$SCRIPT_DIR/generate-react-hcl-schema.mjs" \
   --schema-json "$schema_json" \
   --kind "$kind" \
   --type "$type_name" \
