@@ -25,7 +25,7 @@ describe("Integration: module samples", () => {
   for (const sample of samples) {
     it(sample.name, async () => {
       const result =
-        await $`bun run src/cli.ts tests/fixtures/${sample.fixture}`.text();
+        await $`bun run src/cli/index.ts tests/fixtures/${sample.fixture}`.text();
       expect(result).toMatchSnapshot();
     });
   }

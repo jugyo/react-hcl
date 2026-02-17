@@ -246,8 +246,8 @@ bun install
 Run the CLI directly without building.
 
 ```bash
-bun src/cli.ts infra.tsx
-bun src/cli.ts infra.tsx -o ./tf/main.tf
+bun src/cli/index.ts infra.tsx
+bun src/cli/index.ts infra.tsx -o ./tf/main.tf
 ```
 
 Run the test suite.

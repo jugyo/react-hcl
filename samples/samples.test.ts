@@ -24,7 +24,7 @@ describe("Samples", () => {
         const inputPath = join(inputDir, tsxFile);
         const expectedPath = join(outputDir, tfFile);
 
-        const result = await $`bun run src/cli.ts ${inputPath}`.text();
+        const result = await $`bun run src/cli/index.ts ${inputPath}`.text();
         const expected = await Bun.file(expectedPath).text();
         expect(result).toBe(expected);
       });

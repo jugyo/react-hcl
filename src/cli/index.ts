@@ -1,8 +1,8 @@
 /**
  * CLI entry point for react-hcl.
  *
- * Usage: bun src/cli.ts <input.(j|t)sx|-> [-o <file>]
- *        cat input.jsx | bun src/cli.ts [-o <file>]
+ * Usage: bun src/cli/index.ts <input.(j|t)sx|-> [-o <file>]
+ *        cat input.jsx | bun src/cli/index.ts [-o <file>]
  *
  * Pipeline:
  *   1. Takes a user-authored JSX/TSX file as input
@@ -28,9 +28,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import parseArgv from "arg";
 import * as esbuild from "esbuild";
-import { detectConflicts } from "./conflict";
-import { generate } from "./generator";
-import { render } from "./renderer";
+import { detectConflicts } from "../conflict";
+import { generate } from "../generator";
+import { render } from "../renderer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,11 +133,11 @@ async function main() {
     alias: {
       "react-hcl/jsx-runtime": resolvePackageEntrypoint([
         resolve(__dirname, "jsx-runtime.js"),
-        resolve(__dirname, "../src/jsx-runtime.ts"),
+        resolve(__dirname, "../jsx-runtime.ts"),
       ]),
       "react-hcl": resolvePackageEntrypoint([
         resolve(__dirname, "index.js"),
-        resolve(__dirname, "../src/index.ts"),
+        resolve(__dirname, "../index.ts"),
       ]),
     },
   };

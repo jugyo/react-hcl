@@ -20,7 +20,7 @@ describe("Integration: design doc samples", () => {
   for (const sample of samples) {
     it(sample.name, async () => {
       const result =
-        await $`bun run src/cli.ts tests/fixtures/${sample.fixture}`.text();
+        await $`bun run src/cli/index.ts tests/fixtures/${sample.fixture}`.text();
       expect(result).toMatchSnapshot();
     });
   }
@@ -30,7 +30,7 @@ describe("Determinism", () => {
   it("produces identical output for identical input across multiple runs", async () => {
     const results = await Promise.all(
       Array.from({ length: 5 }, () =>
-        $`bun run src/cli.ts tests/fixtures/sample-15-2.tsx`.text(),
+        $`bun run src/cli/index.ts tests/fixtures/sample-15-2.tsx`.text(),
       ),
     );
     for (const result of results) {
