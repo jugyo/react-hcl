@@ -12,12 +12,23 @@ The goal is not to rewrite Terraform in JS, but to structurally improve IaC comp
 
 ## Usage
 
-Use the CLI to print Terraform to stdout or write it to a file.
+Use the CLI in forward mode (TSX -> HCL) or reverse mode (HCL -> TSX).
 
 ```bash
 react-hcl infra.tsx                  # output to stdout
 react-hcl infra.tsx -o ./tf/main.tf   # write to file
+react-hcl --hcl-react main.tf          # HCL -> JSX elements
+react-hcl --hcl-react --module main.tf # HCL -> TSX module with import/export
+cat main.tf | react-hcl                # auto-detect input format
 ```
+
+Input format detection priority:
+1. Explicit flag (`--hcl-react`)
+2. File extension (`.tf/.hcl` vs `.tsx/.jsx/.ts/.js`)
+3. Content heuristics
+
+If format detection is ambiguous, the CLI fails with:
+`Could not detect input format. Use --hcl-react for HCL input or provide TSX/JSX explicitly.`
 
 ## Example
 
