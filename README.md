@@ -10,9 +10,22 @@ That makes end-to-end reasoning from input to output expensive.
 We use React because component boundaries and data flow provide structure for understanding first.
 The goal is not to rewrite Terraform in JS, but to structurally improve IaC comprehensibility.
 
-## Usage
+## CLI Usage
 
 Use the CLI in forward mode (TSX -> HCL) or reverse mode (HCL -> TSX).
+
+```bash
+react-hcl <input.(j|t)sx|-> [-o <file>]
+react-hcl --hcl-react <input.tf|-> [-o <file>] [--module]
+```
+
+Options:
+- `--hcl-react`: Reverse mode (HCL -> TSX)
+- `--module`: Reverse mode only. Output TSX with import/export module boilerplate
+- `-o, --output <file>`: Write output to a file instead of stdout
+- `-h, --help`: Show help
+
+Examples:
 
 ```bash
 react-hcl infra.tsx                  # output to stdout
@@ -20,6 +33,7 @@ react-hcl infra.tsx -o ./tf/main.tf   # write to file
 react-hcl --hcl-react main.tf          # HCL -> JSX elements
 react-hcl --hcl-react --module main.tf # HCL -> TSX module with import/export
 cat main.tf | react-hcl                # auto-detect input format
+cat main.tf | react-hcl --hcl-react -  # read HCL from stdin explicitly
 ```
 
 Input format detection priority:
