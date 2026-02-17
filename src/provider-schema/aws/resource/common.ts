@@ -10,10 +10,17 @@ export const COMMON_RESOURCE_ATTRIBUTES = {
 const LIFECYCLE_BLOCK = block.single({
   attributes: {
     create_before_destroy: attr.bool({ optional: true }),
+    ignore_changes: attr.list({ optional: true }),
     prevent_destroy: attr.bool({ optional: true }),
     replace_triggered_by: attr.list({ optional: true }),
   },
   blocks: {
+    action_trigger: block.list({
+      attributes: {
+        actions: attr.list({ required: true }),
+        events: attr.list({ required: true }),
+      },
+    }),
     precondition: block.list({
       attributes: {
         condition: attr.any({ required: true }),

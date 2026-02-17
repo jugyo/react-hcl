@@ -9,6 +9,15 @@ Resource({
   subnet_id: tf.raw("aws_subnet.public.id"),
   root_block_device: { volume_size: 20 },
   ebs_block_device: [{ device_name: "/dev/sdf", volume_size: 100 }],
+  lifecycle: {
+    ignore_changes: [tf.raw("tags")],
+    action_trigger: [
+      {
+        actions: ["create"],
+        events: ["before_apply"],
+      },
+    ],
+  },
 });
 
 // @ts-expect-error missing required property: label
