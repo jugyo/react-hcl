@@ -66,7 +66,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block={tf.var("vpc_cidr")}
         enable_dns_hostnames={true}
@@ -76,7 +76,7 @@ function Main({ region }: { region: string }) {
       />
 
       {/* Public subnets across multiple AZs */}
-      <Resource type="aws_subnet" name="public">
+      <Resource type="aws_subnet" label="public">
         {`
           count                   = ${tf.var("public_subnet_count")}
           vpc_id                  = ${vpcRef.id}
@@ -91,7 +91,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* Private subnets across multiple AZs */}
-      <Resource type="aws_subnet" name="private">
+      <Resource type="aws_subnet" label="private">
         {`
           count             = ${tf.var("private_subnet_count")}
           vpc_id            = ${vpcRef.id}
@@ -107,7 +107,7 @@ function Main({ region }: { region: string }) {
       {/* Internet Gateway */}
       <Resource
         type="aws_internet_gateway"
-        name="main"
+        label="main"
         ref={igwRef}
         vpc_id={vpcRef.id}
         // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
@@ -117,7 +117,7 @@ function Main({ region }: { region: string }) {
       {/* Public route table */}
       <Resource
         type="aws_route_table"
-        name="public"
+        label="public"
         ref={publicRtRef}
         vpc_id={vpcRef.id}
         // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
@@ -126,13 +126,13 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_route"
-        name="public_internet_access"
+        label="public_internet_access"
         route_table_id={publicRtRef.id}
         destination_cidr_block="0.0.0.0/0"
         gateway_id={igwRef.id}
       />
 
-      <Resource type="aws_route_table_association" name="public">
+      <Resource type="aws_route_table_association" label="public">
         {`
           count          = ${tf.var("public_subnet_count")}
           subnet_id      = element(aws_subnet.public[*].id, count.index)
@@ -143,14 +143,14 @@ function Main({ region }: { region: string }) {
       {/* NAT Gateway with Elastic IP */}
       <Resource
         type="aws_eip"
-        name="nat"
+        label="nat"
         ref={eipRef}
         domain="vpc"
         // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
         tags={{ Name: "${var.project_name}-nat-eip" }}
       />
 
-      <Resource type="aws_nat_gateway" name="main" ref={natRef}>
+      <Resource type="aws_nat_gateway" label="main" ref={natRef}>
         {`
           allocation_id = ${eipRef.id}
           subnet_id     = aws_subnet.public[0].id
@@ -166,7 +166,7 @@ function Main({ region }: { region: string }) {
       {/* Private route table */}
       <Resource
         type="aws_route_table"
-        name="private"
+        label="private"
         ref={privateRtRef}
         vpc_id={vpcRef.id}
         // biome-ignore lint/suspicious/noTemplateCurlyInString: Terraform interpolation
@@ -175,13 +175,13 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_route"
-        name="private_internet_access"
+        label="private_internet_access"
         route_table_id={privateRtRef.id}
         destination_cidr_block="0.0.0.0/0"
         nat_gateway_id={natRef.id}
       />
 
-      <Resource type="aws_route_table_association" name="private">
+      <Resource type="aws_route_table_association" label="private">
         {`
           count          = ${tf.var("private_subnet_count")}
           subnet_id      = element(aws_subnet.private[*].id, count.index)

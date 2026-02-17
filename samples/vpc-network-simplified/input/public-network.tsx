@@ -26,7 +26,7 @@ export function PublicNetwork({
       {subnetRefs.map((ref, i) => (
         <Resource
           type="aws_subnet"
-          name={`public_${i + 1}`}
+          label={`public_${i + 1}`}
           ref={ref}
           vpc_id={vpcRef.id}
           cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${i + 1})`)}
@@ -38,7 +38,7 @@ export function PublicNetwork({
 
       <Resource
         type="aws_internet_gateway"
-        name="main"
+        label="main"
         ref={igwRef}
         vpc_id={vpcRef.id}
         tags={{ Name: `${projectName}-igw` }}
@@ -46,7 +46,7 @@ export function PublicNetwork({
 
       <Resource
         type="aws_route_table"
-        name="public"
+        label="public"
         ref={rtRef}
         vpc_id={vpcRef.id}
         tags={{ Name: `${projectName}-public-rt` }}
@@ -54,7 +54,7 @@ export function PublicNetwork({
 
       <Resource
         type="aws_route"
-        name="public_internet_access"
+        label="public_internet_access"
         route_table_id={rtRef.id}
         destination_cidr_block="0.0.0.0/0"
         gateway_id={igwRef.id}
@@ -63,7 +63,7 @@ export function PublicNetwork({
       {allSubnetRefs.map((ref, i) => (
         <Resource
           type="aws_route_table_association"
-          name={`public_${i}`}
+          label={`public_${i}`}
           subnet_id={ref.id}
           route_table_id={rtRef.id}
         />

@@ -11,7 +11,7 @@ describe("Resource component", () => {
   it("returns a ResourceBlock with attributes", () => {
     const block = Resource({
       type: "aws_vpc",
-      name: "main",
+      label: "main",
       cidr_block: "10.0.0.0/16",
     });
     expect(block.blockType).toBe("resource");
@@ -23,7 +23,7 @@ describe("Resource component", () => {
   it("excludes ref and children from attributes", () => {
     const block = Resource({
       type: "aws_vpc",
-      name: "main",
+      label: "main",
       ref: {},
       children: "hcl text",
     });
@@ -34,7 +34,7 @@ describe("Resource component", () => {
   it("unwraps children array and stores first element as innerText", () => {
     const block = Resource({
       type: "aws_vpc",
-      name: "main",
+      label: "main",
       children: ["hcl text"] as any,
     });
     expect(block.innerText).toBe("  hcl text");
@@ -43,7 +43,7 @@ describe("Resource component", () => {
   it("discards props and attributes when innerText is used", () => {
     const block = Resource({
       type: "aws_instance",
-      name: "web",
+      label: "web",
       ami: "ami-123",
       attributes: { name: "my-instance" },
       children: 'ami = "ami-456"\nname = "override"',
@@ -53,13 +53,18 @@ describe("Resource component", () => {
   });
 
   it("does not set innerText when children is undefined", () => {
-    const block = Resource({ type: "aws_vpc", name: "main" });
+    const block = Resource({ type: "aws_vpc", label: "main" });
     expect(block.innerText).toBeUndefined();
   });
 
   it("registers __refMeta on useRef proxy", () => {
     const ref = useRef();
-    Resource({ type: "aws_vpc", name: "main", ref, cidr_block: "10.0.0.0/16" });
+    Resource({
+      type: "aws_vpc",
+      label: "main",
+      ref,
+      cidr_block: "10.0.0.0/16",
+    });
     expect(ref.__refMeta).toEqual({
       blockType: "resource",
       type: "aws_vpc",
@@ -77,7 +82,7 @@ describe("Resource component", () => {
     };
     const block = Resource({
       type: "aws_instance",
-      name: "web",
+      label: "web",
       provider: providerRef,
     });
     expect(isRawHCL(block.attributes.provider)).toBe(true);
@@ -91,7 +96,7 @@ describe("Resource component", () => {
     dataRef.__refMeta = { blockType: "data", type: "aws_ami", name: "latest" };
     const block = Resource({
       type: "aws_instance",
-      name: "web",
+      label: "web",
       depends_on: [vpcRef, dataRef],
     });
     expect(block.attributes.depends_on).toHaveLength(2);
@@ -103,7 +108,7 @@ describe("Resource component", () => {
   it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
     const block = Resource({
       type: "aws_instance",
-      name: "web",
+      label: "web",
       ami: "ami-123456",
       attributes: { name: "my-instance", type: "t2.micro" },
     });
@@ -119,7 +124,7 @@ describe("Resource component", () => {
   it("passes multiple attributes of various types", () => {
     const block = Resource({
       type: "aws_instance",
-      name: "web",
+      label: "web",
       ami: "ami-123456",
       instance_type: "t2.micro",
       count: 3,

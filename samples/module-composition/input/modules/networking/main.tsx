@@ -34,7 +34,7 @@ function Main() {
       <Resource
         ref={vpc}
         type="aws_vpc"
-        name="main"
+        label="main"
         cidr_block={tf.var("vpc_cidr")}
         tags={{ Name: tf.var("environment") }}
       />
@@ -42,7 +42,7 @@ function Main() {
       <Resource
         ref={subnet}
         type="aws_subnet"
-        name="private"
+        label="private"
         vpc_id={vpc.id}
         cidr_block="10.0.1.0/24"
         tags={{ Name: "private" }}

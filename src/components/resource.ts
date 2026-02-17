@@ -1,13 +1,13 @@
 /**
  * Resource component — produces a ResourceBlock for the Block[] IR pipeline.
  *
- * Extracts `type` and `name` as block labels, passes remaining props as HCL attributes.
+ * Extracts `type` and `label` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
  *   - `ref`: reserved for useRef (Step 8)
  *   - `children`: if string, stored as `innerText` for raw HCL body output (Step 10)
  *
  * Usage in TSX:
- *   <Resource type="aws_vpc" name="main" cidr_block="10.0.0.0/16" />
+ *   <Resource type="aws_vpc" label="main" cidr_block="10.0.0.0/16" />
  *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
 import type { ResourceBlock } from "../blocks";
@@ -28,12 +28,12 @@ export function Resource<T extends string>(
 export function Resource<T extends string>(
   props: ResourceProps<T>,
 ): ResourceBlock {
-  const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
+  const { type, label, ref, children, attributes: extraAttrs, ...rest } = props;
   const attributes = { ...rest, ...extraAttrs };
 
   // Register ref metadata so ref.id resolves to "aws_vpc.main.id"
   if (ref) {
-    ref.__refMeta = { blockType: "resource", type, name };
+    ref.__refMeta = { blockType: "resource", type, name: label };
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
@@ -62,7 +62,7 @@ export function Resource<T extends string>(
   return {
     blockType: "resource",
     type,
-    name,
+    name: label,
     attributes: hasInnerText ? {} : attributes,
     ...(hasInnerText ? { innerText: adjustIndent(rawChildren, 2) } : {}),
   };

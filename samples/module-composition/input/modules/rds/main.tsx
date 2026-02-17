@@ -30,7 +30,7 @@ function Main() {
       <Resource
         ref={subnetGroup}
         type="aws_db_subnet_group"
-        name="main"
+        label="main"
         subnet_ids={tf.var("subnet_ids")}
         tags={{ Name: "db-subnet-group" }}
       />
@@ -38,7 +38,7 @@ function Main() {
       <Resource
         ref={db}
         type="aws_db_instance"
-        name="main"
+        label="main"
         engine="mysql"
         engine_version="8.0"
         instance_class="db.t3.micro"

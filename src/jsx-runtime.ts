@@ -7,8 +7,8 @@
  * How it integrates:
  *   - esbuild's `jsx: "automatic"` + `jsxImportSource: "react-hcl"` causes
  *     TSX files to import jsx/jsxs from "react-hcl/jsx-runtime" automatically.
- *   - When users write <Resource type="aws_vpc" name="main" />, esbuild transforms it to
- *     jsx(Resource, { type: "aws_vpc", name: "main" }) which returns a JSXElement.
+ *   - When users write <Resource type="aws_vpc" label="main" />, esbuild transforms it to
+ *     jsx(Resource, { type: "aws_vpc", label: "main" }) which returns a JSXElement.
  *   - The CLI (cli.ts) then renders the JSXElement tree by calling component functions
  *     and collecting their output.
  *

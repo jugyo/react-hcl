@@ -11,7 +11,11 @@ import { render } from "../src/renderer";
 describe("Composite components", () => {
   it("expands a function component", () => {
     function VpcModule({ cidr }: { cidr: string }) {
-      return jsx(Resource, { type: "aws_vpc", name: "main", cidr_block: cidr });
+      return jsx(Resource, {
+        type: "aws_vpc",
+        label: "main",
+        cidr_block: cidr,
+      });
     }
     const element = jsx(VpcModule, { cidr: "10.0.0.0/16" });
     const blocks = render(element);
@@ -29,12 +33,12 @@ describe("Composite components", () => {
         children: [
           jsx(Resource, {
             type: "aws_vpc",
-            name: "main",
+            label: "main",
             cidr_block: "10.0.0.0/16",
           }),
           jsx(Resource, {
             type: "aws_subnet",
-            name: "public",
+            label: "public",
             cidr_block: "10.0.1.0/24",
           }),
         ],
@@ -49,7 +53,7 @@ describe("Composite components", () => {
     function InnerComponent() {
       return jsx(Resource, {
         type: "aws_instance",
-        name: "web",
+        label: "web",
         ami: "ami-xxx",
       });
     }
@@ -58,7 +62,7 @@ describe("Composite components", () => {
         children: [
           jsx(Resource, {
             type: "aws_vpc",
-            name: "main",
+            label: "main",
             cidr_block: "10.0.0.0/16",
           }),
           jsx(InnerComponent, {}),
@@ -74,23 +78,23 @@ describe("Composite components", () => {
 
   it("passes props correctly", () => {
     function ConfigurableVpc({
-      name,
+      label,
       cidr,
       dns,
     }: {
-      name: string;
+      label: string;
       cidr: string;
       dns: boolean;
     }) {
       return jsx(Resource, {
         type: "aws_vpc",
-        name,
+        label,
         cidr_block: cidr,
         enable_dns_hostnames: dns,
       });
     }
     const element = jsx(ConfigurableVpc, {
-      name: "custom",
+      label: "custom",
       cidr: "192.168.0.0/16",
       dns: true,
     });
@@ -103,7 +107,7 @@ describe("Composite components", () => {
     function SubnetModule({ vpcRef }: { vpcRef: any }) {
       return jsx(Resource, {
         type: "aws_subnet",
-        name: "public",
+        label: "public",
         vpc_id: vpcRef.id,
         cidr_block: "10.0.1.0/24",
       });
@@ -115,7 +119,7 @@ describe("Composite components", () => {
       children: [
         jsx(Resource, {
           type: "aws_vpc",
-          name: "main",
+          label: "main",
           ref: vpcRef,
           cidr_block: "10.0.0.0/16",
         }),
@@ -133,7 +137,7 @@ describe("Composite components", () => {
     function SubnetModule({ vpcRef }: { vpcRef: any }) {
       return jsx(Resource, {
         type: "aws_subnet",
-        name: "public",
+        label: "public",
         vpc_id: vpcRef.id,
         cidr_block: "10.0.1.0/24",
       });
@@ -145,7 +149,7 @@ describe("Composite components", () => {
       children: [
         jsx(Resource, {
           type: "aws_vpc",
-          name: "main",
+          label: "main",
           ref: vpcRef,
           cidr_block: "10.0.0.0/16",
         }),
@@ -168,7 +172,7 @@ describe("Composite components", () => {
           jsx(Variable, { name: "env", type: "string", default: "dev" }),
           jsx(Resource, {
             type: "aws_instance",
-            name: "web",
+            label: "web",
             ref,
             ami: "ami-xxx",
           }),
@@ -196,7 +200,7 @@ describe("Composite components", () => {
         children: [
           jsx(Resource, {
             type: "aws_vpc",
-            name: "main",
+            label: "main",
             cidr_block: "10.0.0.0/16",
           }),
           ...[].concat(children),
@@ -206,7 +210,7 @@ describe("Composite components", () => {
     const element = jsx(Wrapper, {
       children: jsx(Resource, {
         type: "aws_subnet",
-        name: "sub",
+        label: "sub",
         cidr_block: "10.0.1.0/24",
       }),
     });
@@ -220,16 +224,16 @@ describe("Composite components", () => {
     function Module() {
       return jsxs(Fragment, {
         children: [
-          jsx(Resource, { type: "a", name: "first" }),
-          jsx(Resource, { type: "b", name: "second" }),
+          jsx(Resource, { type: "a", label: "first" }),
+          jsx(Resource, { type: "b", label: "second" }),
         ],
       });
     }
     const element = jsxs(Fragment, {
       children: [
-        jsx(Resource, { type: "z", name: "before" }),
+        jsx(Resource, { type: "z", label: "before" }),
         jsx(Module, {}),
-        jsx(Resource, { type: "z", name: "after" }),
+        jsx(Resource, { type: "z", label: "after" }),
       ],
     });
     const blocks = render(element);

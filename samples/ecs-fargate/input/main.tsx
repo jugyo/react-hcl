@@ -76,12 +76,12 @@ function Main({ region }: { region: string }) {
       {/* Network */}
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block="172.17.0.0/16"
       />
 
-      <Resource type="aws_subnet" name="private">
+      <Resource type="aws_subnet" label="private">
         {`
           count             = ${tf.var("az_count")}
           cidr_block        = cidrsubnet(${vpcRef.cidr_block}, 8, count.index)
@@ -90,7 +90,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_subnet" name="public">
+      <Resource type="aws_subnet" label="public">
         {`
           count                   = ${tf.var("az_count")}
           cidr_block              = cidrsubnet(${vpcRef.cidr_block}, 8, ${tf.var("az_count")} + count.index)
@@ -102,20 +102,20 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_internet_gateway"
-        name="gw"
+        label="gw"
         ref={igwRef}
         vpc_id={vpcRef.id}
       />
 
       <Resource
         type="aws_route"
-        name="internet_access"
+        label="internet_access"
         route_table_id={tf.raw(`${vpcRef.main_route_table_id}`)}
         destination_cidr_block="0.0.0.0/0"
         gateway_id={igwRef.id}
       />
 
-      <Resource type="aws_eip" name="gw">
+      <Resource type="aws_eip" label="gw">
         {`
           count      = ${tf.var("az_count")}
           domain     = "vpc"
@@ -123,7 +123,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_nat_gateway" name="gw">
+      <Resource type="aws_nat_gateway" label="gw">
         {`
           count         = ${tf.var("az_count")}
           subnet_id     = element(aws_subnet.public.*.id, count.index)
@@ -131,7 +131,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_route_table" name="private">
+      <Resource type="aws_route_table" label="private">
         {`
           count  = ${tf.var("az_count")}
           vpc_id = ${vpcRef.id}
@@ -143,7 +143,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_route_table_association" name="private">
+      <Resource type="aws_route_table_association" label="private">
         {`
           count          = ${tf.var("az_count")}
           subnet_id      = element(aws_subnet.private.*.id, count.index)
@@ -152,7 +152,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* Security */}
-      <Resource type="aws_security_group" name="lb" ref={lbSgRef}>
+      <Resource type="aws_security_group" label="lb" ref={lbSgRef}>
         {`
           name        = "tf-ecs-alb"
           description = "controls access to the ALB"
@@ -174,7 +174,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_security_group" name="ecs_tasks" ref={taskSgRef}>
+      <Resource type="aws_security_group" label="ecs_tasks" ref={taskSgRef}>
         {`
           name        = "tf-ecs-tasks"
           description = "allow inbound access from the ALB only"
@@ -197,7 +197,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* ALB */}
-      <Resource type="aws_alb" name="main" ref={albRef}>
+      <Resource type="aws_alb" label="main" ref={albRef}>
         {`
           name            = "tf-ecs-chat"
           subnets         = aws_subnet.public.*.id
@@ -205,7 +205,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_alb_target_group" name="app" ref={tgRef}>
+      <Resource type="aws_alb_target_group" label="app" ref={tgRef}>
         {`
           name        = "tf-ecs-chat"
           port        = 80
@@ -215,7 +215,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_alb_listener" name="front_end" ref={listenerRef}>
+      <Resource type="aws_alb_listener" label="front_end" ref={listenerRef}>
         {`
           load_balancer_arn = ${albRef.id}
           port              = "80"
@@ -229,13 +229,13 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* ECS */}
-      <Resource type="aws_ecs_cluster" name="main" ref={clusterRef}>
+      <Resource type="aws_ecs_cluster" label="main" ref={clusterRef}>
         {`
           name = "tf-ecs-cluster"
         `}
       </Resource>
 
-      <Resource type="aws_ecs_task_definition" name="app" ref={taskDefRef}>
+      <Resource type="aws_ecs_task_definition" label="app" ref={taskDefRef}>
         {`
           family                   = "app"
           network_mode             = "awsvpc"
@@ -263,7 +263,7 @@ function Main({ region }: { region: string }) {
         `}
       </Resource>
 
-      <Resource type="aws_ecs_service" name="main">
+      <Resource type="aws_ecs_service" label="main">
         {`
           name            = "tf-ecs-service"
           cluster         = ${clusterRef.id}

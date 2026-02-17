@@ -19,7 +19,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_kms_key"
-        name="bucket"
+        label="bucket"
         ref={keyRef}
         description="KMS key for S3 server-side encryption"
         enable_key_rotation={true}
@@ -28,7 +28,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket"
-        name="archive"
+        label="archive"
         ref={bucketRef}
         bucket_prefix="react-hcl-archive-"
         force_destroy={false}
@@ -36,7 +36,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket_server_side_encryption_configuration"
-        name="archive"
+        label="archive"
         bucket={bucketRef.id}
         rule={[
           {
@@ -51,7 +51,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket_versioning"
-        name="archive"
+        label="archive"
         bucket={bucketRef.id}
         versioning_configuration={{
           status: "Enabled",
@@ -60,7 +60,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket_lifecycle_configuration"
-        name="archive"
+        label="archive"
         bucket={bucketRef.id}
         rule={[
           {
@@ -97,7 +97,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket_public_access_block"
-        name="archive"
+        label="archive"
         bucket={bucketRef.id}
         block_public_acls={true}
         block_public_policy={true}

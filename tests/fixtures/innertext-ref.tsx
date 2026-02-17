@@ -6,11 +6,11 @@ function App() {
     <>
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block="10.0.0.0/16"
       />
-      <Resource type="aws_security_group" name="web">
+      <Resource type="aws_security_group" label="web">
         {`ingress {
   from_port   = 80
   to_port     = 80

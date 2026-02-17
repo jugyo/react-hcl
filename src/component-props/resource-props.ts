@@ -13,7 +13,7 @@ export type AwsResourcePropsMap = {
 };
 
 type ResourceCoreProps = {
-  name: string;
+  label: string;
   ref?: any;
   children?: string | string[];
 };

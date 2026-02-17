@@ -59,14 +59,14 @@ function Main({ region }: { region: string }) {
       {/* S3 Bucket */}
       <Resource
         type="aws_s3_bucket"
-        name="this"
+        label="this"
         ref={bucketRef}
         bucket={tf.var("domain_name")}
       />
 
       <Resource
         type="aws_s3_bucket_public_access_block"
-        name="this"
+        label="this"
         bucket={bucketRef.id}
         block_public_acls={true}
         block_public_policy={true}
@@ -77,7 +77,7 @@ function Main({ region }: { region: string }) {
       {/* CloudFront Origin Access Control */}
       <Resource
         type="aws_cloudfront_origin_access_control"
-        name="this"
+        label="this"
         ref={oacRef}
       >
         {`
@@ -92,7 +92,7 @@ function Main({ region }: { region: string }) {
       {/* CloudFront Distribution */}
       <Resource
         type="aws_cloudfront_distribution"
-        name="this"
+        label="this"
         ref={distributionRef}
       >
         {`
@@ -164,7 +164,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_s3_bucket_policy"
-        name="this"
+        label="this"
         bucket={bucketRef.id}
         policy={policyDocRef.json}
       />

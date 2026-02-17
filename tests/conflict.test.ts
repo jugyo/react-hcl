@@ -3,7 +3,7 @@ import type { Block } from "../src/blocks";
 import { ConflictError, detectConflicts } from "../src/conflict";
 
 describe("detectConflicts", () => {
-  it("throws on duplicate resource with same type + name", () => {
+  it("throws on duplicate resource with same type + label", () => {
     const blocks: Block[] = [
       { blockType: "resource", type: "aws_vpc", name: "main", attributes: {} },
       { blockType: "resource", type: "aws_vpc", name: "main", attributes: {} },
@@ -32,7 +32,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).toThrow(ConflictError);
   });
 
-  it("allows resource and data source with same type + name", () => {
+  it("allows resource(type + label) and data source(type + name) overlap", () => {
     const blocks: Block[] = [
       { blockType: "resource", type: "aws_vpc", name: "main", attributes: {} },
       { blockType: "data", type: "aws_vpc", name: "main", attributes: {} },

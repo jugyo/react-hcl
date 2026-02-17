@@ -7,7 +7,7 @@
  * `var.environment` or `local.common_tags` directly.
  *
  * Usage in TSX:
- *   <Resource type="aws_instance" name="web"
+ *   <Resource type="aws_instance" label="web"
  *     instance_type={tf.var("instance_type")}
  *     tags={tf.local("common_tags")}
  *   />

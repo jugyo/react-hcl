@@ -21,7 +21,7 @@
  *     const vpcRef = useRef();
  *     return (
  *       <>
- *         <Resource ref={vpcRef} type="aws_vpc" name="main" />  // registers metadata
+ *         <Resource ref={vpcRef} type="aws_vpc" label="main" />  // registers metadata
  *         <Resource vpc_id={vpcRef.id} />  // lazy RawHCL, resolved at serialization
  *       </>
  *     );
@@ -156,8 +156,8 @@ function createLazyRawHCL(resolvePath: () => string): any {
  *     const vpcRef = useRef();
  *     return (
  *       <>
- *         <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
- *         <Resource type="aws_subnet" name="sub" vpc_id={vpcRef.id} />
+ *         <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+ *         <Resource type="aws_subnet" label="sub" vpc_id={vpcRef.id} />
  *       </>
  *     );
  *   }

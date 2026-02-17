@@ -13,13 +13,13 @@ function App() {
       />
       <Resource
         type="aws_instance"
-        name="tokyo"
+        label="tokyo"
         ami="ami-xxx"
         instance_type="t3.micro"
       />
       <Resource
         type="aws_instance"
-        name="us"
+        label="us"
         ami="ami-yyy"
         instance_type="t3.micro"
         provider={virginiaRef}

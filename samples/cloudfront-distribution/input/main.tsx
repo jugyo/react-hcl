@@ -18,7 +18,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_cloudfront_distribution"
-        name="main"
+        label="main"
         ref={distributionRef}
         enabled={true}
         is_ipv6_enabled={true}

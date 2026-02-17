@@ -15,7 +15,7 @@ export default function App() {
 
       <Resource
         type="aws_instance"
-        name="app"
+        label="app"
         ami="ami-0c55b159cbfafe1f0"
         instance_type="t3.micro"
         subnet_id={vpc.private_subnets}

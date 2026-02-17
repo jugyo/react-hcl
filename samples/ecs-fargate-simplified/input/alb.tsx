@@ -13,7 +13,7 @@ export function Alb({
 }) {
   return (
     <>
-      <Resource type="aws_security_group" name="lb" ref={lbSgRef}>
+      <Resource type="aws_security_group" label="lb" ref={lbSgRef}>
         {`
           name        = "tf-ecs-alb"
           description = "controls access to the ALB"
@@ -35,7 +35,7 @@ export function Alb({
         `}
       </Resource>
 
-      <Resource type="aws_alb" name="main" ref={albRef}>
+      <Resource type="aws_alb" label="main" ref={albRef}>
         {`
           name            = "tf-ecs-chat"
           subnets         = [${publicSubnetRefs.map((r) => r.id).join(", ")}]

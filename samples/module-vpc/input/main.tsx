@@ -50,7 +50,7 @@ function Main() {
 
       <Resource
         type="aws_instance"
-        name="app"
+        label="app"
         ami="ami-0c55b159cbfafe1f0"
         instance_type="t3.micro"
         subnet_id={tf.raw(`${vpc.private_subnets}[0]`)}

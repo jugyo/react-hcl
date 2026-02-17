@@ -45,7 +45,7 @@ function ClusterWebServer() {
 
       <Resource
         type="aws_security_group"
-        name="instance"
+        label="instance"
         ref={instanceSgRef}
         ingress={[
           {
@@ -60,7 +60,7 @@ function ClusterWebServer() {
 
       <Resource
         type="aws_security_group"
-        name="elb"
+        label="elb"
         ref={elbSgRef}
         ingress={[
           {
@@ -82,7 +82,7 @@ function ClusterWebServer() {
 
       <Resource
         type="aws_launch_configuration"
-        name="example"
+        label="example"
         ref={launchConfigRef}
       >
         {`
@@ -104,7 +104,7 @@ function ClusterWebServer() {
 
       <Resource
         type="aws_autoscaling_group"
-        name="example"
+        label="example"
         launch_configuration={launchConfigRef.id}
         availability_zones={azRef.names}
         load_balancers={[elbRef.name]}
@@ -120,7 +120,7 @@ function ClusterWebServer() {
         ]}
       />
 
-      <Resource type="aws_elb" name="example" ref={elbRef}>
+      <Resource type="aws_elb" label="example" ref={elbRef}>
         {`
           name               = "terraform-asg-example"
           availability_zones = ${azRef.names}

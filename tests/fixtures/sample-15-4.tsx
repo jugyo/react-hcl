@@ -6,11 +6,11 @@ function App() {
     <>
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block="10.0.0.0/16"
       />
-      <Resource type="aws_security_group" name="example">
+      <Resource type="aws_security_group" label="example">
         {`
           name   = "example"
           vpc_id = ${vpcRef.id}

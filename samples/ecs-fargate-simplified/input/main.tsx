@@ -55,7 +55,7 @@ function Main({
 
       <Data type="aws_availability_zones" name="available" ref={azRef} />
 
-      <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block={vpcCidr} />
+      <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block={vpcCidr} />
 
       <Network
         vpcRef={vpcRef}

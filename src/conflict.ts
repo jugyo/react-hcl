@@ -6,9 +6,9 @@
  * generate() in the CLI pipeline.
  *
  * Conflict rules (from design doc §5.2):
- *   - Resource: duplicate type + name → error
+ *   - Resource: duplicate type + label → error
  *   - Data: duplicate type + name → error
- *   - Resource vs Data with same type + name → allowed
+ *   - Resource(type + label) vs Data(type + name) → allowed
  *   - Variable: duplicate name → error
  *   - Output: duplicate name → error
  *   - Locals: multiple blocks → allowed

@@ -27,7 +27,7 @@ export function PrivateNetwork({
       {subnetRefs.map((ref, i) => (
         <Resource
           type="aws_subnet"
-          name={`private_${i}`}
+          label={`private_${i}`}
           ref={ref}
           vpc_id={vpcRef.id}
           cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, ${i + 100})`)}
@@ -38,7 +38,7 @@ export function PrivateNetwork({
 
       <Resource
         type="aws_eip"
-        name="nat"
+        label="nat"
         ref={eipRef}
         domain="vpc"
         tags={{ Name: `${projectName}-nat-eip` }}
@@ -46,7 +46,7 @@ export function PrivateNetwork({
 
       <Resource
         type="aws_nat_gateway"
-        name="main"
+        label="main"
         ref={natRef}
         allocation_id={eipRef.id}
         subnet_id={natSubnetRef.id}
@@ -56,7 +56,7 @@ export function PrivateNetwork({
 
       <Resource
         type="aws_route_table"
-        name="private"
+        label="private"
         ref={rtRef}
         vpc_id={vpcRef.id}
         tags={{ Name: `${projectName}-private-rt` }}
@@ -64,7 +64,7 @@ export function PrivateNetwork({
 
       <Resource
         type="aws_route"
-        name="private_internet_access"
+        label="private_internet_access"
         route_table_id={rtRef.id}
         destination_cidr_block="0.0.0.0/0"
         nat_gateway_id={natRef.id}
@@ -73,7 +73,7 @@ export function PrivateNetwork({
       {subnetRefs.map((ref, i) => (
         <Resource
           type="aws_route_table_association"
-          name={`private_${i}`}
+          label={`private_${i}`}
           subnet_id={ref.id}
           route_table_id={rtRef.id}
         />

@@ -51,7 +51,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_security_group"
-        name="rds"
+        label="rds"
         ref={dbSgRef}
         vpc_id={defaultVpcRef.id}
         description="RDS security group"
@@ -59,7 +59,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_vpc_security_group_ingress_rule"
-        name="rds_postgres"
+        label="rds_postgres"
         security_group_id={dbSgRef.id}
         from_port={5432}
         to_port={5432}
@@ -69,7 +69,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_vpc_security_group_egress_rule"
-        name="rds_all"
+        label="rds_all"
         security_group_id={dbSgRef.id}
         ip_protocol="-1"
         cidr_ipv4="0.0.0.0/0"
@@ -77,7 +77,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_db_subnet_group"
-        name="main"
+        label="main"
         ref={subnetGroupRef}
         name_prefix="example-rds-"
         subnet_ids={defaultSubnetsRef.ids}
@@ -85,7 +85,7 @@ function Main({ region }: { region: string }) {
 
       <Resource
         type="aws_db_instance"
-        name="main"
+        label="main"
         ref={dbRef}
         identifier="react-hcl-rds-example"
         engine="postgres"

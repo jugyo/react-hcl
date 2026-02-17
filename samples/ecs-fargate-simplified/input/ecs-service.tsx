@@ -29,7 +29,7 @@ export function EcsService({
 
   return (
     <>
-      <Resource type="aws_security_group" name="ecs_tasks" ref={taskSgRef}>
+      <Resource type="aws_security_group" label="ecs_tasks" ref={taskSgRef}>
         {`
           name        = "tf-ecs-tasks"
           description = "allow inbound access from the ALB only"
@@ -51,13 +51,13 @@ export function EcsService({
         `}
       </Resource>
 
-      <Resource type="aws_ecs_cluster" name="main" ref={clusterRef}>
+      <Resource type="aws_ecs_cluster" label="main" ref={clusterRef}>
         {`
           name = "tf-ecs-cluster"
         `}
       </Resource>
 
-      <Resource type="aws_ecs_task_definition" name="app" ref={taskDefRef}>
+      <Resource type="aws_ecs_task_definition" label="app" ref={taskDefRef}>
         {`
           family                   = "app"
           network_mode             = "awsvpc"
@@ -83,7 +83,7 @@ export function EcsService({
         `}
       </Resource>
 
-      <Resource type="aws_ecs_service" name="main">
+      <Resource type="aws_ecs_service" label="main">
         {`
           name            = "tf-ecs-service"
           cluster         = ${clusterRef.id}

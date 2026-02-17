@@ -6,13 +6,13 @@ function App() {
     <>
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block="10.0.0.0/16"
       />
       <Resource
         type="aws_instance"
-        name="web"
+        label="web"
         ami="ami-xxx"
         instance_type="t3.micro"
         depends_on={[vpcRef]}

@@ -52,7 +52,7 @@ function Main({
 
       <Resource
         type="aws_vpc"
-        name="main"
+        label="main"
         ref={vpcRef}
         cidr_block={vpcCidr}
         enable_dns_hostnames={true}
@@ -62,7 +62,7 @@ function Main({
 
       <Resource
         type="aws_subnet"
-        name="public_0"
+        label="public_0"
         ref={natSubnetRef}
         vpc_id={vpcRef.id}
         cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, 0)`)}
