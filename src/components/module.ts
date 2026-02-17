@@ -15,17 +15,12 @@
  *   → module "vpc" { source = "terraform-aws-modules/vpc/aws" version = "~> 5.0" cidr = "10.0.0.0/16" }
  */
 import type { ModuleBlock } from "../blocks";
+import type { ModuleProps } from "../component-props/module-props";
 import { adjustIndent, attribute, raw } from "../hcl-serializer";
 
-export function Module(props: {
-  name: string;
-  ref?: any;
-  children?: string | string[];
-  attributes?: Record<string, any>;
-  [key: string]: any;
-}): ModuleBlock {
-  const { name, ref, children, attributes: extraAttrs, ...rest } = props;
-  const attributes = { ...rest, ...extraAttrs };
+export function Module(props: ModuleProps): ModuleBlock {
+  const { name, ref, children, __hcl, ...rest } = props;
+  const attributes = { ...rest, ...__hcl };
 
   // Register ref metadata so ref.vpc_id resolves to "module.vpc.vpc_id"
   if (ref) {

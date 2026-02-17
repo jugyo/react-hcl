@@ -40,11 +40,11 @@ describe("Data component", () => {
     expect(block.innerText).toBe("  hcl text");
   });
 
-  it("discards props and attributes when innerText is used", () => {
+  it("discards props and __hcl when innerText is used", () => {
     const block = Data({
       type: "external",
       name: "config",
-      attributes: { name: "my-config" },
+      __hcl: { name: "my-config" },
       children: 'name = "override"',
     });
     expect(block.attributes).toEqual({});
@@ -83,11 +83,11 @@ describe("Data component", () => {
     expect(block.attributes.provider.value).toBe("aws.virginia");
   });
 
-  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+  it("merges __hcl prop into HCL attributes to resolve reserved prop conflicts", () => {
     const block = Data({
       type: "external",
       name: "config",
-      attributes: { name: "my-config", type: "json" },
+      __hcl: { name: "my-config", type: "json" },
     });
     expect(block.type).toBe("external");
     expect(block.name).toBe("config");

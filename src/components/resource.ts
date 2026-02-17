@@ -28,8 +28,8 @@ export function Resource<T extends string>(
 export function Resource<T extends string>(
   props: ResourceProps<T>,
 ): ResourceBlock {
-  const { type, label, ref, children, attributes: extraAttrs, ...rest } = props;
-  const attributes = { ...rest, ...extraAttrs };
+  const { type, label, ref, children, __hcl, ...rest } = props;
+  const attributes = { ...rest, ...__hcl };
 
   // Register ref metadata so ref.id resolves to "aws_vpc.main.id"
   if (ref) {

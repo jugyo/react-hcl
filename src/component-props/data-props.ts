@@ -33,13 +33,13 @@ export type StrictDataAttributes<T extends AwsDataType> =
 
 type StrictDataPropsWithoutInnerText<T extends AwsDataType> = DataCoreProps & {
   type: T;
-  attributes?: Partial<StrictDataAttributes<T>>;
+  __hcl?: Partial<StrictDataAttributes<T>>;
 } & StrictDataAttributes<T>;
 
 type StrictDataPropsWithInnerText<T extends AwsDataType> = DataCoreProps & {
   type: T;
   children: string | string[];
-  attributes?: Partial<StrictDataAttributes<T>>;
+  __hcl?: Partial<StrictDataAttributes<T>>;
 } & Partial<StrictDataAttributes<T>>;
 
 export type StrictDataProps<T extends AwsDataType> =
@@ -50,7 +50,7 @@ type NonAwsDataType<T extends string> = T extends AwsDataType ? never : T;
 
 export type LooseDataProps<T extends string = string> = DataCoreProps & {
   type: NonAwsDataType<T>;
-  attributes?: Record<string, any>;
+  __hcl?: Record<string, any>;
   [key: string]: any;
 };
 

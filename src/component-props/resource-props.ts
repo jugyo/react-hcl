@@ -35,14 +35,14 @@ export type StrictResourceAttributes<T extends AwsResourceType> =
 type StrictResourcePropsWithoutInnerText<T extends AwsResourceType> =
   ResourceCoreProps & {
     type: T;
-    attributes?: Partial<StrictResourceAttributes<T>>;
+    __hcl?: Partial<StrictResourceAttributes<T>>;
   } & StrictResourceAttributes<T>;
 
 type StrictResourcePropsWithInnerText<T extends AwsResourceType> =
   ResourceCoreProps & {
     type: T;
     children: string | string[];
-    attributes?: Partial<StrictResourceAttributes<T>>;
+    __hcl?: Partial<StrictResourceAttributes<T>>;
   } & Partial<StrictResourceAttributes<T>>;
 
 export type StrictResourceProps<T extends AwsResourceType> =
@@ -56,7 +56,7 @@ type NonAwsResourceType<T extends string> = T extends AwsResourceType
 export type LooseResourceProps<T extends string = string> =
   ResourceCoreProps & {
     type: NonAwsResourceType<T>;
-    attributes?: Record<string, any>;
+    __hcl?: Record<string, any>;
     [key: string]: any;
   };
 

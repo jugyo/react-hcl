@@ -40,12 +40,12 @@ describe("Resource component", () => {
     expect(block.innerText).toBe("  hcl text");
   });
 
-  it("discards props and attributes when innerText is used", () => {
+  it("discards props and __hcl when innerText is used", () => {
     const block = Resource({
       type: "aws_instance",
       label: "web",
       ami: "ami-123",
-      attributes: { name: "my-instance" },
+      __hcl: { name: "my-instance" },
       children: 'ami = "ami-456"\nname = "override"',
     });
     expect(block.attributes).toEqual({});
@@ -105,12 +105,12 @@ describe("Resource component", () => {
     expect(block.attributes.depends_on[1].value).toBe("data.aws_ami.latest");
   });
 
-  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+  it("merges __hcl prop into HCL attributes to resolve reserved prop conflicts", () => {
     const block = Resource({
       type: "aws_instance",
       label: "web",
       ami: "ami-123456",
-      attributes: { name: "my-instance", type: "t2.micro" },
+      __hcl: { name: "my-instance", type: "t2.micro" },
     });
     expect(block.type).toBe("aws_instance");
     expect(block.name).toBe("web");

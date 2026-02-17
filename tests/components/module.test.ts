@@ -50,11 +50,11 @@ describe("Module component", () => {
     expect(block.innerText).toBe('  source = "./modules/vpc"');
   });
 
-  it("discards props and attributes when innerText is used", () => {
+  it("discards props and __hcl when innerText is used", () => {
     const block = Module({
       name: "vpc",
       source: "./modules/vpc",
-      attributes: { name: "my-network" },
+      __hcl: { name: "my-network" },
       children: 'source = "./local"\nname = "override"',
     });
     expect(block.attributes).toEqual({});
@@ -174,11 +174,11 @@ describe("Module component", () => {
     expect(block.attributes.count).toBe(3);
   });
 
-  it("merges attributes prop into HCL attributes to resolve reserved prop conflicts", () => {
+  it("merges __hcl prop into HCL attributes to resolve reserved prop conflicts", () => {
     const block = Module({
       name: "vpc",
       source: "./modules/vpc",
-      attributes: { name: "my-network", type: "internal" },
+      __hcl: { name: "my-network", type: "internal" },
     });
     expect(block.name).toBe("vpc");
     expect(block.attributes).toEqual({
@@ -188,12 +188,12 @@ describe("Module component", () => {
     });
   });
 
-  it("attributes prop overrides same-named regular props", () => {
+  it("__hcl prop overrides same-named regular props", () => {
     const block = Module({
       name: "vpc",
       source: "./modules/vpc",
       cidr: "10.0.0.0/16",
-      attributes: { cidr: "10.1.0.0/16" },
+      __hcl: { cidr: "10.1.0.0/16" },
     });
     expect(block.attributes.cidr).toBe("10.1.0.0/16");
   });

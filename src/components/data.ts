@@ -24,8 +24,8 @@ export function Data<T extends AwsDataType>(
 ): DataBlock;
 export function Data<T extends string>(props: LooseDataProps<T>): DataBlock;
 export function Data<T extends string>(props: DataProps<T>): DataBlock {
-  const { type, name, ref, children, attributes: extraAttrs, ...rest } = props;
-  const attributes = { ...rest, ...extraAttrs };
+  const { type, name, ref, children, __hcl, ...rest } = props;
+  const attributes = { ...rest, ...__hcl };
 
   // Register ref metadata so ref.id resolves to "data.aws_ami.latest.id"
   if (ref) {
