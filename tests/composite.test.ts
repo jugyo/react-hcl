@@ -169,14 +169,14 @@ describe("Composite components", () => {
       const ref = useRef();
       return jsxs(Fragment, {
         children: [
-          jsx(Variable, { name: "env", type: "string", default: "dev" }),
+          jsx(Variable, { label: "env", type: "string", default: "dev" }),
           jsx(Resource, {
             type: "aws_instance",
             label: "web",
             ref,
             ami: "ami-xxx",
           }),
-          jsx(Output, { name: "instance_id", value: ref.id }),
+          jsx(Output, { label: "instance_id", value: ref.id }),
         ],
       });
     }

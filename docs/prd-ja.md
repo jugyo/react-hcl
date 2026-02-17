@@ -57,8 +57,8 @@ React（JSX/TSX）の記法でTerraform設定を記述し、標準的な `.tf` �
 - HCL上で参照であるものは `useRef` で、文字列であるものは文字列で表現する
 - リソース名衝突判定は Terraform互換で実施する
   - `<Resource>` 同士で同一 `type + label` はエラー
-  - `<DataSource>` 同士で同一 `type + name` はエラー
-  - `<Resource>(type + label)` と `<DataSource>(type + name)` の組み合わせは許可
+  - `<DataSource>` 同士で同一 `type + label` はエラー
+  - `<Resource>(type + label)` と `<DataSource>(type + label)` の組み合わせは許可
 - `<Variable>` 同名定義はエラー
 
 ### 2.5 環境分離

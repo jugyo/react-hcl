@@ -13,7 +13,7 @@ function App() {
           }
         `}
       </Resource>
-      <Data type="aws_ami" name="latest">
+      <Data type="aws_ami" label="latest">
         {`most_recent = true
 owners      = ["amazon"]
 

@@ -36,12 +36,12 @@ function ClusterWebServer() {
       <Provider type="aws" region="eu-west-1" />
 
       <Variable
-        name="server_port"
+        label="server_port"
         description="The port the server will use for HTTP requests"
         default="8080"
       />
 
-      <Data type="aws_availability_zones" name="all" ref={azRef} />
+      <Data type="aws_availability_zones" label="all" ref={azRef} />
 
       <Resource
         type="aws_security_group"
@@ -143,7 +143,7 @@ function ClusterWebServer() {
         `}
       </Resource>
 
-      <Output name="elb_dns_name" value={elbRef.dns_name} />
+      <Output label="elb_dns_name" value={elbRef.dns_name} />
     </>
   );
 }

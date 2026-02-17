@@ -9,7 +9,7 @@ describe("useRef", () => {
 
   it("ref.attr returns RawHCL", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
     const result = ref.id;
     expect(isRawHCL(result)).toBe(true);
     expect(result.value).toBe("aws_vpc.main.id");
@@ -17,7 +17,7 @@ describe("useRef", () => {
 
   it("data source ref", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "data", type: "aws_ami", name: "latest" };
+    ref.__refMeta = { blockType: "data", type: "aws_ami", label: "latest" };
     const result = ref.id;
     expect(isRawHCL(result)).toBe(true);
     expect(result.value).toBe("data.aws_ami.latest.id");
@@ -25,7 +25,7 @@ describe("useRef", () => {
 
   it("ref (type.name format for depends_on)", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
     const result = ref.__dependsOnValue;
     expect(isRawHCL(result)).toBe(true);
     expect(result.value).toBe("aws_vpc.main");
@@ -33,7 +33,7 @@ describe("useRef", () => {
 
   it("data source ref (depends_on format)", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "data", type: "aws_ami", name: "latest" };
+    ref.__refMeta = { blockType: "data", type: "aws_ami", label: "latest" };
     const result = ref.__dependsOnValue;
     expect(isRawHCL(result)).toBe(true);
     expect(result.value).toBe("data.aws_ami.latest");
@@ -44,7 +44,7 @@ describe("useRef", () => {
     ref.__refMeta = {
       blockType: "data",
       type: "terraform_remote_state",
-      name: "network",
+      label: "network",
     };
     const result = ref.outputs.vpc_id;
     expect(isRawHCL(result)).toBe(true);
@@ -58,7 +58,7 @@ describe("useRef", () => {
     ref.__refMeta = {
       blockType: "provider",
       type: "aws",
-      name: "virginia",
+      label: "virginia",
       alias: "virginia",
     };
     const result = ref.__providerValue;
@@ -68,7 +68,7 @@ describe("useRef", () => {
 
   it("toString() works for template literal usage", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
     const result = `${ref.id}`;
     expect(result).toBe("aws_vpc.main.id");
   });
@@ -85,7 +85,7 @@ describe("useRef", () => {
     // Access ref.id BEFORE metadata is set (simulates JSX eager evaluation)
     const lazyValue = ref.id;
     // Now register metadata (simulates component execution during render)
-    ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
     // Value resolves correctly at read time
     expect(isRawHCL(lazyValue)).toBe(true);
     expect(lazyValue.value).toBe("aws_vpc.main.id");
@@ -97,7 +97,7 @@ describe("useRef", () => {
     ref.__refMeta = {
       blockType: "data",
       type: "terraform_remote_state",
-      name: "network",
+      label: "network",
     };
     expect(lazyValue.value).toBe(
       "data.terraform_remote_state.network.outputs.vpc_id",
@@ -107,7 +107,7 @@ describe("useRef", () => {
   it("lazy evaluation: __dependsOnValue resolves after registration", () => {
     const ref = useRef();
     const lazyValue = ref.__dependsOnValue;
-    ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
     expect(lazyValue.value).toBe("aws_vpc.main");
   });
 
@@ -123,11 +123,15 @@ describe("useRef", () => {
     it("resetHookState() without clear only resets index", () => {
       const ref1 = useRef();
       const ref2 = useRef();
-      ref1.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+      ref1.__refMeta = {
+        blockType: "resource",
+        type: "aws_vpc",
+        label: "main",
+      };
       ref2.__refMeta = {
         blockType: "resource",
         type: "aws_subnet",
-        name: "sub",
+        label: "sub",
       };
 
       // Reset index only (not clearing store)
@@ -142,7 +146,7 @@ describe("useRef", () => {
       expect(ref1Again.__refMeta).toEqual({
         blockType: "resource",
         type: "aws_vpc",
-        name: "main",
+        label: "main",
       });
     });
 
@@ -165,7 +169,7 @@ describe("useRef", () => {
     it("metadata set in pass 1 is preserved in pass 2 via index reset", () => {
       // Simulate pass 1: create proxy and set metadata
       const ref = useRef();
-      ref.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+      ref.__refMeta = { blockType: "resource", type: "aws_vpc", label: "main" };
 
       // Simulate pass 2: index reset only
       resetHookState();
@@ -180,9 +184,13 @@ describe("useRef", () => {
       const refA = useRef();
       const refB = useRef();
       const refC = useRef();
-      refA.__refMeta = { blockType: "resource", type: "aws_vpc", name: "a" };
-      refB.__refMeta = { blockType: "data", type: "aws_ami", name: "b" };
-      refC.__refMeta = { blockType: "resource", type: "aws_subnet", name: "c" };
+      refA.__refMeta = { blockType: "resource", type: "aws_vpc", label: "a" };
+      refB.__refMeta = { blockType: "data", type: "aws_ami", label: "b" };
+      refC.__refMeta = {
+        blockType: "resource",
+        type: "aws_subnet",
+        label: "c",
+      };
 
       // Pass 2: index reset
       resetHookState();

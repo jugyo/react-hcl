@@ -21,12 +21,12 @@ function Main() {
         }}
       />
       <Variable
-        name="vpc_cidr"
+        label="vpc_cidr"
         type="string"
         description="CIDR block for the VPC"
       />
       <Variable
-        name="environment"
+        label="environment"
         type="string"
         description="Environment name"
       />
@@ -48,8 +48,8 @@ function Main() {
         tags={{ Name: "private" }}
       />
 
-      <Output name="vpc_id" value={vpc.id} />
-      <Output name="private_subnet_ids" value={[subnet.id]} />
+      <Output label="vpc_id" value={vpc.id} />
+      <Output label="private_subnet_ids" value={[subnet.id]} />
     </>
   );
 }

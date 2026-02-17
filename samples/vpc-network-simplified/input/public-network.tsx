@@ -70,7 +70,7 @@ export function PublicNetwork({
       ))}
 
       <Output
-        name="public_subnet_ids"
+        label="public_subnet_ids"
         value={tf.raw(`[${allSubnetRefs.map((r) => r.id).join(", ")}]`)}
       />
     </>

@@ -68,7 +68,7 @@ describe("Resource component", () => {
     expect(ref.__refMeta).toEqual({
       blockType: "resource",
       type: "aws_vpc",
-      name: "main",
+      label: "main",
     });
   });
 
@@ -77,7 +77,7 @@ describe("Resource component", () => {
     providerRef.__refMeta = {
       blockType: "provider",
       type: "aws",
-      name: "virginia",
+      label: "virginia",
       alias: "virginia",
     };
     const block = Resource({
@@ -91,9 +91,13 @@ describe("Resource component", () => {
 
   it("resolves depends_on refs to raw HCL array", () => {
     const vpcRef = useRef();
-    vpcRef.__refMeta = { blockType: "resource", type: "aws_vpc", name: "main" };
+    vpcRef.__refMeta = {
+      blockType: "resource",
+      type: "aws_vpc",
+      label: "main",
+    };
     const dataRef = useRef();
-    dataRef.__refMeta = { blockType: "data", type: "aws_ami", name: "latest" };
+    dataRef.__refMeta = { blockType: "data", type: "aws_ami", label: "latest" };
     const block = Resource({
       type: "aws_instance",
       label: "web",

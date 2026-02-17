@@ -25,7 +25,7 @@ function Main() {
 
       <Module
         ref={network}
-        name="networking"
+        label="networking"
         source="./modules/networking"
         vpc_cidr="10.0.0.0/16"
         environment="production"
@@ -33,15 +33,15 @@ function Main() {
 
       <Module
         ref={database}
-        name="database"
+        label="database"
         source="./modules/rds"
         vpc_id={network.vpc_id}
         subnet_ids={network.private_subnet_ids}
         depends_on={[network]}
       />
 
-      <Output name="vpc_id" value={network.vpc_id} />
-      <Output name="database_endpoint" value={database.endpoint} />
+      <Output label="vpc_id" value={network.vpc_id} />
+      <Output label="database_endpoint" value={database.endpoint} />
     </>
   );
 }

@@ -11,7 +11,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).toThrow(ConflictError);
   });
 
-  it("allows resources with different names", () => {
+  it("allows resources with different labels", () => {
     const blocks: Block[] = [
       { blockType: "resource", type: "aws_vpc", name: "main", attributes: {} },
       {
@@ -24,7 +24,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).not.toThrow();
   });
 
-  it("throws on duplicate data source with same type + name", () => {
+  it("throws on duplicate data source with same type + label", () => {
     const blocks: Block[] = [
       { blockType: "data", type: "aws_ami", name: "latest", attributes: {} },
       { blockType: "data", type: "aws_ami", name: "latest", attributes: {} },
@@ -32,7 +32,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).toThrow(ConflictError);
   });
 
-  it("allows resource(type + label) and data source(type + name) overlap", () => {
+  it("allows resource(type + label) and data source(type + label) overlap", () => {
     const blocks: Block[] = [
       { blockType: "resource", type: "aws_vpc", name: "main", attributes: {} },
       { blockType: "data", type: "aws_vpc", name: "main", attributes: {} },
@@ -40,7 +40,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).not.toThrow();
   });
 
-  it("throws on duplicate variable name", () => {
+  it("throws on duplicate variable label", () => {
     const blocks: Block[] = [
       { blockType: "variable", name: "env", attributes: {} },
       { blockType: "variable", name: "env", attributes: {} },
@@ -48,7 +48,7 @@ describe("detectConflicts", () => {
     expect(() => detectConflicts(blocks)).toThrow(ConflictError);
   });
 
-  it("throws on duplicate output name", () => {
+  it("throws on duplicate output label", () => {
     const blocks: Block[] = [
       { blockType: "output", name: "id", attributes: {} },
       { blockType: "output", name: "id", attributes: {} },

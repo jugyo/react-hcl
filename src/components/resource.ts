@@ -33,14 +33,14 @@ export function Resource<T extends string>(
 
   // Register ref metadata so ref.id resolves to "aws_vpc.main.id"
   if (ref) {
-    ref.__refMeta = { blockType: "resource", type, name: label };
+    ref.__refMeta = { blockType: "resource", type, label };
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")
   const providerRef = attributes.provider as { __refMeta?: any } | undefined;
   if (providerRef?.__refMeta) {
     const meta = providerRef.__refMeta;
-    attributes.provider = raw(`${meta.type}.${meta.alias || meta.name}`);
+    attributes.provider = raw(`${meta.type}.${meta.alias || meta.label}`);
   }
 
   // Resolve depends_on refs: convert ref proxies → raw("type.name")
@@ -49,9 +49,9 @@ export function Resource<T extends string>(
       if (dep.__refMeta) {
         const meta = dep.__refMeta;
         if (meta.blockType === "data") {
-          return raw(`data.${meta.type}.${meta.name}`);
+          return raw(`data.${meta.type}.${meta.label}`);
         }
-        return raw(`${meta.type}.${meta.name}`);
+        return raw(`${meta.type}.${meta.label}`);
       }
       return dep;
     });

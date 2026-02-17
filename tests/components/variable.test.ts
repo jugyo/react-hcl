@@ -6,7 +6,7 @@ import { isRawHCL } from "../../src/hcl-serializer";
 describe("Variable component", () => {
   it("returns a VariableBlock with name and attributes", () => {
     const block = Variable({
-      name: "environment",
+      label: "environment",
       type: "string",
       default: "dev",
     });
@@ -15,27 +15,27 @@ describe("Variable component", () => {
   });
 
   it("wraps type with raw() so HCL outputs unquoted type", () => {
-    const block = Variable({ name: "env", type: "string" });
+    const block = Variable({ label: "env", type: "string" });
     expect(isRawHCL(block.attributes.type)).toBe(true);
     expect(block.attributes.type.value).toBe("string");
   });
 
   it("generates unquoted type in HCL output", () => {
-    const block = Variable({ name: "env", type: "string", default: "dev" });
+    const block = Variable({ label: "env", type: "string", default: "dev" });
     const hcl = generate([block]);
     expect(hcl).toContain("type    = string");
     expect(hcl).toContain('default = "dev"');
   });
 
   it("does not include type in attributes when type is not provided", () => {
-    const block = Variable({ name: "env", default: "dev" });
+    const block = Variable({ label: "env", default: "dev" });
     expect(block.attributes.type).toBeUndefined();
     expect(block.attributes).toEqual({ default: "dev" });
   });
 
   it("includes description and sensitive attributes", () => {
     const block = Variable({
-      name: "db_password",
+      label: "db_password",
       type: "string",
       description: "Database password",
       sensitive: true,

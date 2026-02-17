@@ -20,9 +20,9 @@ function Main() {
           },
         }}
       />
-      <Variable name="vpc_id" type="string" description="VPC ID" />
+      <Variable label="vpc_id" type="string" description="VPC ID" />
       <Variable
-        name="subnet_ids"
+        label="subnet_ids"
         type="list(string)"
         description="Subnet IDs for the DB subnet group"
       />
@@ -48,7 +48,7 @@ function Main() {
         tags={{ Name: "main-db" }}
       />
 
-      <Output name="endpoint" value={db.endpoint} />
+      <Output label="endpoint" value={db.endpoint} />
     </>
   );
 }

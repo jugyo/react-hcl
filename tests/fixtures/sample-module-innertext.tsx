@@ -1,7 +1,7 @@
 import { Module } from "react-hcl";
 
 export default (
-  <Module name="vpc">
+  <Module label="vpc">
     {`
       source  = "terraform-aws-modules/vpc/aws"
       version = "~> 5.0"

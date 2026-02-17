@@ -1,5 +1,5 @@
 export type ModuleProps = {
-  name: string;
+  label: string;
   ref?: any;
   children?: string | string[];
   __hcl?: Record<string, any>;

@@ -4,7 +4,7 @@
 - Final output is a single `main.tf`
 - Output order preserves React component tree evaluation order (declaration order)
 - Hybrid of JSX attribute syntax and innerText HCL syntax
-- Terraform compatibility first (allow same `type + label` in `Resource` and same `type + name` in `DataSource`)
+- Terraform compatibility first (allow same `type + label` in `Resource` and same `type + label` in `DataSource`)
 - Tool responsibility ends at transpilation; running `terraform validate` is the user's responsibility
 
 ## 2. Scope and Non-Scope
@@ -85,8 +85,8 @@
 
 ### 5.2 Conflict Detection
 - Same `type + label` between `<Resource>` components is an error
-- Same `type + name` between `<DataSource>` components is an error
-- Same `<Resource>(type + label)` and `<DataSource>(type + name)` is allowed
+- Same `type + label` between `<DataSource>` components is an error
+- Same `<Resource>(type + label)` and `<DataSource>(type + label)` is allowed
 - Duplicate `<Variable>` names are an error
 - Multiple `<Locals>` are each output as independent `locals {}` blocks
 - Duplicate `<Output>` names are an error
@@ -225,7 +225,7 @@ react-hcl build src/staging.tsx -o envs/staging/
 - Syntax errors: Errors during TSX evaluation
 - HCL parse errors: Display location and cause within innerText
 - JS expression evaluation errors: Display expression and exception message
-- Conflict errors: Display block type and logical labels (`Resource: type + label`, `DataSource: type + name`)
+- Conflict errors: Display block type and logical labels (`Resource: type + label`, `DataSource: type + label`)
 - Variable mismatch: Display diff content
 
 ## 13. Operations Guide
@@ -275,7 +275,7 @@ const vpcRef = useRef();
 ### 15.3 Variable / Locals
 ```tsx
 <>
-  <Variable name="environment" type="string" default="dev" />
+  <Variable label="environment" type="string" default="dev" />
   <Locals
     common_tags={{ Environment: tf.var("environment") }}
   />

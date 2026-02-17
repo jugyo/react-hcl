@@ -9,7 +9,7 @@ export type OutputValue =
   | { [key: string]: OutputValue };
 
 export type OutputProps = {
-  name: string;
+  label: string;
   value: OutputValue;
   description?: string;
   sensitive?: boolean;

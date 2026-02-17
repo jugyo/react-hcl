@@ -34,10 +34,10 @@ function Main({ region, instanceType }) {
   return (
     <>
       <Provider type="aws" region={region} />
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       <Module
-        name="vpc"
+        label="vpc"
         ref={vpcRef}
         source="terraform-aws-modules/vpc/aws"
         cidr="10.0.0.0/16"
@@ -52,7 +52,7 @@ function Main({ region, instanceType }) {
         instanceType={instanceType}
       />
 
-      <Output name="vpc_id" value={vpcRef.vpc_id} />
+      <Output label="vpc_id" value={vpcRef.vpc_id} />
     </>
   );
 }
@@ -75,7 +75,7 @@ export function WebServer({ vpcId, subnetId, instanceType }) {
     <>
       <Data
         type="aws_ami"
-        name="ubuntu"
+        label="ubuntu"
         ref={amiRef}
         most_recent={true}
         owners={["099720109477"]}
@@ -193,10 +193,10 @@ See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudF
 
 | Component | HCL block |
 |---|---|
-| `<Resource>` | `resource "type" "name" { ... }` |
-| `<Data>` | `data "type" "name" { ... }` |
-| `<Variable>` | `variable "name" { ... }` |
-| `<Output>` | `output "name" { ... }` |
+| `<Resource>` | `resource "type" "label" { ... }` |
+| `<Data>` | `data "type" "label" { ... }` |
+| `<Variable>` | `variable "label" { ... }` |
+| `<Output>` | `output "label" { ... }` |
 | `<Locals>` | `locals { ... }` |
 | `<Provider>` | `provider "type" { ... }` |
 | `<Terraform>` | `terraform { ... }` |

@@ -53,7 +53,7 @@ function Main({
       />
       <Provider type="aws" region={region} />
 
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block={vpcCidr} />
 
@@ -94,7 +94,7 @@ function Main({
         fargateMemory={fargateMemory}
       />
 
-      <Output name="alb_hostname" value={albRef.dns_name} />
+      <Output label="alb_hostname" value={albRef.dns_name} />
     </>
   );
 }

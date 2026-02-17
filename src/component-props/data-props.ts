@@ -12,7 +12,7 @@ export type AwsDataPropsMap = {
 };
 
 type DataCoreProps = {
-  name: string;
+  label: string;
   ref?: any;
   children?: string | string[];
 };

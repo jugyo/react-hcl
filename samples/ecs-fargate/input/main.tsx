@@ -41,37 +41,37 @@ function Main({ region }: { region: string }) {
       <Provider type="aws" region={region} />
 
       <Variable
-        name="az_count"
+        label="az_count"
         description="Number of AZs to cover in a given AWS region"
         default="2"
       />
       <Variable
-        name="app_image"
+        label="app_image"
         description="Docker image to run in the ECS cluster"
         default="adongy/hostname-docker:latest"
       />
       <Variable
-        name="app_port"
+        label="app_port"
         description="Port exposed by the docker image to redirect traffic to"
         default={3000}
       />
       <Variable
-        name="app_count"
+        label="app_count"
         description="Number of docker containers to run"
         default={2}
       />
       <Variable
-        name="fargate_cpu"
+        label="fargate_cpu"
         description="Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
         default="256"
       />
       <Variable
-        name="fargate_memory"
+        label="fargate_memory"
         description="Fargate instance memory to provision (in MiB)"
         default="512"
       />
 
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       {/* Network */}
       <Resource
@@ -287,7 +287,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* Outputs */}
-      <Output name="alb_hostname" value={albRef.dns_name} />
+      <Output label="alb_hostname" value={albRef.dns_name} />
     </>
   );
 }

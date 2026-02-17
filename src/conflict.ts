@@ -7,14 +7,14 @@
  *
  * Conflict rules (from design doc §5.2):
  *   - Resource: duplicate type + label → error
- *   - Data: duplicate type + name → error
- *   - Resource(type + label) vs Data(type + name) → allowed
- *   - Variable: duplicate name → error
- *   - Output: duplicate name → error
+ *   - Data: duplicate type + label → error
+ *   - Resource(type + label) vs Data(type + label) → allowed
+ *   - Variable: duplicate label → error
+ *   - Output: duplicate label → error
  *   - Locals: multiple blocks → allowed
  *   - Provider: same type with different alias → allowed; same type + alias → error
  *   - Terraform: more than one block → error
- *   - Module: duplicate name → error
+ *   - Module: duplicate label → error
  */
 
 import type { Block } from "./blocks";
@@ -47,7 +47,7 @@ export function detectConflicts(blocks: Block[]): void {
         const key = `${block.type}:${block.name}`;
         if (resourceKeys.has(key)) {
           throw new ConflictError(
-            `Conflict: duplicate resource "${block.type}" "${block.name}"`,
+            `Conflict: duplicate resource type+label "${block.type}" "${block.name}"`,
           );
         }
         resourceKeys.add(key);
@@ -57,7 +57,7 @@ export function detectConflicts(blocks: Block[]): void {
         const key = `${block.type}:${block.name}`;
         if (dataKeys.has(key)) {
           throw new ConflictError(
-            `Conflict: duplicate data source "${block.type}" "${block.name}"`,
+            `Conflict: duplicate data source type+label "${block.type}" "${block.name}"`,
           );
         }
         dataKeys.add(key);
@@ -66,7 +66,7 @@ export function detectConflicts(blocks: Block[]): void {
       case "variable": {
         if (variableNames.has(block.name)) {
           throw new ConflictError(
-            `Conflict: duplicate variable "${block.name}"`,
+            `Conflict: duplicate variable label "${block.name}"`,
           );
         }
         variableNames.add(block.name);
@@ -74,7 +74,9 @@ export function detectConflicts(blocks: Block[]): void {
       }
       case "output": {
         if (outputNames.has(block.name)) {
-          throw new ConflictError(`Conflict: duplicate output "${block.name}"`);
+          throw new ConflictError(
+            `Conflict: duplicate output label "${block.name}"`,
+          );
         }
         outputNames.add(block.name);
         break;
@@ -102,7 +104,9 @@ export function detectConflicts(blocks: Block[]): void {
       }
       case "module": {
         if (moduleNames.has(block.name)) {
-          throw new ConflictError(`Conflict: duplicate module "${block.name}"`);
+          throw new ConflictError(
+            `Conflict: duplicate module label "${block.name}"`,
+          );
         }
         moduleNames.add(block.name);
         break;

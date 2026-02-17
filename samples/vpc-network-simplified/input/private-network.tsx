@@ -80,7 +80,7 @@ export function PrivateNetwork({
       ))}
 
       <Output
-        name="private_subnet_ids"
+        label="private_subnet_ids"
         value={tf.raw(`[${subnetRefs.map((r) => r.id).join(", ")}]`)}
       />
     </>

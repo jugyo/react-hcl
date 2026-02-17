@@ -105,8 +105,8 @@ function Main({ region }: { region: string }) {
         restrict_public_buckets={true}
       />
 
-      <Output name="bucket_name" value={bucketRef.id} />
-      <Output name="kms_key_arn" value={keyRef.arn} />
+      <Output label="bucket_name" value={bucketRef.id} />
+      <Output label="kms_key_arn" value={keyRef.arn} />
     </>
   );
 }

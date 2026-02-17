@@ -170,7 +170,7 @@ describe("render", () => {
         [key: string]: any;
       }) {
         const { type, name, ref, children, ...attrs } = props;
-        if (ref) ref.__refMeta = { blockType: "resource", type, name };
+        if (ref) ref.__refMeta = { blockType: "resource", type, label: name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
         return {
           blockType: "resource" as const,
@@ -233,7 +233,7 @@ describe("render", () => {
         [key: string]: any;
       }) {
         const { type, name, ref, children, ...attrs } = props;
-        if (ref) ref.__refMeta = { blockType: "resource", type, name };
+        if (ref) ref.__refMeta = { blockType: "resource", type, label: name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
         return {
           blockType: "resource" as const,
@@ -288,7 +288,7 @@ describe("render", () => {
         [key: string]: any;
       }) {
         const { type, name, ref, children, ...attrs } = props;
-        if (ref) ref.__refMeta = { blockType: "resource", type, name };
+        if (ref) ref.__refMeta = { blockType: "resource", type, label: name };
         const rawChildren = Array.isArray(children) ? children[0] : children;
         return {
           blockType: "resource" as const,

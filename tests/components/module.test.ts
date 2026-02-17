@@ -10,7 +10,7 @@ describe("Module component", () => {
 
   it("returns a ModuleBlock with source and input variables", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "terraform-aws-modules/vpc/aws",
       cidr: "10.0.0.0/16",
     });
@@ -24,7 +24,7 @@ describe("Module component", () => {
 
   it("includes version in attributes", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "terraform-aws-modules/vpc/aws",
       version: "~> 5.0",
     });
@@ -34,7 +34,7 @@ describe("Module component", () => {
 
   it("excludes ref and children from attributes", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       ref: {},
       children: 'source = "./modules/vpc"',
     });
@@ -44,7 +44,7 @@ describe("Module component", () => {
 
   it("unwraps children array and stores first element as innerText", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       children: ['source = "./modules/vpc"'] as any,
     });
     expect(block.innerText).toBe('  source = "./modules/vpc"');
@@ -52,7 +52,7 @@ describe("Module component", () => {
 
   it("discards props and __hcl when innerText is used", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "./modules/vpc",
       __hcl: { name: "my-network" },
       children: 'source = "./local"\nname = "override"',
@@ -63,7 +63,7 @@ describe("Module component", () => {
 
   it("does not set innerText when children is undefined", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "./modules/vpc",
     });
     expect(block.innerText).toBeUndefined();
@@ -72,20 +72,20 @@ describe("Module component", () => {
   it("registers __refMeta with blockType module on useRef proxy", () => {
     const ref = useRef();
     Module({
-      name: "vpc",
+      label: "vpc",
       source: "terraform-aws-modules/vpc/aws",
       ref,
     });
     expect(ref.__refMeta).toEqual({
       blockType: "module",
       type: "module",
-      name: "vpc",
+      label: "vpc",
     });
   });
 
   it("resolves module ref to module.<name>.<attr> path", () => {
     const ref = useRef();
-    ref.__refMeta = { blockType: "module", type: "module", name: "vpc" };
+    ref.__refMeta = { blockType: "module", type: "module", label: "vpc" };
     const vpcId = ref.vpc_id;
     expect(isRawHCL(vpcId)).toBe(true);
     expect(vpcId.value).toBe("module.vpc.vpc_id");
@@ -96,16 +96,16 @@ describe("Module component", () => {
     vpcRef.__refMeta = {
       blockType: "resource",
       type: "aws_vpc",
-      name: "main",
+      label: "main",
     };
     const moduleRef = useRef();
     moduleRef.__refMeta = {
       blockType: "module",
       type: "module",
-      name: "networking",
+      label: "networking",
     };
     const block = Module({
-      name: "app",
+      label: "app",
       source: "./modules/app",
       depends_on: [vpcRef, moduleRef],
     });
@@ -120,10 +120,10 @@ describe("Module component", () => {
     dataRef.__refMeta = {
       blockType: "data",
       type: "aws_ami",
-      name: "latest",
+      label: "latest",
     };
     const block = Module({
-      name: "app",
+      label: "app",
       source: "./modules/app",
       depends_on: [dataRef],
     });
@@ -135,11 +135,11 @@ describe("Module component", () => {
     westRef.__refMeta = {
       blockType: "provider",
       type: "aws",
-      name: "west",
+      label: "west",
       alias: "west",
     };
     const block = Module({
-      name: "vpc_west",
+      label: "vpc_west",
       source: "./modules/vpc",
       providers: { aws: westRef },
     });
@@ -154,10 +154,10 @@ describe("Module component", () => {
     defaultRef.__refMeta = {
       blockType: "provider",
       type: "aws",
-      name: "default",
+      label: "default",
     };
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "./modules/vpc",
       providers: { aws: defaultRef },
     });
@@ -167,7 +167,7 @@ describe("Module component", () => {
 
   it("passes count and for_each as regular attributes", () => {
     const block = Module({
-      name: "instances",
+      label: "instances",
       source: "./modules/instance",
       count: 3,
     });
@@ -176,7 +176,7 @@ describe("Module component", () => {
 
   it("merges __hcl prop into HCL attributes to resolve reserved prop conflicts", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "./modules/vpc",
       __hcl: { name: "my-network", type: "internal" },
     });
@@ -190,7 +190,7 @@ describe("Module component", () => {
 
   it("__hcl prop overrides same-named regular props", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "./modules/vpc",
       cidr: "10.0.0.0/16",
       __hcl: { cidr: "10.1.0.0/16" },
@@ -200,7 +200,7 @@ describe("Module component", () => {
 
   it("passes multiple input variables of various types", () => {
     const block = Module({
-      name: "vpc",
+      label: "vpc",
       source: "terraform-aws-modules/vpc/aws",
       cidr: "10.0.0.0/16",
       azs: ["us-east-1a", "us-east-1b"],

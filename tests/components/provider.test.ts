@@ -26,7 +26,7 @@ describe("Provider component", () => {
     expect(ref.__refMeta).toEqual({
       blockType: "provider",
       type: "aws",
-      name: "west",
+      label: "west",
       alias: "west",
     });
   });
@@ -37,7 +37,7 @@ describe("Provider component", () => {
     expect(ref.__refMeta).toEqual({
       blockType: "provider",
       type: "aws",
-      name: "aws",
+      label: "aws",
     });
   });
 });

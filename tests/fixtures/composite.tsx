@@ -25,6 +25,6 @@ const vpcRef = useRef();
 export default (
   <>
     <VpcModule cidr="10.0.0.0/16" vpcRef={vpcRef} />
-    <Output name="vpc_id" value={vpcRef.id} />
+    <Output label="vpc_id" value={vpcRef.id} />
   </>
 );

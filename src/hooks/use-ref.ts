@@ -8,7 +8,7 @@
  *   1. Stores metadata (__refMeta) set by Resource/Data/Provider/Module components
  *   2. Returns RawHCL values on property access (e.g. ref.id → raw("aws_vpc.main.id"))
  *   3. Supports nested access (ref.outputs.vpc_id → raw("data.terraform_remote_state.x.outputs.vpc_id"))
- *   4. Provides special __dependsOnValue (type.name format for depends_on)
+ *   4. Provides special __dependsOnValue (type.label format for depends_on)
  *   5. Provides special __providerValue (type.alias format for provider references)
  *
  * Stateful hook store:
@@ -38,7 +38,7 @@ const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 export type RefMeta = {
   blockType: "resource" | "data" | "provider" | "module";
   type: string;
-  name: string;
+  label: string;
   alias?: string;
 };
 
@@ -100,12 +100,12 @@ export function getHookStore(): RefProxy[] {
  */
 function buildPrefix(meta: RefMeta): string {
   if (meta.blockType === "module") {
-    return `module.${meta.name}`;
+    return `module.${meta.label}`;
   }
   if (meta.blockType === "data") {
-    return `data.${meta.type}.${meta.name}`;
+    return `data.${meta.type}.${meta.label}`;
   }
-  return `${meta.type}.${meta.name}`;
+  return `${meta.type}.${meta.label}`;
 }
 
 const UNRESOLVED_PLACEHOLDER = "__UNRESOLVED_REF__";
@@ -179,7 +179,7 @@ export function useRef(): RefProxy {
       return {
         blockType: "resource",
         type: UNRESOLVED_PLACEHOLDER,
-        name: UNRESOLVED_PLACEHOLDER,
+        label: UNRESOLVED_PLACEHOLDER,
       };
     }
     return meta;
@@ -194,7 +194,7 @@ export function useRef(): RefProxy {
         return meta;
       }
 
-      // depends_on value: type.name (or data.type.name) without attribute suffix
+      // depends_on value: type.label (or data.type.label) without attribute suffix
       if (prop === "__dependsOnValue") {
         return createLazyRawHCL(() => buildPrefix(getMeta()));
       }
@@ -203,7 +203,7 @@ export function useRef(): RefProxy {
       if (prop === "__providerValue") {
         return createLazyRawHCL(() => {
           const m = getMeta();
-          return `${m.type}.${m.alias || m.name}`;
+          return `${m.type}.${m.alias || m.label}`;
         });
       }
 

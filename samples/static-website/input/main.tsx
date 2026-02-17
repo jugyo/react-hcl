@@ -36,18 +36,18 @@ function Main({ region }: { region: string }) {
       <Provider type="aws" region={region} />
 
       <Variable
-        name="domain_name"
+        label="domain_name"
         type="string"
         description="Domain name for the website"
       />
       <Variable
-        name="price_class"
+        label="price_class"
         type="string"
         default="PriceClass_100"
         description="CloudFront distribution price class"
       />
       <Variable
-        name="default_root_object"
+        label="default_root_object"
         type="string"
         default="index.html"
         description="Default root object for CloudFront"
@@ -141,7 +141,7 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* S3 Bucket Policy - allow CloudFront access */}
-      <Data type="aws_iam_policy_document" name="this" ref={policyDocRef}>
+      <Data type="aws_iam_policy_document" label="this" ref={policyDocRef}>
         {`
           statement {
             sid       = "AllowCloudFrontServicePrincipal"
@@ -171,11 +171,11 @@ function Main({ region }: { region: string }) {
 
       {/* Outputs */}
       <Output
-        name="cloudfront_domain_name"
+        label="cloudfront_domain_name"
         value={distributionRef.domain_name}
       />
-      <Output name="cloudfront_distribution_id" value={distributionRef.id} />
-      <Output name="s3_bucket_arn" value={bucketRef.arn} />
+      <Output label="cloudfront_distribution_id" value={distributionRef.id} />
+      <Output label="s3_bucket_arn" value={bucketRef.arn} />
     </>
   );
 }

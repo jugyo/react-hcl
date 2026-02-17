@@ -30,16 +30,16 @@ function Main({ region }: { region: string }) {
       <Provider type="aws" region={region} />
 
       <Variable
-        name="db_password"
+        label="db_password"
         type="string"
         sensitive={true}
         description="Master password for the PostgreSQL instance"
       />
 
-      <Data type="aws_vpc" name="default" ref={defaultVpcRef} default={true} />
+      <Data type="aws_vpc" label="default" ref={defaultVpcRef} default={true} />
       <Data
         type="aws_subnets"
-        name="default"
+        label="default"
         ref={defaultSubnetsRef}
         filter={[
           {
@@ -104,8 +104,8 @@ function Main({ region }: { region: string }) {
         lifecycle={{ prevent_destroy: true }}
       />
 
-      <Output name="db_endpoint" value={dbRef.endpoint} />
-      <Output name="db_arn" value={dbRef.arn} />
+      <Output label="db_endpoint" value={dbRef.endpoint} />
+      <Output label="db_arn" value={dbRef.arn} />
     </>
   );
 }

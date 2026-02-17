@@ -48,7 +48,7 @@ function Main({
       />
       <Provider type="aws" region={region} />
 
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       <Resource
         type="aws_vpc"
@@ -91,7 +91,7 @@ function Main({
         projectName={projectName}
       />
 
-      <Output name="vpc_id" value={vpcRef.id} />
+      <Output label="vpc_id" value={vpcRef.id} />
     </>
   );
 }

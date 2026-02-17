@@ -31,11 +31,11 @@ function Main() {
         }}
       />
       <Provider type="aws" region="ap-northeast-1" />
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       <Module
         ref={vpc}
-        name="vpc"
+        label="vpc"
         source="terraform-aws-modules/vpc/aws"
         version="~> 5.0"
         __hcl={{ name: "demo-vpc" }}
@@ -57,8 +57,8 @@ function Main() {
         tags={{ Name: "app-server" }}
       />
 
-      <Output name="vpc_id" value={vpc.vpc_id} />
-      <Output name="private_subnets" value={vpc.private_subnets} />
+      <Output label="vpc_id" value={vpc.vpc_id} />
+      <Output label="private_subnets" value={vpc.private_subnets} />
     </>
   );
 }

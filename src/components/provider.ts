@@ -25,7 +25,7 @@ export function Provider(props: {
     ref.__refMeta = {
       blockType: "provider",
       type,
-      name: alias || type,
+      label: alias || type,
       ...(alias ? { alias } : {}),
     };
   }

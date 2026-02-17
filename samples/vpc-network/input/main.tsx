@@ -38,31 +38,31 @@ function Main({ region }: { region: string }) {
       <Provider type="aws" region={region} />
 
       <Variable
-        name="vpc_cidr"
+        label="vpc_cidr"
         type="string"
         default="10.0.0.0/16"
         description="VPC CIDR block"
       />
       <Variable
-        name="public_subnet_count"
+        label="public_subnet_count"
         type="number"
         default={2}
         description="Number of public subnets"
       />
       <Variable
-        name="private_subnet_count"
+        label="private_subnet_count"
         type="number"
         default={2}
         description="Number of private subnets"
       />
       <Variable
-        name="project_name"
+        label="project_name"
         type="string"
         default="demo"
         description="Project name for resource tags"
       />
 
-      <Data type="aws_availability_zones" name="available" ref={azRef} />
+      <Data type="aws_availability_zones" label="available" ref={azRef} />
 
       <Resource
         type="aws_vpc"
@@ -190,13 +190,13 @@ function Main({ region }: { region: string }) {
       </Resource>
 
       {/* Outputs */}
-      <Output name="vpc_id" value={vpcRef.id} />
+      <Output label="vpc_id" value={vpcRef.id} />
       <Output
-        name="public_subnet_ids"
+        label="public_subnet_ids"
         value={tf.raw("aws_subnet.public[*].id")}
       />
       <Output
-        name="private_subnet_ids"
+        label="private_subnet_ids"
         value={tf.raw("aws_subnet.private[*].id")}
       />
     </>

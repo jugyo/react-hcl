@@ -85,8 +85,8 @@
 
 ### 5.2 衝突検出
 - `<Resource>` 同士の同一 `type + label` はエラー
-- `<DataSource>` 同士の同一 `type + name` はエラー
-- `<Resource>(type + label)` と `<DataSource>(type + name)` の組み合わせは許可
+- `<DataSource>` 同士の同一 `type + label` はエラー
+- `<Resource>(type + label)` と `<DataSource>(type + label)` の組み合わせは許可
 - `<Variable>` は同名定義をエラー
 - 複数の `<Locals>` はそれぞれ独立した `locals {}` ブロックとして出力
 - `<Output>` は同名定義をエラー
@@ -210,7 +210,7 @@
 - 構文エラー: TSX 評価時にエラー
 - HCL パースエラー: innerText の該当位置と原因を表示
 - JS 式評価エラー: 式と例外メッセージを表示
-- 衝突エラー: ブロック種別と論理ラベル（`Resource: type + label`、`DataSource: type + name`）を表示
+- 衝突エラー: ブロック種別と論理ラベル（`Resource: type + label`、`DataSource: type + label`）を表示
 - Variable 不一致: 差分内容を表示
 
 ## 13. 運用ガイド
@@ -260,7 +260,7 @@ const vpcRef = useRef();
 ### 15.3 Variable / Locals
 ```tsx
 <>
-  <Variable name="environment" type="string" default="dev" />
+  <Variable label="environment" type="string" default="dev" />
   <Locals
     common_tags={{ Environment: tf.var("environment") }}
   />
