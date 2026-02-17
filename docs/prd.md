@@ -56,9 +56,9 @@ The final output is a `main.tf` file that can be used directly with Terraform CL
 - `useRef` is supported as a reference expression (resource attribute references, `provider`, `depends_on`)
 - What is a reference in HCL is expressed with `useRef`; what is a string in HCL is expressed as a string
 - Resource name collision detection follows Terraform compatibility:
-  - Same `type + name` between `<Resource>` elements is an error
+  - Same `type + label` between `<Resource>` elements is an error
   - Same `type + name` between `<DataSource>` elements is an error
-  - Same `type + name` between `<Resource>` and `<DataSource>` is allowed
+  - Same `<Resource>(type + label)` and `<DataSource>(type + name)` is allowed
 - Duplicate `<Variable>` names are an error
 
 ### 2.5 Environment Separation

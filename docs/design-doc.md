@@ -4,7 +4,7 @@
 - Final output is a single `main.tf`
 - Output order preserves React component tree evaluation order (declaration order)
 - Hybrid of JSX attribute syntax and innerText HCL syntax
-- Terraform compatibility first (allow same `type + name` between `Resource` and `DataSource`)
+- Terraform compatibility first (allow same `type + label` in `Resource` and same `type + name` in `DataSource`)
 - Tool responsibility ends at transpilation; running `terraform validate` is the user's responsibility
 
 ## 2. Scope and Non-Scope
@@ -84,9 +84,9 @@
   - `depends_on` attribute: reference via array of `useRef` → output as `depends_on = [aws_vpc.main]`
 
 ### 5.2 Conflict Detection
-- Same `type + name` between `<Resource>` components is an error
+- Same `type + label` between `<Resource>` components is an error
 - Same `type + name` between `<DataSource>` components is an error
-- Same `type + name` between `<Resource>` and `<DataSource>` is allowed
+- Same `<Resource>(type + label)` and `<DataSource>(type + name)` is allowed
 - Duplicate `<Variable>` names are an error
 - Multiple `<Locals>` are each output as independent `locals {}` blocks
 - Duplicate `<Output>` names are an error
@@ -103,7 +103,7 @@
 - Maintain composite grouping
 
 ### 6.3 innerText and Duplicate Checking
-- When innerText is used, attributes other than `type`/`name` are prohibited, so "attribute vs innerText" duplicate checking within the same resource is unnecessary
+- When innerText is used, attributes other than `type`/`label` are prohibited, so "attribute vs innerText" duplicate checking within the same resource is unnecessary
 - However, name conflict detection is still performed as usual
 
 ### 6.4 Formatting
@@ -225,7 +225,7 @@ react-hcl build src/staging.tsx -o envs/staging/
 - Syntax errors: Errors during TSX evaluation
 - HCL parse errors: Display location and cause within innerText
 - JS expression evaluation errors: Display expression and exception message
-- Conflict errors: Display block type and `type + name`
+- Conflict errors: Display block type and logical labels (`Resource: type + label`, `DataSource: type + name`)
 - Variable mismatch: Display diff content
 
 ## 13. Operations Guide
@@ -256,7 +256,7 @@ react-hcl build src/staging.tsx -o envs/staging/
 ```tsx
 <Resource
   type="aws_vpc"
-  name="main"
+  label="main"
   cidr_block="10.0.0.0/16"
   enable_dns_hostnames={true}
 />
@@ -267,8 +267,8 @@ react-hcl build src/staging.tsx -o envs/staging/
 const vpcRef = useRef();
 
 <>
-  <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
-  <Resource type="aws_subnet" name="public" vpc_id={vpcRef.id} cidr_block="10.0.1.0/24" />
+  <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+  <Resource type="aws_subnet" label="public" vpc_id={vpcRef.id} cidr_block="10.0.1.0/24" />
 </>
 ```
 
@@ -284,7 +284,7 @@ const vpcRef = useRef();
 
 ### 15.4 innerText
 ```tsx
-<Resource type="aws_security_group" name="example">
+<Resource type="aws_security_group" label="example">
   {() => `
     name   = "example"
     vpc_id = ${vpcRef.id}
@@ -314,10 +314,10 @@ const virginiaRef = useRef();
   <Provider type="aws" ref={virginiaRef} alias="virginia" region="us-east-1" />
 
   {/* provider omitted → default aws (Tokyo) */}
-  <Resource type="aws_instance" name="tokyo" ami="ami-xxx" instance_type="t3.micro" />
+  <Resource type="aws_instance" label="tokyo" ami="ami-xxx" instance_type="t3.micro" />
 
   {/* reference provider via useRef → Virginia */}
-  <Resource type="aws_instance" name="us" ami="ami-yyy" instance_type="t3.micro" provider={virginiaRef} />
+  <Resource type="aws_instance" label="us" ami="ami-yyy" instance_type="t3.micro" provider={virginiaRef} />
 </>
 ```
 
@@ -326,8 +326,8 @@ const virginiaRef = useRef();
 const vpcRef = useRef();
 
 <>
-  <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
-  <Resource type="aws_instance" name="web" ami="ami-xxx" instance_type="t3.micro" depends_on={[vpcRef]} />
+  <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+  <Resource type="aws_instance" label="web" ami="ami-xxx" instance_type="t3.micro" depends_on={[vpcRef]} />
 </>
 ```
 

@@ -85,13 +85,13 @@ export function WebServer({ vpcId, subnetId, instanceType }) {
       />
       <Resource
         type="aws_security_group"
-        name="web"
+        label="web"
         ref={sgRef}
         vpc_id={vpcId}
       />
       <Resource
         type="aws_vpc_security_group_ingress_rule"
-        name="web_http"
+        label="web_http"
         security_group_id={sgRef.id}
         from_port={80}
         to_port={80}
@@ -100,14 +100,14 @@ export function WebServer({ vpcId, subnetId, instanceType }) {
       />
       <Resource
         type="aws_vpc_security_group_egress_rule"
-        name="web_all"
+        label="web_all"
         security_group_id={sgRef.id}
         ip_protocol="-1"
         cidr_ipv4="0.0.0.0/0"
       />
       <Resource
         type="aws_instance"
-        name="web"
+        label="web"
         ami={amiRef.id}
         instance_type={instanceType}
         subnet_id={subnetId}

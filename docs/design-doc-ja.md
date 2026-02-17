@@ -84,9 +84,9 @@
   - `depends_on` 属性: `useRef` の配列で参照 → `depends_on = [aws_vpc.main]` として出力
 
 ### 5.2 衝突検出
-- `<Resource>` 同士の同一 `type + name` はエラー
+- `<Resource>` 同士の同一 `type + label` はエラー
 - `<DataSource>` 同士の同一 `type + name` はエラー
-- `<Resource>` と `<DataSource>` の同一 `type + name` は許可
+- `<Resource>(type + label)` と `<DataSource>(type + name)` の組み合わせは許可
 - `<Variable>` は同名定義をエラー
 - 複数の `<Locals>` はそれぞれ独立した `locals {}` ブロックとして出力
 - `<Output>` は同名定義をエラー
@@ -210,7 +210,7 @@
 - 構文エラー: TSX 評価時にエラー
 - HCL パースエラー: innerText の該当位置と原因を表示
 - JS 式評価エラー: 式と例外メッセージを表示
-- 衝突エラー: ブロック種別と `type + name` を表示
+- 衝突エラー: ブロック種別と論理ラベル（`Resource: type + label`、`DataSource: type + name`）を表示
 - Variable 不一致: 差分内容を表示
 
 ## 13. 運用ガイド
@@ -241,7 +241,7 @@
 ```tsx
 <Resource
   type="aws_vpc"
-  name="main"
+  label="main"
   cidr_block="10.0.0.0/16"
   enable_dns_hostnames={true}
 />
@@ -252,8 +252,8 @@
 const vpcRef = useRef();
 
 <>
-  <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
-  <Resource type="aws_subnet" name="public" vpc_id={vpcRef.id} cidr_block="10.0.1.0/24" />
+  <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+  <Resource type="aws_subnet" label="public" vpc_id={vpcRef.id} cidr_block="10.0.1.0/24" />
 </>
 ```
 
@@ -269,7 +269,7 @@ const vpcRef = useRef();
 
 ### 15.4 innerText
 ```tsx
-<Resource type="aws_security_group" name="example">
+<Resource type="aws_security_group" label="example">
   {() => `
     name   = "example"
     vpc_id = ${vpcRef.id}
@@ -299,10 +299,10 @@ const virginiaRef = useRef();
   <Provider type="aws" ref={virginiaRef} alias="virginia" region="us-east-1" />
 
   {/* provider 省略 → デフォルトの aws（東京） */}
-  <Resource type="aws_instance" name="tokyo" ami="ami-xxx" instance_type="t3.micro" />
+  <Resource type="aws_instance" label="tokyo" ami="ami-xxx" instance_type="t3.micro" />
 
   {/* useRef で provider を参照 → バージニア */}
-  <Resource type="aws_instance" name="us" ami="ami-yyy" instance_type="t3.micro" provider={virginiaRef} />
+  <Resource type="aws_instance" label="us" ami="ami-yyy" instance_type="t3.micro" provider={virginiaRef} />
 </>
 ```
 
@@ -311,8 +311,8 @@ const virginiaRef = useRef();
 const vpcRef = useRef();
 
 <>
-  <Resource type="aws_vpc" name="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
-  <Resource type="aws_instance" name="web" ami="ami-xxx" instance_type="t3.micro" depends_on={[vpcRef]} />
+  <Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block="10.0.0.0/16" />
+  <Resource type="aws_instance" label="web" ami="ami-xxx" instance_type="t3.micro" depends_on={[vpcRef]} />
 </>
 ```
 
