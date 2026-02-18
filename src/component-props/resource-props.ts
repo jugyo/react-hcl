@@ -1,7 +1,8 @@
 import type { RawHCL } from "../hcl-serializer";
+import type { Ref } from "../hooks/use-ref";
 import type { SchemaProps } from "./schema-props";
 
-type RefLike = { __refMeta?: unknown };
+type RefLike = Ref;
 
 type AwsResourceSchemas =
   typeof import("../provider-schema/aws").AWS_RESOURCE_SCHEMAS;
@@ -14,7 +15,7 @@ export type AwsResourcePropsMap = {
 
 type ResourceCoreProps = {
   label: string;
-  ref?: any;
+  ref?: Ref;
   children?: string | string[];
 };
 

@@ -33,7 +33,11 @@ export function Resource<T extends string>(
 
   // Register ref metadata so ref.id resolves to "aws_vpc.main.id"
   if (ref) {
-    ref.__refMeta = { blockType: "resource", type, label };
+    (ref as { __refMeta?: any }).__refMeta = {
+      blockType: "resource",
+      type,
+      label,
+    };
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")

@@ -29,7 +29,7 @@ export function Data<T extends string>(props: DataProps<T>): DataBlock {
 
   // Register ref metadata so ref.id resolves to "data.aws_ami.latest.id"
   if (ref) {
-    ref.__refMeta = { blockType: "data", type, label };
+    (ref as { __refMeta?: any }).__refMeta = { blockType: "data", type, label };
   }
 
   // Resolve provider ref: convert ref proxy → raw("type.alias")

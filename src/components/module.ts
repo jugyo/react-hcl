@@ -24,7 +24,11 @@ export function Module(props: ModuleProps): ModuleBlock {
 
   // Register ref metadata so ref.vpc_id resolves to "module.vpc.vpc_id"
   if (ref) {
-    ref.__refMeta = { blockType: "module", type: "module", label };
+    (ref as { __refMeta?: any }).__refMeta = {
+      blockType: "module",
+      type: "module",
+      label,
+    };
   }
 
   // Resolve depends_on refs: convert ref proxies → raw("module.name") / raw("type.name")
