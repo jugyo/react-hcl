@@ -16,6 +16,7 @@ import * as esbuild from "esbuild";
 import { detectConflicts } from "../conflict";
 import { generate } from "../generator";
 import { render } from "../renderer";
+import { formatCliError } from "./error-format";
 import { normalizeHclDocument } from "./hcl-react/normalize";
 import { parseHclDocument } from "./hcl-react/parser";
 import { generateTsxFromBlocks } from "./hcl-react/tsx-generator";
@@ -50,8 +51,12 @@ function parseArgs(argv: string[]): {
       "-h": "--help",
       "-o": "--output",
     },
-    { argv: argv.slice(2), permissive: true },
+    { argv: argv.slice(2) },
   );
+
+  if (args._.length > 1) {
+    throw new Error(`Too many positional arguments: ${args._.join(" ")}`);
+  }
 
   return {
     inputFile: args._[0] ?? "",
@@ -121,6 +126,7 @@ async function runForwardMode(options: {
     bundle: true,
     format: "esm",
     platform: "node",
+    logLevel: "silent",
     jsx: "automatic",
     jsxImportSource: "react-hcl",
     write: false,
@@ -264,6 +270,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err);
+  console.error(formatCliError(err));
   process.exit(1);
 });

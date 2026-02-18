@@ -139,6 +139,9 @@ describe("CLI error handling", () => {
     } catch (e) {
       const err = e as ShellError;
       expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain(
+        "Input file not found: non-existent-file.tsx",
+      );
     }
   });
 
@@ -151,8 +154,37 @@ describe("CLI error handling", () => {
     } catch (e) {
       const err = e as ShellError;
       expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain("Build failed with");
+      expect(err.stderr.toString()).toContain("1.");
+      expect(err.stderr.toString()).not.toContain("failureErrorWithLog");
+      expect(err.stderr.toString()).not.toContain("node_modules/esbuild");
     } finally {
       await $`rm -rf ${tmpDir}`;
+    }
+  });
+
+  it("exits with formatted location for invalid TSX from stdin", async () => {
+    try {
+      await $`printf "export default <NotClosed" | bun run src/cli/index.ts -`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain("Build failed with");
+      expect(err.stderr.toString()).toContain("stdin.tsx");
+      expect(err.stderr.toString()).not.toContain("failureErrorWithLog");
+    }
+  });
+
+  it("exits with error for unknown option", async () => {
+    try {
+      await $`bun run src/cli/index.ts --foo`.quiet();
+      throw new Error("should have failed");
+    } catch (e) {
+      const err = e as ShellError;
+      expect(err.exitCode).not.toBe(0);
+      expect(err.stderr.toString()).toContain("--foo");
+      expect(err.stderr.toString()).toContain("Usage:");
     }
   });
 
