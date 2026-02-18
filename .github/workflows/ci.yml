@@ -20,7 +20,7 @@ jobs:
 
       - run: bun test
 
-      - run: bun run typecheck:samples
+      - run: bun run typecheck:examples
 
       - run: bun run build
 
