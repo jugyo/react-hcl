@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`Integration: module samples Module: basic with registry source 1`] = `
+exports[`Integration: module examples Module: basic with registry source 1`] = `
 "module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "~> 5.0"
@@ -16,7 +16,7 @@ exports[`Integration: module samples Module: basic with registry source 1`] = `
 "
 `;
 
-exports[`Integration: module samples Module: useRef output references 1`] = `
+exports[`Integration: module examples Module: useRef output references 1`] = `
 "module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -32,7 +32,7 @@ resource "aws_instance" "app" {
 "
 `;
 
-exports[`Integration: module samples Module: depends_on between modules 1`] = `
+exports[`Integration: module examples Module: depends_on between modules 1`] = `
 "module "networking" {
   source   = "./modules/networking"
   vpc_cidr = "10.0.0.0/16"
@@ -53,7 +53,7 @@ module "application" {
 "
 `;
 
-exports[`Integration: module samples Module: provider pass-through 1`] = `
+exports[`Integration: module examples Module: provider pass-through 1`] = `
 "provider "aws" {
   alias  = "east"
   region = "us-east-1"
@@ -84,7 +84,7 @@ module "vpc_west" {
 "
 `;
 
-exports[`Integration: module samples Module: innerText 1`] = `
+exports[`Integration: module examples Module: innerText 1`] = `
 "module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"

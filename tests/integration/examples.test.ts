@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { $ } from "bun";
 
-const samples = [
+const examples = [
   { name: "15.1 Basic Resource", fixture: "sample-15-1.tsx" },
   { name: "15.2 References", fixture: "sample-15-2.tsx" },
   { name: "15.3 Variable/Locals", fixture: "sample-15-3.tsx" },
@@ -16,11 +16,11 @@ const samples = [
   },
 ];
 
-describe("Integration: design doc samples", () => {
-  for (const sample of samples) {
-    it(sample.name, async () => {
+describe("Integration: design doc examples", () => {
+  for (const example of examples) {
+    it(example.name, async () => {
       const result =
-        await $`bun run src/cli/index.ts tests/fixtures/${sample.fixture}`.text();
+        await $`bun run src/cli/index.ts tests/fixtures/${example.fixture}`.text();
       expect(result).toMatchSnapshot();
     });
   }

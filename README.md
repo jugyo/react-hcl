@@ -212,7 +212,7 @@ output "vpc_id" {
 
 </details>
 
-See [`samples/`](samples/) for more examples including ECS Fargate and S3+CloudFront.
+See [`examples/`](examples/) for more examples including ECS Fargate and S3+CloudFront.
 
 ## Components
 

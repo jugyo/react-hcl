@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`Integration: design doc samples 15.1 Basic Resource 1`] = `
+exports[`Integration: design doc examples 15.1 Basic Resource 1`] = `
 "resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -8,7 +8,7 @@ exports[`Integration: design doc samples 15.1 Basic Resource 1`] = `
 "
 `;
 
-exports[`Integration: design doc samples 15.2 References 1`] = `
+exports[`Integration: design doc examples 15.2 References 1`] = `
 "resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
 "
 `;
 
-exports[`Integration: design doc samples 15.3 Variable/Locals 1`] = `
+exports[`Integration: design doc examples 15.3 Variable/Locals 1`] = `
 "variable "environment" {
   type    = string
   default = "dev"
@@ -34,7 +34,7 @@ locals {
 "
 `;
 
-exports[`Integration: design doc samples 15.4 innerText 1`] = `
+exports[`Integration: design doc examples 15.4 innerText 1`] = `
 "resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
@@ -56,7 +56,7 @@ resource "aws_security_group" "example" {
 "
 `;
 
-exports[`Integration: design doc samples 15.5 Provider Aliases 1`] = `
+exports[`Integration: design doc examples 15.5 Provider Aliases 1`] = `
 "provider "aws" {
   region = "ap-northeast-1"
 }
@@ -79,7 +79,7 @@ resource "aws_instance" "us" {
 "
 `;
 
-exports[`Integration: design doc samples 15.6 depends_on 1`] = `
+exports[`Integration: design doc examples 15.6 depends_on 1`] = `
 "resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
@@ -92,7 +92,7 @@ resource "aws_instance" "web" {
 "
 `;
 
-exports[`Integration: design doc samples 15.7 Terraform Attribute 1`] = `
+exports[`Integration: design doc examples 15.7 Terraform Attribute 1`] = `
 "terraform {
   required_version = ">= 1.0"
 
@@ -106,7 +106,7 @@ exports[`Integration: design doc samples 15.7 Terraform Attribute 1`] = `
 "
 `;
 
-exports[`Integration: design doc samples 15.8 Terraform innerText 1`] = `
+exports[`Integration: design doc examples 15.8 Terraform innerText 1`] = `
 "terraform {
 
       required_version = ">= 1.0"
@@ -128,7 +128,7 @@ exports[`Integration: design doc samples 15.8 Terraform innerText 1`] = `
 "
 `;
 
-exports[`Integration: design doc samples Escape: Terraform expressions in innerText 1`] = `
+exports[`Integration: design doc examples Escape: Terraform expressions in innerText 1`] = `
 "resource "aws_instance" "example" {
   ami           = "\${var.ami_id}"
   instance_type = "\${var.instance_type}"

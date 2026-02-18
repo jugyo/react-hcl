@@ -34,9 +34,9 @@
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "lint": "bunx biome check .",
     "lint:fix": "bunx biome check --fix .",
-    "typecheck:samples": "tsc -p samples/tsconfig.json --noEmit",
+    "typecheck:examples": "tsc -p examples/tsconfig.json --noEmit",
     "test": "bun test",
-    "tf:validate:samples": "bash scripts/terraform-validate-samples.sh",
+    "tf:validate:examples": "bash scripts/terraform-validate-examples.sh",
     "prepack": "bun run build"
   },
   "devDependencies": {

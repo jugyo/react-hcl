@@ -8,7 +8,7 @@ if ! command -v terraform >/dev/null 2>&1; then
 fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SAMPLES_DIR="$ROOT_DIR/samples"
+EXAMPLES_DIR="$ROOT_DIR/examples"
 PLUGIN_CACHE_DIR="${TF_PLUGIN_CACHE_DIR:-$ROOT_DIR/.terraform-plugin-cache}"
 PLUGIN_TIMEOUT="${TF_PLUGIN_TIMEOUT:-5m}"
 VALIDATE_LOG_LEVEL="${TF_VALIDATE_LOG:-}"
@@ -16,7 +16,7 @@ DISABLE_IMDS="${AWS_EC2_METADATA_DISABLED:-true}"
 INIT_UPGRADE="${TF_INIT_UPGRADE:-true}"
 VALIDATE_RETRIES="${TF_VALIDATE_RETRIES:-2}"
 
-RUN_TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tf-validate-samples.XXXXXX")"
+RUN_TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tf-validate-examples.XXXXXX")"
 cleanup() {
   rm -rf "$RUN_TMP_DIR"
 }
@@ -27,10 +27,10 @@ mkdir -p "$PLUGIN_CACHE_DIR"
 output_dirs=()
 while IFS= read -r dir; do
   output_dirs+=("$dir")
-done < <(find "$SAMPLES_DIR" -type f -path "*/output/*.tf" -exec dirname {} \; | sort -u)
+done < <(find "$EXAMPLES_DIR" -type f -path "*/output/*.tf" -exec dirname {} \; | sort -u)
 
 if [[ ${#output_dirs[@]} -eq 0 ]]; then
-  echo "No Terraform files found under samples/**/output/*.tf"
+  echo "No Terraform files found under examples/**/output/*.tf"
   exit 0
 fi
 
@@ -41,10 +41,10 @@ if [[ ${#targets[@]} -gt 0 ]]; then
     rel_dir="${dir#"$ROOT_DIR"/}"
     for target in "${targets[@]}"; do
       normalized_target="${target#./}"
-      normalized_target="${normalized_target#samples/}"
+      normalized_target="${normalized_target#examples/}"
       normalized_target="${normalized_target%/}"
       normalized_target="${normalized_target%/output}"
-      if [[ "$rel_dir" == "samples/$normalized_target/output" || "$rel_dir" == "samples/$normalized_target/output/"* ]]; then
+      if [[ "$rel_dir" == "examples/$normalized_target/output" || "$rel_dir" == "examples/$normalized_target/output/"* ]]; then
         filtered_dirs+=("$dir")
         break
       fi
@@ -57,7 +57,7 @@ if [[ ${#output_dirs[@]} -eq 0 ]]; then
   if [[ ${#targets[@]} -gt 0 ]]; then
     echo "No matching Terraform outputs found for targets: ${targets[*]}" >&2
   else
-    echo "No Terraform files found under samples/**/output/*.tf"
+    echo "No Terraform files found under examples/**/output/*.tf"
   fi
   exit 1
 fi
@@ -145,4 +145,4 @@ if [[ ${#failed_dirs[@]} -gt 0 ]]; then
   exit 1
 fi
 
-echo "All sample Terraform outputs are valid."
+echo "All example Terraform outputs are valid."
