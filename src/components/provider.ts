@@ -11,10 +11,11 @@
  *   → provider "aws" { region = "ap-northeast-1" }
  */
 import type { ProviderBlock } from "../blocks";
+import type { Ref } from "../hooks/use-ref";
 
 export function Provider(props: {
   type: string;
-  ref?: any;
+  ref?: Ref;
   alias?: string;
   [key: string]: any;
 }): ProviderBlock {
@@ -22,7 +23,7 @@ export function Provider(props: {
 
   // Register ref metadata so provider can be referenced
   if (ref) {
-    ref.__refMeta = {
+    (ref as { __refMeta?: any }).__refMeta = {
       blockType: "provider",
       type,
       label: alias || type,
