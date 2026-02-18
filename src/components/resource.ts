@@ -3,8 +3,8 @@
  *
  * Extracts `type` and `label` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
- *   - `ref`: reserved for useRef (Step 8)
- *   - `children`: if string, stored as `innerText` for raw HCL body output (Step 10)
+ *   - `ref`: reserved for useRef metadata registration
+ *   - `children`: if string, stored as `innerText` for raw HCL body output
  *
  * Usage in TSX:
  *   <Resource type="aws_vpc" label="main" cidr_block="10.0.0.0/16" />

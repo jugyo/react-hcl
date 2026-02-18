@@ -3,7 +3,7 @@
  *
  * Extracts `type` and `label` as block labels, passes remaining props as HCL attributes.
  * Special props `ref` and `children` are excluded from attributes:
- *   - `ref`: reserved for useRef (Step 8)
+ *   - `ref`: reserved for useRef metadata registration
  *   - `children`: if string, stored as `innerText`
  *
  * Usage in TSX:
