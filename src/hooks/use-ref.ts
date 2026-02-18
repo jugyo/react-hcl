@@ -31,26 +31,44 @@ import type { RawHCL } from "../hcl-serializer";
 
 const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
+export type RefBlockType = "resource" | "data" | "provider" | "module";
+
+/**
+ * Chainable Terraform reference expression (e.g. ref.outputs.vpc_id).
+ */
+export type RefExpression = RawHCL & {
+  [key: string]: RefExpression;
+};
+
+declare const REF_BLOCK_TYPE: unique symbol;
+
+/**
+ * Public ref type returned by useRef().
+ * Generic parameter is an intent marker only.
+ */
+export type Ref<TBlockType extends RefBlockType = RefBlockType> = {
+  __dependsOnValue: RefExpression;
+  __providerValue: RefExpression;
+  [key: string]: RefExpression;
+  [REF_BLOCK_TYPE]?: TBlockType;
+};
+
 /**
  * Metadata stored on a ref after a component registers it.
  * Set by Resource, Data, Provider, or Module when they receive a `ref` prop.
  */
 export type RefMeta = {
-  blockType: "resource" | "data" | "provider" | "module";
+  blockType: RefBlockType;
   type: string;
   label: string;
   alias?: string;
 };
 
 /**
- * The Proxy-based ref object returned by useRef().
- * Property access returns RawHCL or nested RefProxy for chained access.
+ * Internal ref shape used by renderer/components to register metadata.
  */
-export type RefProxy = {
+type InternalRef = Ref & {
   __refMeta?: RefMeta;
-  __dependsOnValue: RawHCL;
-  __providerValue: RawHCL;
-  [key: string]: any;
 };
 
 // --- Hook store for stateful behavior across render passes ---
@@ -61,7 +79,7 @@ const HOOK_KEY = Symbol.for("react-hcl:hookState");
 
 type HookState = {
   hookIndex: number;
-  hookStore: RefProxy[];
+  hookStore: InternalRef[];
 };
 
 function getState(): HookState {
@@ -87,7 +105,7 @@ export function resetHookState(clear?: boolean): void {
 /**
  * Returns the current hook store (for validation after rendering).
  */
-export function getHookStore(): RefProxy[] {
+export function getHookStore(): InternalRef[] {
   return getState().hookStore;
 }
 
@@ -162,13 +180,15 @@ function createLazyRawHCL(resolvePath: () => string): any {
  *     );
  *   }
  */
-export function useRef(): RefProxy {
+export function useRef<
+  TBlockType extends RefBlockType = RefBlockType,
+>(): Ref<TBlockType> {
   const state = getState();
   const idx = state.hookIndex++;
 
   // Return existing proxy from store if available (pass 2 reuses pass 1 proxies)
   if (idx < state.hookStore.length) {
-    return state.hookStore[idx];
+    return state.hookStore[idx] as Ref<TBlockType>;
   }
 
   let meta: RefMeta | undefined;
@@ -185,7 +205,7 @@ export function useRef(): RefProxy {
     return meta;
   };
 
-  const proxy: RefProxy = new Proxy({} as any, {
+  const proxy: InternalRef = new Proxy({} as any, {
     get(_target, prop: string | symbol) {
       if (typeof prop === "symbol") return undefined;
 
@@ -221,5 +241,5 @@ export function useRef(): RefProxy {
   });
 
   state.hookStore.push(proxy);
-  return proxy;
+  return proxy as Ref<TBlockType>;
 }

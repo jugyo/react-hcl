@@ -19,5 +19,6 @@ export { Resource } from "./components/resource";
 export { Terraform } from "./components/terraform";
 export { Variable } from "./components/variable";
 export { tf } from "./helpers/tf";
+export type { Ref, RefBlockType, RefExpression } from "./hooks/use-ref";
 export { useRef } from "./hooks/use-ref";
 export { Fragment } from "./jsx-runtime";
