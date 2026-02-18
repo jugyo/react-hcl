@@ -291,3 +291,10 @@ bun run build
 
 - [Design Document](docs/design-doc.md)
 - [Product Requirements](docs/prd.md)
+
+## Next Steps
+
+- Create project documentation and host it publicly.
+- Refine Terraform schema sync to user environments, modeled after `cdktf get`.
+- Support multi-module project structures.
+- Introduce CLI subcommands for upcoming feature expansion.
