@@ -2,8 +2,8 @@
  * CLI entry point for react-hcl.
  *
  * Usage:
- *   - Forward mode: JSX/TSX -> HCL
- *   - Reverse mode: HCL -> JSX/TSX (`--hcl-react`)
+ *   - generate: JSX/TSX -> HCL
+ *   - reverse: HCL -> JSX/TSX
  */
 
 import { existsSync } from "node:fs";
@@ -11,7 +11,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import parseArgv from "arg";
+import { Command } from "commander";
 import * as esbuild from "esbuild";
 import { detectConflicts } from "../conflict";
 import { generate } from "../generator";
@@ -20,7 +20,6 @@ import { formatCliError } from "./error-format";
 import { normalizeHclDocument } from "./hcl-react/normalize";
 import { parseHclDocument } from "./hcl-react/parser";
 import { generateTsxFromBlocks } from "./hcl-react/tsx-generator";
-import { detectInputFormat } from "./input-format";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,66 +32,6 @@ function resolvePackageEntrypoint(candidates: string[]): string {
   }
 
   return candidates[0];
-}
-
-function parseArgs(argv: string[]): {
-  inputFile: string;
-  output?: string;
-  help: boolean;
-  hclReact: boolean;
-  moduleOutput: boolean;
-} {
-  const args = parseArgv(
-    {
-      "--help": Boolean,
-      "--output": String,
-      "--hcl-react": Boolean,
-      "--module": Boolean,
-      "-h": "--help",
-      "-o": "--output",
-    },
-    { argv: argv.slice(2) },
-  );
-
-  if (args._.length > 1) {
-    throw new Error(`Too many positional arguments: ${args._.join(" ")}`);
-  }
-
-  return {
-    inputFile: args._[0] ?? "",
-    output: args["--output"],
-    help: Boolean(args["--help"]),
-    hclReact: Boolean(args["--hcl-react"]),
-    moduleOutput: Boolean(args["--module"]),
-  };
-}
-
-function printUsage() {
-  console.error("Usage: react-hcl <input.(j|t)sx|-> [-o <file>]");
-  console.error(
-    "       react-hcl --hcl-react <input.tf|-> [-o <file>] [--module]",
-  );
-}
-
-function printHelp() {
-  process.stdout.write(
-    [
-      "react-hcl - Convert between JSX/TSX and Terraform HCL",
-      "",
-      "Usage:",
-      "  react-hcl <input.(j|t)sx|-> [-o <file>]",
-      "  react-hcl --hcl-react <input.tf|-> [-o <file>] [--module]",
-      "  cat input.tsx | react-hcl [-o <file>]",
-      "  cat input.tf | react-hcl --hcl-react [-o <file>] [--module]",
-      "",
-      "Options:",
-      "  --hcl-react         Reverse mode: convert HCL to JSX/TSX",
-      "  --module            Reverse mode: output import/export module format",
-      "  -o, --output <file> Write output to file instead of stdout",
-      "  -h, --help          Show help",
-      "",
-    ].join("\n"),
-  );
 }
 
 async function readStdin(): Promise<string> {
@@ -197,76 +136,122 @@ async function runReverseMode(options: {
   await writeOutput(tsx, options.output);
 }
 
-async function main() {
-  let parsedArgs: ReturnType<typeof parseArgs>;
-  try {
-    parsedArgs = parseArgs(process.argv);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(message);
-    printUsage();
-    process.exit(1);
-  }
-
-  const { inputFile, output, help, hclReact, moduleOutput } = parsedArgs;
-  if (help) {
-    printHelp();
-    return;
-  }
-
+async function resolveInputMode(inputFile: string): Promise<{
+  wantsStdin: boolean;
+  stdinContents: string;
+}> {
   const stdinContents = process.stdin.isTTY ? "" : await readStdin();
   const hasStdin = stdinContents.trim().length > 0;
-  const wantsStdin = inputFile === "-" || (!inputFile && hasStdin);
-  const hasFileInput = Boolean(inputFile && inputFile !== "-");
+  const wantsStdin = inputFile === "-";
+  const hasFileInput = inputFile !== "-";
 
   if (hasFileInput && hasStdin) {
-    console.error("Cannot use stdin and input file together.");
-    printUsage();
-    process.exit(1);
+    throw new Error("Cannot use stdin and input file together.");
   }
 
-  if (!hasFileInput && !wantsStdin) {
-    printUsage();
-    process.exit(1);
+  if (wantsStdin && !hasStdin) {
+    throw new Error("Stdin input is required when input is '-'.");
   }
 
+  return { wantsStdin, stdinContents };
+}
+
+async function runGenerateCommand(options: {
+  inputFile: string;
+  output?: string;
+}) {
+  const { wantsStdin, stdinContents } = await resolveInputMode(
+    options.inputFile,
+  );
+
+  await runForwardMode({
+    inputFile: options.inputFile,
+    wantsStdin,
+    stdinContents,
+    output: options.output,
+  });
+}
+
+async function runReverseCommand(options: {
+  inputFile: string;
+  output?: string;
+  moduleOutput: boolean;
+}) {
+  const { wantsStdin, stdinContents } = await resolveInputMode(
+    options.inputFile,
+  );
   const inputContents = wantsStdin
     ? stdinContents
-    : await readFile(resolve(inputFile), "utf8");
-
-  const inputFormat = detectInputFormat({
-    inputFile: hasFileInput ? inputFile : undefined,
-    inputContents,
-    explicitHclReact: hclReact,
-  });
-
-  if (inputFormat === "unknown") {
-    console.error(
-      "Could not detect input format. Use --hcl-react for HCL input or provide TSX/JSX explicitly.",
-    );
-    process.exit(1);
-  }
-
-  if (inputFormat === "tsx") {
-    if (moduleOutput) {
-      console.error("--module is only available in HCL reverse mode.");
-      process.exit(1);
-    }
-
-    await runForwardMode({
-      inputFile,
-      wantsStdin,
-      stdinContents,
-      output,
-    });
-    return;
-  }
+    : await readFile(resolve(options.inputFile), "utf8");
 
   await runReverseMode({
     inputContents,
-    moduleOutput,
-    output,
+    moduleOutput: options.moduleOutput,
+    output: options.output,
   });
+}
+
+async function main() {
+  const program = new Command();
+  program
+    .name("react-hcl")
+    .description("Convert between JSX/TSX and Terraform HCL")
+    .showHelpAfterError();
+
+  program
+    .command("generate")
+    .description("Convert JSX/TSX to Terraform HCL")
+    .argument("<input>", "Input TSX/JSX file path or '-' for stdin")
+    .option("-o, --output <file>", "Write output to file instead of stdout")
+    .addHelpText(
+      "after",
+      [
+        "",
+        "Examples:",
+        "  react-hcl generate infra.tsx",
+        "  react-hcl generate infra.tsx -o ./tf/main.tf",
+        "  cat infra.tsx | react-hcl generate -",
+      ].join("\n"),
+    )
+    .action(async (inputFile: string, options: { output?: string }) => {
+      await runGenerateCommand({ inputFile, output: options.output });
+    });
+
+  program
+    .command("reverse")
+    .description("Convert Terraform HCL to JSX/TSX")
+    .argument("<input>", "Input .tf file path or '-' for stdin")
+    .option("-o, --output <file>", "Write output to file instead of stdout")
+    .option("--module", "Output import/export module format")
+    .addHelpText(
+      "after",
+      [
+        "",
+        "Examples:",
+        "  react-hcl reverse main.tf",
+        "  react-hcl reverse --module main.tf",
+        "  cat main.tf | react-hcl reverse - -o ./src/main.tsx",
+      ].join("\n"),
+    )
+    .action(
+      async (
+        inputFile: string,
+        options: { output?: string; module?: boolean },
+      ) => {
+        await runReverseCommand({
+          inputFile,
+          output: options.output,
+          moduleOutput: Boolean(options.module),
+        });
+      },
+    );
+
+  if (process.argv.slice(2).length === 0) {
+    program.outputHelp();
+    return;
+  }
+
+  await program.parseAsync(process.argv);
 }
 
 main().catch((err) => {

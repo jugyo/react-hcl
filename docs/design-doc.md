@@ -186,8 +186,8 @@
 ```
 
 ```bash
-react-hcl build src/prod.tsx -o envs/prod/
-react-hcl build src/staging.tsx -o envs/staging/
+react-hcl generate src/prod.tsx -o envs/prod/main.tf
+react-hcl generate src/staging.tsx -o envs/staging/main.tf
 ```
 
 ## 11. Additional Specifications

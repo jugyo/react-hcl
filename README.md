@@ -15,12 +15,13 @@ The goal is not to rewrite Terraform in JS, but to structurally improve IaC comp
 Use the CLI in forward mode (TSX -> HCL) or reverse mode (HCL -> TSX).
 
 ```bash
-react-hcl <input.(j|t)sx|-> [-o <file>]
-react-hcl --hcl-react <input.tf|-> [-o <file>] [--module]
+react-hcl generate <input.(j|t)sx|-> [-o <file>]
+react-hcl reverse <input.tf|-> [-o <file>] [--module]
 ```
 
 Options:
-- `--hcl-react`: Reverse mode (HCL -> TSX)
+- `generate`: Forward mode (TSX/JSX -> HCL)
+- `reverse`: Reverse mode (HCL -> TSX)
 - `--module`: Reverse mode only. Output TSX with import/export module boilerplate
 - `-o, --output <file>`: Write output to a file instead of stdout
 - `-h, --help`: Show help
@@ -28,21 +29,13 @@ Options:
 Examples:
 
 ```bash
-react-hcl infra.tsx                  # output to stdout
-react-hcl infra.tsx -o ./tf/main.tf   # write to file
-react-hcl --hcl-react main.tf          # HCL -> JSX elements
-react-hcl --hcl-react --module main.tf # HCL -> TSX module with import/export
-cat main.tf | react-hcl                # auto-detect input format
-cat main.tf | react-hcl --hcl-react -  # read HCL from stdin explicitly
+react-hcl generate infra.tsx                  # output to stdout
+react-hcl generate infra.tsx -o ./tf/main.tf # write to file
+react-hcl reverse main.tf                     # HCL -> JSX elements
+react-hcl reverse --module main.tf            # HCL -> TSX module with import/export
+cat infra.tsx | react-hcl generate -          # read TSX from stdin
+cat main.tf | react-hcl reverse -             # read HCL from stdin
 ```
-
-Input format detection priority:
-1. Explicit flag (`--hcl-react`)
-2. File extension (`.tf/.hcl` vs `.tsx/.jsx/.ts/.js`)
-3. Content heuristics
-
-If format detection is ambiguous, the CLI fails with:
-`Could not detect input format. Use --hcl-react for HCL input or provide TSX/JSX explicitly.`
 
 ## Example
 
@@ -271,8 +264,8 @@ bun install
 Run the CLI directly without building.
 
 ```bash
-bun src/cli/index.ts infra.tsx
-bun src/cli/index.ts infra.tsx -o ./tf/main.tf
+bun src/cli/index.ts generate infra.tsx
+bun src/cli/index.ts generate infra.tsx -o ./tf/main.tf
 ```
 
 Run the test suite.

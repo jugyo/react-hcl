@@ -175,6 +175,12 @@
 - 環境ごとに異なる出力ディレクトリへ `main.tf` を生成
 - 生成物に条件分岐ロジックを残さない
 
+### 10.1 例
+```bash
+react-hcl generate src/prod.tsx -o envs/prod/main.tf
+react-hcl generate src/staging.tsx -o envs/staging/main.tf
+```
+
 ## 11. 追加仕様
 
 ### 11.1 lifecycle

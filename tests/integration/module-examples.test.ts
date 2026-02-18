@@ -25,7 +25,7 @@ describe("Integration: module examples", () => {
   for (const example of examples) {
     it(example.name, async () => {
       const result =
-        await $`bun run src/cli/index.ts tests/fixtures/${example.fixture}`.text();
+        await $`bun run src/cli/index.ts generate tests/fixtures/${example.fixture}`.text();
       expect(result).toMatchSnapshot();
     });
   }
