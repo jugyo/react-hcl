@@ -67,6 +67,7 @@ React（JSX/TSX）の記法でTerraform設定を記述し、標準的な `.tf` �
 
 ### 2.6 検証責務
 - React Terraformは `terraform validate` を実行しない
+- React Terraform は innerText の HCL 構文をパース/検証せず、JS評価後テキストをそのまま出力する
 - 生成物の検証はユーザーが手元環境で実施する（必要に応じてCIで実施可能）
 
 ## 3. 制約・前提

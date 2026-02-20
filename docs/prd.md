@@ -67,6 +67,7 @@ The final output is a `main.tf` file that can be used directly with Terraform CL
 
 ### 2.6 Validation Responsibility
 - React Terraform does not execute `terraform validate`
+- React Terraform does not parse/validate innerText HCL syntax; innerText is passed through as-is after JS evaluation
 - Validation of generated output is performed by the user in their local environment (can also be done in CI as needed)
 
 ## 3. Constraints & Assumptions

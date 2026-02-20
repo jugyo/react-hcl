@@ -221,14 +221,10 @@ describe("CLI error handling (generate)", () => {
     }
   });
 
-  it("exits with error for invalid innerText HCL", async () => {
-    try {
-      await $`bun run src/cli/index.ts generate tests/fixtures/error-invalid-innertext.tsx`.quiet();
-      throw new Error("should have failed");
-    } catch (e) {
-      const err = e as ShellError;
-      expect(err.exitCode).not.toBe(0);
-    }
+  it("does not validate innerText HCL syntax", async () => {
+    const result =
+      await $`bun run src/cli/index.ts generate tests/fixtures/error-invalid-innertext.tsx`.text();
+    expect(result).toContain("this is not valid HCL {{{");
   });
 
   it("-o creates parent directories if they do not exist", async () => {

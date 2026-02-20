@@ -144,8 +144,8 @@
 - innerText: Incorporate expanded text
 
 ### 8.2 Minimal Validation
-- innerText is syntax-checked with `hcl2-parser` (npm package)
-- Post-JS-evaluation HCL text is parsed with `hcl2-parser`'s `parseToObject()`
+- innerText is passed through as-is after JS expression evaluation
+- The transpiler does not parse/validate innerText HCL syntax
 - Detailed attribute validity is delegated to Terraform CLI (`terraform validate`)
 
 ### 8.3 Responsibility Boundary
@@ -223,7 +223,6 @@ react-hcl generate src/staging.tsx -o envs/staging/main.tf
 ### 12.2 Error Types
 - Type errors: Invalid attribute usage with innerText, etc. (detected by TypeScript type checking)
 - Syntax errors: Errors during TSX evaluation
-- HCL parse errors: Display location and cause within innerText
 - JS expression evaluation errors: Display expression and exception message
 - Conflict errors: Display block type and logical labels (`Resource: type + label`, `DataSource: type + label`)
 - Variable mismatch: Display diff content
@@ -238,7 +237,7 @@ react-hcl generate src/staging.tsx -o envs/staging/main.tf
 
 ### 14.1 Unit Tests
 - Attribute -> HCL conversion
-- innerText expansion/validation
+- innerText expansion/pass-through
 - `useRef` resolution
 - Conflict detection and Variable handling
 

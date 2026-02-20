@@ -145,8 +145,8 @@
 - innerText: 展開後テキストを取り込み
 
 ### 8.2 最低限バリデーション
-- innerText は `hcl2-parser`（npm パッケージ）で構文チェック
-- JS式評価後のHCLテキストを `hcl2-parser` の `parseToObject()` でパースする
+- innerText は JS 式評価後のテキストをそのまま取り込む
+- トランスパイラは innerText の HCL 構文をパース/検証しない
 - 詳細な属性妥当性は Terraform CLI（`terraform validate`）に委譲
 
 ### 8.3 責務境界
@@ -214,7 +214,6 @@ react-hcl generate src/staging.tsx -o envs/staging/main.tf
 ### 12.2 エラー種別
 - 型エラー: innerText 使用時の不正な属性指定など（TypeScript の型チェックで検出）
 - 構文エラー: TSX 評価時にエラー
-- HCL パースエラー: innerText の該当位置と原因を表示
 - JS 式評価エラー: 式と例外メッセージを表示
 - 衝突エラー: ブロック種別と論理ラベル（`Resource: type + label`、`DataSource: type + label`）を表示
 - Variable 不一致: 差分内容を表示
@@ -229,7 +228,7 @@ react-hcl generate src/staging.tsx -o envs/staging/main.tf
 
 ### 14.1 単体テスト
 - 属性 -> HCL 変換
-- innerText 展開/検証
+- innerText 展開/素通し
 - `useRef` 解決
 - 衝突検出・Variable マージ
 

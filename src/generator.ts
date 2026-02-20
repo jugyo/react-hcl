@@ -15,7 +15,6 @@
 
 import type { Block } from "./blocks";
 import { serializeHCLAttributes } from "./hcl-serializer";
-import { validateInnerTextHCL } from "./hcl-validator";
 import type { SerializationContext } from "./provider-schema";
 
 /**
@@ -71,7 +70,6 @@ function hasInnerText(block: Block): block is Block & { innerText: string } {
 function renderBlock(block: Block): string {
   const header = blockHeader(block);
   if (hasInnerText(block)) {
-    validateInnerTextHCL(block.innerText);
     return `${header} {\n${block.innerText}\n}`;
   }
   let context: SerializationContext | undefined;

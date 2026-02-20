@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { generate } from "../src/generator";
 import { adjustIndent } from "../src/hcl-serializer";
-import { validateInnerTextHCL } from "../src/hcl-validator";
 
 describe("adjustIndent", () => {
   it("strips leading and trailing blank lines", () => {
@@ -43,43 +42,18 @@ describe("adjustIndent", () => {
   });
 });
 
-describe("validateInnerTextHCL", () => {
-  it("accepts valid HCL", () => {
-    expect(() => validateInnerTextHCL('  ami = "test"')).not.toThrow();
-  });
-
-  it("accepts valid HCL with nested blocks", () => {
-    const hcl = `  ingress {
-    from_port = 80
-    to_port   = 80
-  }`;
-    expect(() => validateInnerTextHCL(hcl)).not.toThrow();
-  });
-
-  it("rejects invalid HCL", () => {
-    expect(() => validateInnerTextHCL("  a = {")).toThrow("Invalid HCL");
-  });
-
-  it("rejects unclosed blocks", () => {
-    expect(() => validateInnerTextHCL("  block {\n    x = 1")).toThrow(
-      "Invalid HCL",
-    );
-  });
-});
-
 describe("generate with innerText", () => {
-  it("throws on invalid HCL innerText", () => {
-    expect(() =>
-      generate([
-        {
-          blockType: "resource",
-          type: "aws_instance",
-          name: "web",
-          attributes: {},
-          innerText: "  a = {",
-        },
-      ]),
-    ).toThrow("Invalid HCL");
+  it("passes through invalid HCL innerText without validation", () => {
+    const hcl = generate([
+      {
+        blockType: "resource",
+        type: "aws_instance",
+        name: "web",
+        attributes: {},
+        innerText: "  a = {",
+      },
+    ]);
+    expect(hcl).toContain("  a = {");
   });
 
   it("innerText takes precedence over attributes", () => {
