@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Integration: module examples Module: basic with registry source 1`] = `
+exports[`Integration: module examples > Module: basic with registry source 1`] = `
 "module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "~> 5.0"
@@ -12,27 +12,10 @@ exports[`Integration: module examples Module: basic with registry source 1`] = `
   tags = {
     Environment = "dev"
   }
-}
-"
+}"
 `;
 
-exports[`Integration: module examples Module: useRef output references 1`] = `
-"module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
-  cidr    = "10.0.0.0/16"
-}
-
-resource "aws_instance" "app" {
-  ami                    = "ami-0c55b159cbfafe1f0"
-  instance_type          = "t3.micro"
-  subnet_id              = module.vpc.private_subnets
-  vpc_security_group_ids = module.vpc.default_security_group_id
-}
-"
-`;
-
-exports[`Integration: module examples Module: depends_on between modules 1`] = `
+exports[`Integration: module examples > Module: depends_on between modules 1`] = `
 "module "networking" {
   source   = "./modules/networking"
   vpc_cidr = "10.0.0.0/16"
@@ -49,11 +32,23 @@ module "application" {
   vpc_id            = module.networking.vpc_id
   database_endpoint = module.database.endpoint
   depends_on        = [module.networking, module.database]
-}
-"
+}"
 `;
 
-exports[`Integration: module examples Module: provider pass-through 1`] = `
+exports[`Integration: module examples > Module: innerText 1`] = `
+"module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+}"
+`;
+
+exports[`Integration: module examples > Module: provider pass-through 1`] = `
 "provider "aws" {
   alias  = "east"
   region = "us-east-1"
@@ -80,20 +75,20 @@ module "vpc_west" {
   providers = {
     aws = aws.west
   }
-}
-"
+}"
 `;
 
-exports[`Integration: module examples Module: innerText 1`] = `
+exports[`Integration: module examples > Module: useRef output references 1`] = `
 "module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
-
-  name = "my-vpc"
-  cidr = "10.0.0.0/16"
-
-  azs             = ["us-east-1a", "us-east-1b"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  cidr    = "10.0.0.0/16"
 }
-"
+
+resource "aws_instance" "app" {
+  ami                    = "ami-0c55b159cbfafe1f0"
+  instance_type          = "t3.micro"
+  subnet_id              = module.vpc.private_subnets
+  vpc_security_group_ids = module.vpc.default_security_group_id
+}"
 `;

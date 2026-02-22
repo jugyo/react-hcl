@@ -1,5 +1,5 @@
-import { describe, expect, it } from "bun:test";
-import { $ } from "bun";
+import { describe, expect, it } from "vitest";
+import { runCli } from "../helpers/cli";
 
 const examples = [
   { name: "15.1 Basic Resource", fixture: "sample-15-1.tsx" },
@@ -19,9 +19,12 @@ const examples = [
 describe("Integration: design doc examples", () => {
   for (const example of examples) {
     it(example.name, async () => {
-      const result =
-        await $`bun run src/cli/index.ts generate tests/fixtures/${example.fixture}`.text();
-      expect(result).toMatchSnapshot();
+      const result = await runCli([
+        "generate",
+        `tests/fixtures/${example.fixture}`,
+      ]);
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout.trimEnd()).toMatchSnapshot();
     });
   }
 });
@@ -29,10 +32,16 @@ describe("Integration: design doc examples", () => {
 describe("Determinism", () => {
   it("produces identical output for identical input across multiple runs", async () => {
     const results = await Promise.all(
-      Array.from({ length: 5 }, () =>
-        $`bun run src/cli/index.ts generate tests/fixtures/sample-15-2.tsx`.text(),
-      ),
+      Array.from({ length: 5 }, async () => {
+        const result = await runCli([
+          "generate",
+          "tests/fixtures/sample-15-2.tsx",
+        ]);
+        expect(result.exitCode).toBe(0);
+        return result.stdout;
+      }),
     );
+
     for (const result of results) {
       expect(result).toBe(results[0]);
     }

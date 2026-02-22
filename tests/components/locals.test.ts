@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { Locals } from "../../src/components/locals";
 
 describe("Locals component", () => {

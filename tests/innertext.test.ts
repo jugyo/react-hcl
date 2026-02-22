@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { generate } from "../src/generator";
 import { adjustIndent } from "../src/hcl-serializer";
 

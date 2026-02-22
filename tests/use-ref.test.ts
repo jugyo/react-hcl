@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "vitest";
 import { isRawHCL } from "../src/hcl-serializer";
 import { getHookStore, resetHookState, useRef } from "../src/hooks/use-ref";
 

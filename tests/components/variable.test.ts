@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { Variable } from "../../src/components/variable";
 import { generate } from "../../src/generator";
 import { isRawHCL } from "../../src/hcl-serializer";

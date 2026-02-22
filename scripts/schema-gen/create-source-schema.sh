@@ -107,14 +107,14 @@ if [[ "$refresh_schema" == "true" || ! -f "$schema_json" ]]; then
 fi
 
 mkdir -p "$(dirname "$out")"
-bun "$SCRIPT_DIR/generate-react-hcl-schema.mjs" \
+node "$SCRIPT_DIR/generate-react-hcl-schema.mjs" \
   --schema-json "$schema_json" \
   --kind "$kind" \
   --type "$type_name" \
   --out "$out"
 
-if command -v bunx >/dev/null 2>&1; then
-  bunx biome check --write "$out" >/dev/null || true
+if command -v npx >/dev/null 2>&1; then
+  npx biome check --write "$out" >/dev/null || true
 fi
 
 echo "generated source schema: $out"

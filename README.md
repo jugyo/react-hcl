@@ -244,8 +244,8 @@ Clone, build, and link the CLI from source.
 ```bash
 git clone https://github.com/jugyo/react-hcl.git
 cd react-hcl
-bun install
-bun run build
+npm install
+npm run build
 npm link
 ```
 
@@ -258,26 +258,28 @@ Set up a local development environment.
 ```bash
 git clone https://github.com/jugyo/react-hcl.git
 cd react-hcl
-bun install
+# Use Node.js 22 (or newer)
+nvm use || nvm install 22
+npm install
 ```
 
 Run the CLI directly without building.
 
 ```bash
-bun src/cli/index.ts generate infra.tsx
-bun src/cli/index.ts generate infra.tsx -o ./tf/main.tf
+npx tsx src/cli/index.ts generate infra.tsx
+npx tsx src/cli/index.ts generate infra.tsx -o ./tf/main.tf
 ```
 
 Run the test suite.
 
 ```bash
-bun test
+npm test
 ```
 
 Build distributable output.
 
 ```bash
-bun run build
+npm run build
 ```
 
 ## Documentation

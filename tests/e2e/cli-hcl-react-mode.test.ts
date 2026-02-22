@@ -1,79 +1,93 @@
-import { describe, expect, it } from "bun:test";
-import { $, type ShellError } from "bun";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import { runCli } from "../helpers/cli";
 
 describe("CLI reverse command", () => {
   it("reverse converts HCL file to JSX", async () => {
-    const result =
-      await $`bun run src/cli/index.ts reverse tests/fixtures/hcl-react/basic.tf`.text();
-    const expected = await Bun.file(
+    const result = await runCli([
+      "reverse",
+      "tests/fixtures/hcl-react/basic.tf",
+    ]);
+    const expected = await readFile(
       "tests/fixtures/hcl-react/basic.expected.tsx",
-    ).text();
-    expect(result).toBe(expected);
+      "utf8",
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe(expected);
   });
 
   it("reverse --module outputs import/export module format", async () => {
-    const result =
-      await $`bun run src/cli/index.ts reverse --module tests/fixtures/hcl-react/basic.tf`.text();
-    const expected = await Bun.file(
+    const result = await runCli([
+      "reverse",
+      "--module",
+      "tests/fixtures/hcl-react/basic.tf",
+    ]);
+    const expected = await readFile(
       "tests/fixtures/hcl-react/basic.module.expected.tsx",
-    ).text();
-    expect(result).toBe(expected);
+      "utf8",
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe(expected);
   });
 
   it("reverse --help prints subcommand help", async () => {
-    const result = await $`bun run src/cli/index.ts reverse --help`.text();
-    expect(result).toContain("Usage:");
-    expect(result).toContain("react-hcl reverse");
-    expect(result).toContain("Examples:");
+    const result = await runCli(["reverse", "--help"]);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Usage:");
+    expect(result.stdout).toContain("react-hcl reverse");
+    expect(result.stdout).toContain("Examples:");
   });
 
   it("stdin HCL + -o writes reverse output", async () => {
-    const tmpDir = (await $`mktemp -d`.text()).trim();
+    const tmpDir = await mkdtemp(join(tmpdir(), "react-hcl-"));
     const outFile = `${tmpDir}/reverse.tsx`;
     try {
-      await $`cat tests/fixtures/hcl-react/basic.tf | bun run src/cli/index.ts reverse - -o ${outFile}`;
-      const actual = await Bun.file(outFile).text();
-      const expected = await Bun.file(
+      const input = await readFile("tests/fixtures/hcl-react/basic.tf", "utf8");
+      const result = await runCli(["reverse", "-", "-o", outFile], input);
+      const actual = await readFile(outFile, "utf8");
+      const expected = await readFile(
         "tests/fixtures/hcl-react/basic.expected.tsx",
-      ).text();
+        "utf8",
+      );
+      expect(result.exitCode).toBe(0);
       expect(actual).toBe(expected);
     } finally {
-      await $`rm -rf ${tmpDir}`;
+      await rm(tmpDir, { recursive: true, force: true });
     }
   });
 
   it("complex HCL fixtures -> expected reverse TSX", async () => {
-    const result =
-      await $`bun run src/cli/index.ts reverse tests/fixtures/hcl-react/complex.tf`.text();
-    const expected = await Bun.file(
+    const result = await runCli([
+      "reverse",
+      "tests/fixtures/hcl-react/complex.tf",
+    ]);
+    const expected = await readFile(
       "tests/fixtures/hcl-react/complex.expected.tsx",
-    ).text();
-    expect(result).toBe(expected);
+      "utf8",
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe(expected);
   });
 
   it("exits with error when input file and stdin are both provided", async () => {
-    try {
-      await $`cat tests/fixtures/hcl-react/basic.tf | bun run src/cli/index.ts reverse tests/fixtures/hcl-react/basic.tf`.quiet();
-      throw new Error("should have failed");
-    } catch (e) {
-      const err = e as ShellError;
-      expect(err.exitCode).not.toBe(0);
-      expect(err.stderr.toString()).toContain(
-        "Cannot use stdin and input file together.",
-      );
-    }
+    const input = await readFile("tests/fixtures/hcl-react/basic.tf", "utf8");
+    const result = await runCli(
+      ["reverse", "tests/fixtures/hcl-react/basic.tf"],
+      input,
+    );
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain(
+      "Cannot use stdin and input file together.",
+    );
   });
 
   it("exits with error when '-' is passed without stdin content", async () => {
-    try {
-      await $`bun run src/cli/index.ts reverse -`.quiet();
-      throw new Error("should have failed");
-    } catch (e) {
-      const err = e as ShellError;
-      expect(err.exitCode).not.toBe(0);
-      expect(err.stderr.toString()).toContain(
-        "Stdin input is required when input is '-'.",
-      );
-    }
+    const result = await runCli(["reverse", "-"]);
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain(
+      "Stdin input is required when input is '-'.",
+    );
   });
 });
