@@ -1,11 +1,22 @@
-import { describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import {
   attribute,
   block,
   raw,
   serializeHCLAttributes,
 } from "../src/hcl-serializer";
-import type { SerializationContext } from "../src/provider-schema";
+import type {
+  SerializationContext,
+  TerraformTypeSchema,
+} from "../src/provider-schema";
+import {
+  AWS_DATA_SCHEMAS,
+  AWS_RESOURCE_SCHEMAS,
+} from "../src/provider-schema/aws";
+import {
+  TEST_AWS_DATA_SCHEMAS,
+  TEST_AWS_RESOURCE_SCHEMAS,
+} from "./fixtures/provider-schema";
 
 const AWS_INSTANCE_CONTEXT: SerializationContext = {
   blockType: "resource",
@@ -21,6 +32,41 @@ const AWS_CLOUDWATCH_METRIC_ALARM_CONTEXT: SerializationContext = {
   blockType: "resource",
   type: "aws_cloudwatch_metric_alarm",
 };
+
+function seedSchemas() {
+  Object.assign(
+    AWS_RESOURCE_SCHEMAS as Record<string, TerraformTypeSchema>,
+    TEST_AWS_RESOURCE_SCHEMAS,
+  );
+  Object.assign(
+    AWS_DATA_SCHEMAS as Record<string, TerraformTypeSchema>,
+    TEST_AWS_DATA_SCHEMAS,
+  );
+}
+
+function clearSchemas() {
+  const resourceSchemas = AWS_RESOURCE_SCHEMAS as Record<
+    string,
+    TerraformTypeSchema
+  >;
+  const dataSchemas = AWS_DATA_SCHEMAS as Record<string, TerraformTypeSchema>;
+
+  for (const key of Object.keys(resourceSchemas)) {
+    delete resourceSchemas[key];
+  }
+  for (const key of Object.keys(dataSchemas)) {
+    delete dataSchemas[key];
+  }
+}
+
+beforeEach(() => {
+  clearSchemas();
+  seedSchemas();
+});
+
+afterEach(() => {
+  clearSchemas();
+});
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {

@@ -20,20 +20,9 @@ resource "aws_cloudfront_distribution" "main" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
   wait_for_deployment = false
+  origin              = [{ domain_name = "example.com", origin_id = "example-origin", custom_origin_config = { http_port = 80, https_port = 443, origin_protocol_policy = "https-only", origin_ssl_protocols = ["TLSv1.2"] } }]
 
-  origin {
-    domain_name = "example.com"
-    origin_id   = "example-origin"
-
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
-
-  default_cache_behavior {
+  default_cache_behavior = {
     target_origin_id       = "example-origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
@@ -43,22 +32,22 @@ resource "aws_cloudfront_distribution" "main" {
     default_ttl            = 3600
     max_ttl                = 86400
 
-    forwarded_values {
+    forwarded_values = {
       query_string = false
 
-      cookies {
+      cookies = {
         forward = "none"
       }
     }
   }
 
-  restrictions {
-    geo_restriction {
+  restrictions = {
+    geo_restriction = {
       restriction_type = "none"
     }
   }
 
-  viewer_certificate {
+  viewer_certificate = {
     cloudfront_default_certificate = true
   }
 }

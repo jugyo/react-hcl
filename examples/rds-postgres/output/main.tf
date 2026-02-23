@@ -24,10 +24,7 @@ data "aws_vpc" "default" {
 }
 
 data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
+  filter = [{ name = "vpc-id", values = [data.aws_vpc.default.id] }]
 }
 
 resource "aws_security_group" "rds" {
@@ -70,7 +67,7 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot     = true
   backup_retention_period = 7
 
-  lifecycle {
+  lifecycle = {
     prevent_destroy = true
   }
 }

@@ -29,7 +29,7 @@ export function Resource<T extends string>(
   props: ResourceProps<T>,
 ): ResourceBlock {
   const { type, label, ref, children, __hcl, ...rest } = props;
-  const attributes = { ...rest, ...__hcl };
+  const attributes = { ...rest, ...__hcl } as Record<string, any>;
 
   // Register ref metadata so ref.id resolves to "aws_vpc.main.id"
   if (ref) {

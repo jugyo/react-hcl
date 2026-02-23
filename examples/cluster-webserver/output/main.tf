@@ -22,32 +22,16 @@ data "aws_availability_zones" "all" {
 }
 
 resource "aws_security_group" "instance" {
-  ingress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  ingress = [{ from_port = var.server_port, to_port = var.server_port, protocol = "tcp", cidr_blocks = ["0.0.0.0/0"] }]
 
-  lifecycle {
+  lifecycle = {
     create_before_destroy = true
   }
 }
 
 resource "aws_security_group" "elb" {
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  ingress = [{ from_port = 80, to_port = 80, protocol = "tcp", cidr_blocks = ["0.0.0.0/0"] }]
+  egress  = [{ from_port = 0, to_port = 0, protocol = "-1", cidr_blocks = ["0.0.0.0/0"] }]
 }
 
 resource "aws_launch_configuration" "example" {
@@ -73,12 +57,7 @@ resource "aws_autoscaling_group" "example" {
   health_check_type    = "ELB"
   min_size             = 2
   max_size             = 10
-
-  tag {
-    key                 = "Name"
-    value               = "terraform-asg-example"
-    propagate_at_launch = true
-  }
+  tag                  = [{ key = "Name", value = "terraform-asg-example", propagate_at_launch = true }]
 }
 
 resource "aws_elb" "example" {
