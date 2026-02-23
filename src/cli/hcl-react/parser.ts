@@ -1,4 +1,8 @@
-import { parseToObject } from "hcl2-parser";
+import hcl2Parser from "hcl2-parser";
+
+type ParseToObject = (input: string) => [unknown, unknown];
+const parseToObject = (hcl2Parser as { parseToObject: ParseToObject })
+  .parseToObject;
 
 export function parseHclDocument(input: string): Record<string, any> {
   const [result, err] = parseToObject(input);

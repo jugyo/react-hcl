@@ -1,6 +1,6 @@
 {
   "name": "react-hcl",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "JSX/TSX to Terraform (.tf) transpiler with a custom JSX runtime",
   "type": "module",
   "main": "dist/index.js",
@@ -36,6 +36,7 @@
     "lint:fix": "bunx biome check --fix .",
     "typecheck:examples": "tsc -p examples/tsconfig.json --noEmit",
     "test": "bun test",
+    "test:smoke:packed-install": "bash scripts/smoke-test-packed-install.sh",
     "tf:validate:examples": "bash scripts/terraform-validate-examples.sh",
     "prepack": "bun run build"
   },
