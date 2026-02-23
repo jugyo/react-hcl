@@ -37,6 +37,7 @@
     "typecheck:examples": "tsc -p examples/tsconfig.json --noEmit",
     "test": "bun test",
     "test:smoke:packed-install": "bash scripts/smoke-test-packed-install.sh",
+    "release": "bash scripts/release.sh",
     "tf:validate:examples": "bash scripts/terraform-validate-examples.sh",
     "prepack": "bun run build"
   },
