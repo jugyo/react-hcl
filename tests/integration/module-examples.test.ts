@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { runCli } from "../helpers/cli";
+import { describe, expect, it } from "bun:test";
+import { $ } from "bun";
 
 const examples = [
   {
@@ -24,12 +24,9 @@ const examples = [
 describe("Integration: module examples", () => {
   for (const example of examples) {
     it(example.name, async () => {
-      const result = await runCli([
-        "generate",
-        `tests/fixtures/${example.fixture}`,
-      ]);
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout.trimEnd()).toMatchSnapshot();
+      const result =
+        await $`bun run src/cli/index.ts generate tests/fixtures/${example.fixture}`.text();
+      expect(result).toMatchSnapshot();
     });
   }
 });

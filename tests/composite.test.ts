@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { Output } from "../src/components/output";
 import { Resource } from "../src/components/resource";
 import { Variable } from "../src/components/variable";

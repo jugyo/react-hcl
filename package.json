@@ -26,26 +26,22 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:js && npm run build:types",
-    "build:js": "npm run build:js:cli && npm run build:js:index && npm run build:js:jsx-runtime",
-    "build:js:cli": "esbuild src/cli/index.ts --outfile=dist/cli.js --format=esm --platform=node --target=node22 --bundle --external:esbuild --external:commander --external:hcl2-parser --banner:js='#!/usr/bin/env node'",
-    "build:js:index": "esbuild src/index.ts --outfile=dist/index.js --format=esm --platform=node --target=node22 --external:esbuild --bundle",
-    "build:js:jsx-runtime": "esbuild src/jsx-runtime.ts --outfile=dist/jsx-runtime.js --format=esm --platform=node --target=node22 --bundle",
+    "build": "bun run build:js && bun run build:types",
+    "build:js": "bun run build:js:cli && bun run build:js:index && bun run build:js:jsx-runtime",
+    "build:js:cli": "bun build src/cli/index.ts --outfile=dist/cli.js --format=esm --target=node --external=esbuild --bundle --banner='#!/usr/bin/env node'",
+    "build:js:index": "bun build src/index.ts --outfile=dist/index.js --format=esm --target=node --external=esbuild --bundle",
+    "build:js:jsx-runtime": "bun build src/jsx-runtime.ts --outfile=dist/jsx-runtime.js --format=esm --target=node --bundle",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix .",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check --fix .",
     "typecheck:examples": "tsc -p examples/tsconfig.json --noEmit",
-    "pretest": "npm run build:js:cli",
-    "test": "vitest run",
+    "test": "bun test",
     "tf:validate:examples": "bash scripts/terraform-validate-examples.sh",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.15",
-    "@types/node": "^24.5.2",
-    "execa": "^9.6.0",
-    "tsx": "^4.20.6",
-    "vitest": "^3.2.4"
+    "@types/bun": "^1.3.9"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -1,7 +1,7 @@
-import hcl2Parser from "hcl2-parser";
+import { parseToObject } from "hcl2-parser";
 
 export function parseHclDocument(input: string): Record<string, any> {
-  const [result, err] = hcl2Parser.parseToObject(input);
+  const [result, err] = parseToObject(input);
   if (result === null || err !== null) {
     throw new Error(`Failed to parse HCL: ${JSON.stringify(err)}`);
   }

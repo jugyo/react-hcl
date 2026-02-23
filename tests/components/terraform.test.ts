@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { Terraform } from "../../src/components/terraform";
 import { isBlockHCL } from "../../src/hcl-serializer";
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { Provider } from "../../src/components/provider";
 import { useRef } from "../../src/hooks/use-ref";
 

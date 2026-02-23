@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { attr, block, data, resource } from "../src/provider-schema/dsl";
 
 describe("resource schema DSL", () => {

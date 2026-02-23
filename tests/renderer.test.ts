@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { resetHookState, useRef } from "../src/hooks/use-ref";
 import { Fragment, jsx, jsxs } from "../src/jsx-runtime";
 import { render } from "../src/renderer";
