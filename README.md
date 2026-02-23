@@ -284,6 +284,7 @@ bun run build
 
 - [Design Document](docs/design-doc.md)
 - [Product Requirements](docs/prd.md)
+- [Development Guide](docs/development.md)
 
 ## Next Steps
 
