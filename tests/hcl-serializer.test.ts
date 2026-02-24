@@ -1,72 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import {
   attribute,
   block,
   raw,
   serializeHCLAttributes,
 } from "../src/hcl-serializer";
-import type {
-  SerializationContext,
-  TerraformTypeSchema,
-} from "../src/provider-schema";
-import {
-  AWS_DATA_SCHEMAS,
-  AWS_RESOURCE_SCHEMAS,
-} from "../src/provider-schema/aws";
-import {
-  TEST_AWS_DATA_SCHEMAS,
-  TEST_AWS_RESOURCE_SCHEMAS,
-} from "./fixtures/provider-schema";
-
-const AWS_INSTANCE_CONTEXT: SerializationContext = {
-  blockType: "resource",
-  type: "aws_instance",
-};
-
-const AWS_SECURITY_GROUP_CONTEXT: SerializationContext = {
-  blockType: "resource",
-  type: "aws_security_group",
-};
-
-const AWS_CLOUDWATCH_METRIC_ALARM_CONTEXT: SerializationContext = {
-  blockType: "resource",
-  type: "aws_cloudwatch_metric_alarm",
-};
-
-function seedSchemas() {
-  Object.assign(
-    AWS_RESOURCE_SCHEMAS as Record<string, TerraformTypeSchema>,
-    TEST_AWS_RESOURCE_SCHEMAS,
-  );
-  Object.assign(
-    AWS_DATA_SCHEMAS as Record<string, TerraformTypeSchema>,
-    TEST_AWS_DATA_SCHEMAS,
-  );
-}
-
-function clearSchemas() {
-  const resourceSchemas = AWS_RESOURCE_SCHEMAS as Record<
-    string,
-    TerraformTypeSchema
-  >;
-  const dataSchemas = AWS_DATA_SCHEMAS as Record<string, TerraformTypeSchema>;
-
-  for (const key of Object.keys(resourceSchemas)) {
-    delete resourceSchemas[key];
-  }
-  for (const key of Object.keys(dataSchemas)) {
-    delete dataSchemas[key];
-  }
-}
-
-beforeEach(() => {
-  clearSchemas();
-  seedSchemas();
-});
-
-afterEach(() => {
-  clearSchemas();
-});
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
@@ -110,36 +48,19 @@ describe("serializeHCLAttributes", () => {
     expect(result).toContain('Name = "main"');
   });
 
-  it("schema-defined key uses block syntax", () => {
-    const result = serializeHCLAttributes(
-      {
-        lifecycle: { prevent_destroy: true },
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
+  it("explicit block() uses block syntax", () => {
+    const result = serializeHCLAttributes({
+      lifecycle: block({ prevent_destroy: true }),
+    });
     expect(result).toContain("lifecycle {");
     expect(result).not.toContain("lifecycle = {");
     expect(result).toContain("prevent_destroy = true");
   });
 
-  it("explicit block() uses block syntax", () => {
+  it("explicit attribute() forces attribute syntax", () => {
     const result = serializeHCLAttributes({
-      custom_block: block({ nested_key: "value" }),
+      lifecycle: attribute({ prevent_destroy: true }),
     });
-    expect(result).toContain("custom_block {");
-    expect(result).not.toContain("custom_block = {");
-    expect(result).toContain('nested_key = "value"');
-  });
-
-  it("explicit attribute() forces attribute syntax on schema block key", () => {
-    const result = serializeHCLAttributes(
-      {
-        lifecycle: attribute({ prevent_destroy: true }),
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
     expect(result).toContain("lifecycle = {");
     expect(result).toContain("prevent_destroy = true");
   });
@@ -152,36 +73,10 @@ describe("serializeHCLAttributes", () => {
     expect(result).toContain('Name = "main"');
   });
 
-  it("array of objects becomes repeated blocks only when repeatable in schema", () => {
-    const result = serializeHCLAttributes(
-      {
-        ingress: [
-          { from_port: 80, to_port: 80, protocol: "tcp" },
-          { from_port: 443, to_port: 443, protocol: "tcp" },
-        ],
-      },
-      2,
-      AWS_SECURITY_GROUP_CONTEXT,
-    );
-    // Two separate ingress blocks (block syntax, no =)
-    const blocks = result.split("ingress {");
-    expect(blocks.length).toBe(3); // 1 before + 2 blocks
-    expect(result).toContain("from_port = 80");
-    expect(result).toContain("from_port = 443");
-    expect(result).not.toContain("ingress = {");
-  });
-
   it("nested indentation increases by 2 spaces per level", () => {
-    const result = serializeHCLAttributes(
-      {
-        lifecycle: { nested: block({ deep_key: "value" }) },
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
-    // level 0 (indent=2): "  lifecycle {"
-    // level 1 (indent=4): "    nested {"
-    // level 2 (indent=6): "      deep_key = \"value\""
+    const result = serializeHCLAttributes({
+      lifecycle: block({ nested: block({ deep_key: "value" }) }),
+    });
     expect(result).toContain("  lifecycle {");
     expect(result).toContain("    nested {");
     expect(result).toContain('      deep_key = "value"');
@@ -192,7 +87,6 @@ describe("serializeHCLAttributes", () => {
       id: "abc",
       long_key_name: "xyz",
     });
-    // "id" (2 chars) should be padded to align with "long_key_name" (13 chars)
     expect(result).toContain('  id            = "abc"');
     expect(result).toContain('  long_key_name = "xyz"');
   });
@@ -203,61 +97,36 @@ describe("serializeHCLAttributes", () => {
   });
 
   it("blank line between simple attributes and block entries", () => {
-    const result = serializeHCLAttributes(
-      {
-        name: "example",
-        lifecycle: { prevent_destroy: true },
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
-    // Simple attr followed by blank line then block
+    const result = serializeHCLAttributes({
+      name: "example",
+      lifecycle: block({ prevent_destroy: true }),
+    });
     expect(result).toContain('  name = "example"\n\n  lifecycle {');
   });
 
   it("combined case: order, alignment, and blank line separation", () => {
-    const result = serializeHCLAttributes(
-      {
-        cidr_block: "10.0.0.0/16",
-        enable_dns_hostnames: true,
-        tags: { Name: "main" },
-        lifecycle: { prevent_destroy: true },
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
-    // Simple attributes come before block entries
+    const result = serializeHCLAttributes({
+      cidr_block: "10.0.0.0/16",
+      enable_dns_hostnames: true,
+      tags: { Name: "main" },
+      lifecycle: block({ prevent_destroy: true }),
+    });
     const cidrPos = result.indexOf("cidr_block");
     const tagsPos = result.indexOf("tags = {");
     const lifecyclePos = result.indexOf("lifecycle {");
     expect(cidrPos).toBeLessThan(tagsPos);
     expect(cidrPos).toBeLessThan(lifecyclePos);
 
-    // Simple attributes are aligned
     expect(result).toContain('cidr_block           = "10.0.0.0/16"');
     expect(result).toContain("enable_dns_hostnames = true");
 
-    // Blank line between simple attrs and first block entry
     expect(result).toContain("enable_dns_hostnames = true\n\n  tags = {");
   });
 
-  it("unknown type silently falls back to attribute syntax", () => {
-    const result = serializeHCLAttributes({ ingress: { from_port: 80 } }, 2, {
-      blockType: "resource",
-      type: "aws_unknown",
+  it("array<object> remains an attribute value", () => {
+    const result = serializeHCLAttributes({
+      root_block_device: [{ volume_size: 20 }],
     });
-    expect(result).toContain("ingress = {");
-    expect(result).not.toContain("ingress {");
-  });
-
-  it("array<object> is attribute when schema block is non-repeatable", () => {
-    const result = serializeHCLAttributes(
-      {
-        root_block_device: [{ volume_size: 20 }],
-      },
-      2,
-      AWS_INSTANCE_CONTEXT,
-    );
     expect(result).toContain("root_block_device = [{ volume_size = 20 }]");
     expect(result).not.toContain("root_block_device {");
   });
@@ -287,24 +156,5 @@ describe("serializeHCLAttributes", () => {
         metric_query: [block({ id: "q1" }), raw("local.other")],
       }),
     ).toThrow(/mixed BlockHCL array/i);
-  });
-
-  it("metric_query is rendered as repeated blocks via schema", () => {
-    const result = serializeHCLAttributes(
-      {
-        metric_query: [
-          {
-            id: "m1",
-            return_data: true,
-            metric: { metric_name: "CPUUtilization", namespace: "AWS/EC2" },
-          },
-        ],
-      },
-      2,
-      AWS_CLOUDWATCH_METRIC_ALARM_CONTEXT,
-    );
-    expect(result).toContain("metric_query {");
-    expect(result).toContain("metric {");
-    expect(result).not.toContain("metric_query = [");
   });
 });

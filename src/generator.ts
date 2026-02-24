@@ -14,8 +14,10 @@
  */
 
 import type { Block } from "./blocks";
-import { serializeHCLAttributes } from "./hcl-serializer";
-import type { SerializationContext } from "./provider-schema";
+import {
+  type SerializationContext,
+  serializeHCLAttributes,
+} from "./hcl-serializer";
 
 /**
  * Produces the HCL block header string based on block type.

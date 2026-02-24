@@ -23,7 +23,7 @@ It covers local setup, project structure, scripts, testing, and release operatio
 | `src/cli/` | CLI entrypoint and command implementations (`generate`, `reverse`, `init`). |
 | `src/components/` | Primitive Terraform JSX components (`Resource`, `Data`, `Module`, etc.). |
 | `src/hooks/` | Hook implementations such as `useRef`. |
-| `src/provider-schema/` | Provider schema core types and DSL; generated AWS schema modules are intentionally omitted. |
+| `src/cli/init/provider-schema/` | Terraform provider schema resolution and normalization used by `react-hcl init`. |
 | `src/jsx-runtime.ts` | Custom JSX runtime entry for `jsxImportSource`. |
 | `tests/` | Unit/integration/e2e tests. |
 | `examples/` | Example TSX projects used by integration tests and docs. |

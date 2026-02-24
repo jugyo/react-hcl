@@ -7,18 +7,12 @@
  *
  * Auto-classification order:
  *   1. Explicit marker wrappers: attribute()/block()
- *   2. Schema lookup (`blockType + type + key`)
- *   3. Fallback: plain objects -> attribute syntax
+ *   2. Fallback: plain objects -> attribute syntax
  */
-
-import {
-  getNestedBlockSchema,
-  getTypeSchema,
-  isRepeatableBlock,
-  type NestedBlockSchema,
-  type SerializationContext,
-  type TerraformTypeSchema,
-} from "./provider-schema";
+export type SerializationContext = {
+  blockType: "resource" | "data";
+  type: string;
+};
 
 const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
@@ -115,8 +109,6 @@ function serializeValue(value: unknown): string {
   return String(value);
 }
 
-type SerializationScope = TerraformTypeSchema | NestedBlockSchema | undefined;
-
 function isArrayOfBlockHCL(value: unknown[]): value is BlockHCL[] {
   return value.every((item) => isBlockHCL(item));
 }
@@ -125,61 +117,32 @@ export function serializeHCLAttributes(
   attrs: Record<string, any>,
   indent: number = 2,
   context?: SerializationContext,
-  scope?: SerializationScope,
 ): string {
   const pad = " ".repeat(indent);
   const lines: string[] = [];
 
-  const activeScope = scope ?? getTypeSchema(context);
-
   type SimpleEntry = { kind: "simple"; key: string; value: unknown };
   type BlockEntry =
-    | {
-        kind: "block";
-        key: string;
-        value: BlockHCL;
-        schema?: NestedBlockSchema;
-      }
+    | { kind: "block"; key: string; value: BlockHCL }
     | { kind: "attribute"; key: string; value: AttributeHCL }
-    | {
-        kind: "repeated_block";
-        key: string;
-        value: Record<string, any>[];
-        schema: NestedBlockSchema;
-      };
+    | { kind: "repeated_block"; key: string; value: Record<string, any>[] };
 
   const simpleEntries: SimpleEntry[] = [];
   const blockEntries: BlockEntry[] = [];
 
   for (const [key, value] of Object.entries(attrs)) {
-    const nestedBlockSchema = getNestedBlockSchema(context, key, activeScope);
-
     if (isAttributeHCL(value)) {
       blockEntries.push({ kind: "attribute", key, value });
       continue;
     }
 
     if (isBlockHCL(value)) {
-      blockEntries.push({
-        kind: "block",
-        key,
-        value,
-        schema: nestedBlockSchema,
-      });
+      blockEntries.push({ kind: "block", key, value });
       continue;
     }
 
     if (isPlainObject(value)) {
-      if (nestedBlockSchema) {
-        blockEntries.push({
-          kind: "block",
-          key,
-          value: block(value),
-          schema: nestedBlockSchema,
-        });
-      } else {
-        blockEntries.push({ kind: "attribute", key, value: attribute(value) });
-      }
+      blockEntries.push({ kind: "attribute", key, value: attribute(value) });
       continue;
     }
 
@@ -197,23 +160,6 @@ export function serializeHCLAttributes(
         kind: "repeated_block",
         key,
         value: value.map((item) => item.value),
-        schema: nestedBlockSchema ?? { nestingMode: "list", attributes: {} },
-      });
-      continue;
-    }
-
-    if (
-      Array.isArray(value) &&
-      value.length > 0 &&
-      value.every((item) => isPlainObject(item)) &&
-      nestedBlockSchema &&
-      isRepeatableBlock(nestedBlockSchema)
-    ) {
-      blockEntries.push({
-        kind: "repeated_block",
-        key,
-        value: value as Record<string, any>[],
-        schema: nestedBlockSchema,
       });
       continue;
     }
@@ -242,12 +188,7 @@ export function serializeHCLAttributes(
           if (i > 0) lines.push("");
           lines.push(`${pad}${entry.key} {`);
           lines.push(
-            serializeHCLAttributes(
-              entry.value[i],
-              indent + 2,
-              context,
-              entry.schema,
-            ),
+            serializeHCLAttributes(entry.value[i], indent + 2, context),
           );
           lines.push(`${pad}}`);
         }
@@ -255,12 +196,7 @@ export function serializeHCLAttributes(
       case "block":
         lines.push(`${pad}${entry.key} {`);
         lines.push(
-          serializeHCLAttributes(
-            entry.value.value,
-            indent + 2,
-            context,
-            entry.schema,
-          ),
+          serializeHCLAttributes(entry.value.value, indent + 2, context),
         );
         lines.push(`${pad}}`);
         break;
