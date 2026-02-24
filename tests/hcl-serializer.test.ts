@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
+import type { TerraformBlockSchema } from "../src/cli/init/types";
 import {
   attribute,
   block,
   raw,
   serializeHCLAttributes,
 } from "../src/hcl-serializer";
-import type { TerraformBlockSchema } from "../src/cli/init/types";
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
@@ -168,15 +168,11 @@ describe("serializeHCLAttributes with schema context", () => {
       },
     };
     expect(() =>
-      serializeHCLAttributes(
-        { ami: "ami-123", unknown_key: true },
-        2,
-        {
-          blockType: "resource",
-          type: "aws_instance",
-          schemaBlock,
-        },
-      ),
+      serializeHCLAttributes({ ami: "ami-123", unknown_key: true }, 2, {
+        blockType: "resource",
+        type: "aws_instance",
+        schemaBlock,
+      }),
     ).toThrow(/Unknown key "unknown_key"/);
   });
 

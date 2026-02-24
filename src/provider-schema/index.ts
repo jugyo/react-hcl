@@ -1,9 +1,10 @@
 // Public provider schema runtime/store surface.
+
+export { loadRuntimeSchemaRegistry } from "./registry";
 export {
   loadNormalizedActiveProviderSchema,
   writeActiveProviderSchemaMetadata,
 } from "./store";
-export { loadRuntimeSchemaRegistry } from "./registry";
 export type {
   ActiveProviderSchemaMetadataEntry,
   CachePayload,

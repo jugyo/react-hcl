@@ -1,10 +1,13 @@
 // Store helpers for active provider schema metadata and normalized schema loading.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { rename, writeFile } from "node:fs/promises";
-import { mkdir } from "node:fs/promises";
+import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { normalizeProviderSchema } from "./normalize";
-import type { CachePayload, NormalizedProviderSchema, RuntimeMetadata } from "./types";
+import type {
+  CachePayload,
+  NormalizedProviderSchema,
+  RuntimeMetadata,
+} from "./types";
 
 export const DEFAULT_PROVIDER_SOURCE = "registry.terraform.io/hashicorp/aws";
 const RUNTIME_METADATA_FORMAT_VERSION = 1;

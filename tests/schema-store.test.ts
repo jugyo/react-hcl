@@ -8,9 +8,7 @@ import {
   writeActiveProviderSchemaMetadata,
 } from "../src/provider-schema";
 
-async function withTempDir(
-  run: (cwd: string) => Promise<void>,
-): Promise<void> {
+async function withTempDir(run: (cwd: string) => Promise<void>): Promise<void> {
   const cwd = await mkdtemp(join(tmpdir(), "react-hcl-provider-schema-"));
   try {
     await run(cwd);
@@ -139,12 +137,12 @@ describe("provider-schema", () => {
       ).toBe(true);
 
       const normalized = loadNormalizedActiveProviderSchema({ cwd });
-      expect(normalized.resourceSchemas.aws_instance.attributes.ami.required).toBe(
-        true,
-      );
-      expect(normalized.dataSchemas.aws_ami.attributes.most_recent.optional).toBe(
-        true,
-      );
+      expect(
+        normalized.resourceSchemas.aws_instance.attributes.ami.required,
+      ).toBe(true);
+      expect(
+        normalized.dataSchemas.aws_ami.attributes.most_recent.optional,
+      ).toBe(true);
       expect(normalized.providerSchema.attributes.region.optional).toBe(true);
     });
   });

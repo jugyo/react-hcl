@@ -1,10 +1,13 @@
 // Runtime lookup registry that resolves Terraform block schema by block context.
-import type { TerraformProviderSchemaEntry } from "./types";
+
 import {
   DEFAULT_PROVIDER_SOURCE,
   loadActiveProviderSchemaPayload,
 } from "./store";
-import type { RuntimeSchemaRegistry } from "./types";
+import type {
+  RuntimeSchemaRegistry,
+  TerraformProviderSchemaEntry,
+} from "./types";
 
 export function loadRuntimeSchemaRegistry(options?: {
   cwd?: string;
@@ -28,10 +31,14 @@ export function loadRuntimeSchemaRegistry(options?: {
         return null;
       }
       if (context.blockType === "resource") {
-        return providerSchemaEntry.resource_schemas?.[context.type]?.block ?? null;
+        return (
+          providerSchemaEntry.resource_schemas?.[context.type]?.block ?? null
+        );
       }
       if (context.blockType === "data") {
-        return providerSchemaEntry.data_source_schemas?.[context.type]?.block ?? null;
+        return (
+          providerSchemaEntry.data_source_schemas?.[context.type]?.block ?? null
+        );
       }
       return providerSchemaEntry.provider?.block ?? null;
     },

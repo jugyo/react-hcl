@@ -15,11 +15,11 @@ import { Command } from "commander";
 import * as esbuild from "esbuild";
 import { detectConflicts } from "../conflict";
 import { generate } from "../generator";
-import { render } from "../renderer";
 import {
   loadRuntimeSchemaRegistry,
   type RuntimeSchemaRegistry,
 } from "../provider-schema";
+import { render } from "../renderer";
 import { formatCliError } from "./error-format";
 import { normalizeHclDocument } from "./hcl-react/normalize";
 import { parseHclDocument } from "./hcl-react/parser";

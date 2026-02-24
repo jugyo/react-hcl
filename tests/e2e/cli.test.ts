@@ -76,20 +76,23 @@ afterAll(async () => {
 
 describe("CLI E2E (generate)", () => {
   it("root --help prints help text", async () => {
-    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} --help`.text();
+    const result =
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} --help`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("generate [options] <input>");
     expect(result).toContain("reverse [options] <input>");
   });
 
   it("root -h prints help text", async () => {
-    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} -h`.text();
+    const result =
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} -h`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("Commands:");
   });
 
   it("no subcommand prints root help", async () => {
-    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT}`.text();
+    const result =
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT}`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("generate [options] <input>");
     expect(result).toContain("reverse [options] <input>");

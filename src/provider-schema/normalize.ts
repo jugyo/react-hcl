@@ -146,7 +146,10 @@ export function normalizeProviderSchema(options: {
   const dataSchemas = sortKeys(
     Object.fromEntries(
       Object.entries(schemaEntry.data_source_schemas ?? {}).map(
-        ([type, entry]) => [type, normalizeTypeSchema("data", type, entry.block)],
+        ([type, entry]) => [
+          type,
+          normalizeTypeSchema("data", type, entry.block),
+        ],
       ),
     ),
   );

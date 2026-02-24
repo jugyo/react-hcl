@@ -1,8 +1,8 @@
-import { logInit } from "./log";
 import {
   loadNormalizedActiveProviderSchema,
   writeActiveProviderSchemaMetadata,
 } from "../../provider-schema";
+import { logInit } from "./log";
 import {
   ensureTerraformVersion,
   resolveSchema,
@@ -12,9 +12,9 @@ import {
   writeGeneratedOutputs,
 } from "./schema-type/output";
 
-export async function runInitCommand(
-  options: { refresh: boolean },
-): Promise<void> {
+export async function runInitCommand(options: {
+  refresh: boolean;
+}): Promise<void> {
   logInit("Resolving Terraform version...");
   const terraformVersion = await ensureTerraformVersion();
   logInit(`Terraform version: ${terraformVersion}`);
