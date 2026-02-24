@@ -1,17 +1,16 @@
 import type { RawHCL } from "../hcl-serializer";
 import type { Ref } from "../hooks/use-ref";
-import type { SchemaProps } from "./schema-props";
+import type { ReactHclSchemaMode, ResourceTypeMap } from "../index";
 
 type RefLike = Ref;
 
-type AwsResourceSchemas =
-  typeof import("../provider-schema/aws").AWS_RESOURCE_SCHEMAS;
+type StrictMode = ReactHclSchemaMode extends { __strictSchema: true }
+  ? true
+  : false;
 
-export type AwsResourceType = keyof AwsResourceSchemas;
+export type AwsResourceType = keyof ResourceTypeMap & string;
 
-export type AwsResourcePropsMap = {
-  [K in AwsResourceType]: SchemaProps<AwsResourceSchemas[K]>;
-};
+export type AwsResourcePropsMap = ResourceTypeMap;
 
 type ResourceCoreProps = {
   label: string;
@@ -50,17 +49,16 @@ export type StrictResourceProps<T extends AwsResourceType> =
   | StrictResourcePropsWithoutInnerText<T>
   | StrictResourcePropsWithInnerText<T>;
 
-type NonAwsResourceType<T extends string> = T extends AwsResourceType
-  ? never
-  : T;
+type LooseResourceProps = ResourceCoreProps & {
+  type: string;
+  __hcl?: Record<string, any>;
+  [key: string]: any;
+};
 
-export type LooseResourceProps<T extends string = string> =
-  ResourceCoreProps & {
-    type: NonAwsResourceType<T>;
-    __hcl?: Record<string, any>;
-    [key: string]: any;
-  };
+type StrictResourcePropsUnion = {
+  [K in AwsResourceType]: StrictResourceProps<K>;
+}[AwsResourceType];
 
-export type ResourceProps<T extends string> = T extends AwsResourceType
-  ? StrictResourceProps<T>
-  : LooseResourceProps<T>;
+export type ResourceProps = StrictMode extends true
+  ? StrictResourcePropsUnion
+  : StrictResourcePropsUnion | LooseResourceProps;

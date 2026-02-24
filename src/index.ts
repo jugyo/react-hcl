@@ -22,3 +22,9 @@ export { tf } from "./helpers/tf";
 export type { Ref, RefBlockType, RefExpression } from "./hooks/use-ref";
 export { useRef } from "./hooks/use-ref";
 export { Fragment } from "./jsx-runtime";
+export type {
+  DataTypeMap,
+  ProviderTypeMap,
+  ReactHclSchemaMode,
+  ResourceTypeMap,
+} from "./types/schema-extension";

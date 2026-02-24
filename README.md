@@ -17,13 +17,16 @@ Use the CLI in forward mode (TSX -> HCL) or reverse mode (HCL -> TSX).
 ```bash
 react-hcl generate <input.(j|t)sx|-> [-o <file>]
 react-hcl reverse <input.tf|-> [-o <file>] [--module]
+react-hcl init [--refresh]
 ```
 
 Options:
 - `generate`: Forward mode (TSX/JSX -> HCL)
 - `reverse`: Reverse mode (HCL -> TSX)
+- `init`: Fetch AWS provider schema and generate local type declarations under `.react-hcl/` (also creates `tsconfig.json` with local `react-hcl` paths if missing)
 - `--module`: Reverse mode only. Output TSX with import/export module boilerplate
 - `-o, --output <file>`: Write output to a file instead of stdout
+- `--refresh`: Init mode only. Ignore cache TTL and fetch schema again
 - `-h, --help`: Show help
 
 Examples:
@@ -33,6 +36,8 @@ react-hcl generate infra.tsx                  # output to stdout
 react-hcl generate infra.tsx -o ./tf/main.tf # write to file
 react-hcl reverse main.tf                     # HCL -> JSX elements
 react-hcl reverse --module main.tf            # HCL -> TSX module with import/export
+react-hcl init                                # generate provider-based type declarations
+react-hcl init --refresh                      # force schema refresh
 cat infra.tsx | react-hcl generate -          # read TSX from stdin
 cat main.tf | react-hcl reverse -             # read HCL from stdin
 ```

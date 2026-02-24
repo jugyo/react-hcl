@@ -12,11 +12,41 @@
  */
 import type { ProviderBlock } from "../blocks";
 import type { Ref } from "../hooks/use-ref";
+import type { ProviderTypeMap, ReactHclSchemaMode } from "../index";
 
+type StrictMode = ReactHclSchemaMode extends { __strictSchema: true }
+  ? true
+  : false;
+
+type StrictProviderType = keyof ProviderTypeMap & string;
+
+type StrictProviderPropsUnion = {
+  [K in StrictProviderType]: {
+    type: K;
+    ref?: Ref;
+    alias?: string;
+    children?: string | string[];
+  } & ProviderTypeMap[K];
+}[StrictProviderType];
+
+type LooseProviderProps = {
+  type: string;
+  ref?: Ref;
+  alias?: string;
+  children?: string | string[];
+  [key: string]: any;
+};
+
+type ProviderProps = StrictMode extends true
+  ? StrictProviderPropsUnion
+  : StrictProviderPropsUnion | LooseProviderProps;
+
+export function Provider(props: ProviderProps): ProviderBlock;
 export function Provider(props: {
   type: string;
   ref?: Ref;
   alias?: string;
+  children?: string | string[];
   [key: string]: any;
 }): ProviderBlock {
   const { type, ref, alias, children, ...rest } = props;

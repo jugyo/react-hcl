@@ -1,16 +1,16 @@
 import type { RawHCL } from "../hcl-serializer";
 import type { Ref } from "../hooks/use-ref";
-import type { SchemaProps } from "./schema-props";
+import type { DataTypeMap, ReactHclSchemaMode } from "../index";
 
 type RefLike = Ref;
 
-type AwsDataSchemas = typeof import("../provider-schema/aws").AWS_DATA_SCHEMAS;
+type StrictMode = ReactHclSchemaMode extends { __strictSchema: true }
+  ? true
+  : false;
 
-export type AwsDataType = keyof AwsDataSchemas;
+export type AwsDataType = keyof DataTypeMap & string;
 
-export type AwsDataPropsMap = {
-  [K in AwsDataType]: SchemaProps<AwsDataSchemas[K]>;
-};
+export type AwsDataPropsMap = DataTypeMap;
 
 type DataCoreProps = {
   label: string;
@@ -47,14 +47,16 @@ export type StrictDataProps<T extends AwsDataType> =
   | StrictDataPropsWithoutInnerText<T>
   | StrictDataPropsWithInnerText<T>;
 
-type NonAwsDataType<T extends string> = T extends AwsDataType ? never : T;
-
-export type LooseDataProps<T extends string = string> = DataCoreProps & {
-  type: NonAwsDataType<T>;
+type LooseDataProps = DataCoreProps & {
+  type: string;
   __hcl?: Record<string, any>;
   [key: string]: any;
 };
 
-export type DataProps<T extends string> = T extends AwsDataType
-  ? StrictDataProps<T>
-  : LooseDataProps<T>;
+type StrictDataPropsUnion = {
+  [K in AwsDataType]: StrictDataProps<K>;
+}[AwsDataType];
+
+export type DataProps = StrictMode extends true
+  ? StrictDataPropsUnion
+  : StrictDataPropsUnion | LooseDataProps;

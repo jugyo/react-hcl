@@ -20,7 +20,7 @@ It covers local setup, project structure, scripts, testing, and release operatio
 
 | Path | Role |
 | --- | --- |
-| `src/cli/` | CLI entrypoint and command implementations (`generate`, `reverse`). |
+| `src/cli/` | CLI entrypoint and command implementations (`generate`, `reverse`, `init`). |
 | `src/components/` | Primitive Terraform JSX components (`Resource`, `Data`, `Module`, etc.). |
 | `src/hooks/` | Hook implementations such as `useRef`. |
 | `src/provider-schema/` | Provider schema core types and DSL; generated AWS schema modules are intentionally omitted. |
@@ -81,6 +81,15 @@ bun run build
 ```bash
 bun run tf:validate:examples
 ```
+
+### Refresh generated provider types for local project usage
+
+```bash
+bun src/cli/index.ts init
+```
+
+`init` also generates local `react-hcl` declaration shims under `.react-hcl/gen/react-hcl/`
+so TSX type-checking can work without adding a project-local `react-hcl` dependency.
 
 ### Release
 

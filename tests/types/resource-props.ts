@@ -45,8 +45,9 @@ Resource({
   arn: "not-allowed",
 });
 
+// @ts-expect-error unsupported resource type should be rejected
 Resource({
   type: "aws_route53_record",
   label: "example",
-  any_key: "allowed-for-unsupported-types",
+  any_key: "not-allowed",
 });

@@ -20,6 +20,7 @@ import { formatCliError } from "./error-format";
 import { normalizeHclDocument } from "./hcl-react/normalize";
 import { parseHclDocument } from "./hcl-react/parser";
 import { generateTsxFromBlocks } from "./hcl-react/tsx-generator";
+import { runInitCommand } from "./init";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -245,6 +246,27 @@ async function main() {
         });
       },
     );
+
+  program
+    .command("init")
+    .description(
+      "Fetch Terraform provider schema and generate TypeScript declarations",
+    )
+    .option(
+      "--refresh",
+      "Ignore cache TTL and refresh provider schema from Terraform CLI",
+    )
+    .addHelpText(
+      "after",
+      ["", "Examples:", "  react-hcl init", "  react-hcl init --refresh"].join(
+        "\n",
+      ),
+    )
+    .action(async (options: { refresh?: boolean }) => {
+      await runInitCommand({
+        refresh: Boolean(options.refresh),
+      });
+    });
 
   if (process.argv.slice(2).length === 0) {
     program.outputHelp();

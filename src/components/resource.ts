@@ -11,23 +11,18 @@
  *   → resource "aws_vpc" "main" { cidr_block = "10.0.0.0/16" }
  */
 import type { ResourceBlock } from "../blocks";
-import type {
-  AwsResourceType,
-  LooseResourceProps,
-  ResourceProps,
-  StrictResourceProps,
-} from "../component-props/resource-props";
+import type { ResourceProps } from "../component-props/resource-props";
 import { adjustIndent, raw } from "../hcl-serializer";
 
-export function Resource<T extends AwsResourceType>(
-  props: StrictResourceProps<T>,
-): ResourceBlock;
-export function Resource<T extends string>(
-  props: LooseResourceProps<T>,
-): ResourceBlock;
-export function Resource<T extends string>(
-  props: ResourceProps<T>,
-): ResourceBlock {
+export function Resource(props: ResourceProps): ResourceBlock;
+export function Resource(props: {
+  type: string;
+  label: string;
+  ref?: unknown;
+  children?: string | string[];
+  __hcl?: Record<string, unknown>;
+  [key: string]: unknown;
+}): ResourceBlock {
   const { type, label, ref, children, __hcl, ...rest } = props;
   const attributes = { ...rest, ...__hcl } as Record<string, any>;
 
