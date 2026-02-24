@@ -16,6 +16,10 @@ import * as esbuild from "esbuild";
 import { detectConflicts } from "../conflict";
 import { generate } from "../generator";
 import { render } from "../renderer";
+import {
+  loadRuntimeSchemaRegistry,
+  type RuntimeSchemaRegistry,
+} from "../provider-schema";
 import { formatCliError } from "./error-format";
 import { normalizeHclDocument } from "./hcl-react/normalize";
 import { parseHclDocument } from "./hcl-react/parser";
@@ -59,8 +63,10 @@ async function runForwardMode(options: {
   wantsStdin: boolean;
   stdinContents: string;
   output?: string;
+  schemaRegistry: RuntimeSchemaRegistry;
 }) {
-  const { inputFile, wantsStdin, stdinContents, output } = options;
+  const { inputFile, wantsStdin, stdinContents, output, schemaRegistry } =
+    options;
 
   const buildBaseOptions: esbuild.BuildOptions = {
     bundle: true,
@@ -116,7 +122,7 @@ async function runForwardMode(options: {
     if (mod.default != null) {
       const blocks = render(mod.default);
       detectConflicts(blocks);
-      const hcl = generate(blocks);
+      const hcl = generate(blocks, { schemaRegistry });
       await writeOutput(hcl, output);
     }
   } finally {
@@ -164,12 +170,14 @@ async function runGenerateCommand(options: {
   const { wantsStdin, stdinContents } = await resolveInputMode(
     options.inputFile,
   );
+  const schemaRegistry = loadRuntimeSchemaRegistry({ required: true });
 
   await runForwardMode({
     inputFile: options.inputFile,
     wantsStdin,
     stdinContents,
     output: options.output,
+    schemaRegistry,
   });
 }
 

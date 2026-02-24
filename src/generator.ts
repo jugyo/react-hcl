@@ -18,6 +18,7 @@ import {
   type SerializationContext,
   serializeHCLAttributes,
 } from "./hcl-serializer";
+import type { RuntimeSchemaRegistry } from "./provider-schema";
 
 /**
  * Produces the HCL block header string based on block type.
@@ -69,16 +70,42 @@ function hasInnerText(block: Block): block is Block & { innerText: string } {
  *   2. Otherwise → serialize attributes via serializeHCLAttributes()
  *   3. If attributes are empty (body === "") → output empty braces
  */
-function renderBlock(block: Block): string {
+function renderBlock(
+  block: Block,
+  schemaRegistry?: RuntimeSchemaRegistry,
+): string {
   const header = blockHeader(block);
   if (hasInnerText(block)) {
     return `${header} {\n${block.innerText}\n}`;
   }
   let context: SerializationContext | undefined;
   if (block.blockType === "resource") {
-    context = { blockType: "resource", type: block.type };
+    context = {
+      blockType: "resource",
+      type: block.type,
+      schemaBlock: schemaRegistry?.resolveBlockSchema({
+        blockType: "resource",
+        type: block.type,
+      }),
+    };
   } else if (block.blockType === "data") {
-    context = { blockType: "data", type: block.type };
+    context = {
+      blockType: "data",
+      type: block.type,
+      schemaBlock: schemaRegistry?.resolveBlockSchema({
+        blockType: "data",
+        type: block.type,
+      }),
+    };
+  } else if (block.blockType === "provider") {
+    context = {
+      blockType: "provider",
+      type: block.type,
+      schemaBlock: schemaRegistry?.resolveBlockSchema({
+        blockType: "provider",
+        type: block.type,
+      }),
+    };
   }
   const body = serializeHCLAttributes(block.attributes, 2, context);
   if (body === "") {
@@ -107,6 +134,11 @@ function renderBlock(block: Block): string {
  *     cidr_block = "10.0.1.0/24"
  *   }
  */
-export function generate(blocks: Block[]): string {
-  return `${blocks.map(renderBlock).join("\n\n")}\n`;
+export function generate(
+  blocks: Block[],
+  options?: { schemaRegistry?: RuntimeSchemaRegistry },
+): string {
+  return `${blocks
+    .map((block) => renderBlock(block, options?.schemaRegistry))
+    .join("\n\n")}\n`;
 }

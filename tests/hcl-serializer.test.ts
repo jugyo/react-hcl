@@ -5,6 +5,7 @@ import {
   raw,
   serializeHCLAttributes,
 } from "../src/hcl-serializer";
+import type { TerraformBlockSchema } from "../src/cli/init/types";
 
 describe("serializeHCLAttributes", () => {
   it("string attribute", () => {
@@ -156,5 +157,56 @@ describe("serializeHCLAttributes", () => {
         metric_query: [block({ id: "q1" }), raw("local.other")],
       }),
     ).toThrow(/mixed BlockHCL array/i);
+  });
+});
+
+describe("serializeHCLAttributes with schema context", () => {
+  it("rejects unknown keys defined outside schema", () => {
+    const schemaBlock: TerraformBlockSchema = {
+      attributes: {
+        ami: { type: "string", required: true },
+      },
+    };
+    expect(() =>
+      serializeHCLAttributes(
+        { ami: "ami-123", unknown_key: true },
+        2,
+        {
+          blockType: "resource",
+          type: "aws_instance",
+          schemaBlock,
+        },
+      ),
+    ).toThrow(/Unknown key "unknown_key"/);
+  });
+
+  it("auto-renders schema block_types as nested blocks", () => {
+    const schemaBlock: TerraformBlockSchema = {
+      attributes: {
+        ami: { type: "string", required: true },
+      },
+      block_types: {
+        root_block_device: {
+          nesting_mode: "list",
+          block: {
+            attributes: {
+              volume_size: { type: "number", optional: true },
+            },
+          },
+        },
+      },
+    };
+    const result = serializeHCLAttributes(
+      {
+        ami: "ami-123",
+        root_block_device: [{ volume_size: 20 }],
+      },
+      2,
+      { blockType: "resource", type: "aws_instance", schemaBlock },
+    );
+    expect(result).toContain('ami = "ami-123"');
+    expect(result).toContain("root_block_device {");
+    expect(result).toContain("volume_size = 20");
+    expect(result).not.toContain("root_block_device = [");
   });
 });

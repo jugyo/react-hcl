@@ -1,29 +1,103 @@
-import { describe, expect, it } from "bun:test";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { $, type ShellError } from "bun";
+
+const REPO_ROOT = resolve(import.meta.dir, "../..");
+const BUN_PATH = process.execPath;
+const CLI_ENTRYPOINT = resolve(REPO_ROOT, "src/cli/index.ts");
+const FIXTURE_DIR = resolve(REPO_ROOT, "tests/fixtures");
+const fixturePath = (name: string) => resolve(FIXTURE_DIR, name);
+let testWorkdir = "";
+let runtimeMetadataPath = "";
+let runtimeSchemaPath = "";
+
+beforeAll(async () => {
+  testWorkdir = await mkdtemp(join(resolve(REPO_ROOT, "tmp"), "cli-e2e-"));
+  runtimeMetadataPath = resolve(testWorkdir, ".react-hcl/metadata.json");
+  runtimeSchemaPath = resolve(
+    testWorkdir,
+    ".react-hcl/provider-schema/test-cli-schema.json",
+  );
+
+  await mkdir(resolve(testWorkdir, ".react-hcl/provider-schema"), {
+    recursive: true,
+  });
+  await writeFile(
+    runtimeSchemaPath,
+    JSON.stringify(
+      {
+        providerSource: "registry.terraform.io/hashicorp/aws",
+        providerVersion: "latest",
+        terraformVersion: "1.9.0",
+        fetchedAt: "2026-02-24T00:00:00.000Z",
+        schema: {
+          resource_schemas: {},
+          data_source_schemas: {},
+          provider: {
+            block: {
+              attributes: {
+                region: { type: "string", optional: true },
+                alias: { type: "string", optional: true },
+              },
+            },
+          },
+        },
+      },
+      null,
+      2,
+    ),
+  );
+  await writeFile(
+    runtimeMetadataPath,
+    JSON.stringify(
+      {
+        formatVersion: 1,
+        activeProviderSchemas: {
+          "registry.terraform.io/hashicorp/aws": {
+            path: ".react-hcl/provider-schema/test-cli-schema.json",
+            terraformVersion: "1.9.0",
+            providerVersion: "latest",
+            updatedAt: "2026-02-24T00:00:00.000Z",
+          },
+        },
+      },
+      null,
+      2,
+    ),
+  );
+});
+
+afterAll(async () => {
+  if (testWorkdir.length > 0) {
+    await rm(testWorkdir, { recursive: true, force: true });
+  }
+});
 
 describe("CLI E2E (generate)", () => {
   it("root --help prints help text", async () => {
-    const result = await $`bun run src/cli/index.ts --help`.text();
+    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} --help`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("generate [options] <input>");
     expect(result).toContain("reverse [options] <input>");
   });
 
   it("root -h prints help text", async () => {
-    const result = await $`bun run src/cli/index.ts -h`.text();
+    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} -h`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("Commands:");
   });
 
   it("no subcommand prints root help", async () => {
-    const result = await $`bun run src/cli/index.ts`.text();
+    const result = await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT}`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("generate [options] <input>");
     expect(result).toContain("reverse [options] <input>");
   });
 
   it("generate --help prints subcommand help", async () => {
-    const result = await $`bun run src/cli/index.ts generate --help`.text();
+    const result =
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate --help`.text();
     expect(result).toContain("Usage:");
     expect(result).toContain("react-hcl generate");
     expect(result).toContain("Examples:");
@@ -31,14 +105,14 @@ describe("CLI E2E (generate)", () => {
 
   it("basic.tsx -> matches expected HCL snapshot", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/basic.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("basic.tsx")}`.text();
     const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
     expect(result).toBe(expected);
   });
 
   it("multiple.tsx -> multiple resources via Fragment", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/multiple.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("multiple.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/multiple.expected.tf",
     ).text();
@@ -47,7 +121,7 @@ describe("CLI E2E (generate)", () => {
 
   it("all-components.tsx -> all primitive components", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/all-components.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("all-components.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/all-components.expected.tf",
     ).text();
@@ -56,14 +130,14 @@ describe("CLI E2E (generate)", () => {
 
   it("refs.tsx -> resource references with useRef", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/refs.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("refs.tsx")}`.text();
     const expected = await Bun.file("tests/fixtures/refs.expected.tf").text();
     expect(result).toBe(expected);
   });
 
   it("variables.tsx -> tf.var / tf.local helpers", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/variables.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("variables.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/variables.expected.tf",
     ).text();
@@ -72,7 +146,7 @@ describe("CLI E2E (generate)", () => {
 
   it("innertext.tsx -> innerText with adjustIndent", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/innertext.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("innertext.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/innertext.expected.tf",
     ).text();
@@ -81,7 +155,7 @@ describe("CLI E2E (generate)", () => {
 
   it("innertext-ref.tsx -> template literal ref without function wrapper", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/innertext-ref.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("innertext-ref.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/innertext-ref.expected.tf",
     ).text();
@@ -90,7 +164,7 @@ describe("CLI E2E (generate)", () => {
 
   it("export-default-function.tsx -> default exported function component", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/export-default-function.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("export-default-function.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/export-default-function.expected.tf",
     ).text();
@@ -99,7 +173,7 @@ describe("CLI E2E (generate)", () => {
 
   it("composite.tsx -> composite components with ref passing", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/composite.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("composite.tsx")}`.text();
     const expected = await Bun.file(
       "tests/fixtures/composite.expected.tf",
     ).text();
@@ -109,7 +183,7 @@ describe("CLI E2E (generate)", () => {
   it("-o writes to specified file", async () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {
-      await $`bun run src/cli/index.ts generate tests/fixtures/basic.tsx -o ${tmpDir}/main.tf`;
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("basic.tsx")} -o ${tmpDir}/main.tf`;
       const content = await Bun.file(`${tmpDir}/main.tf`).text();
       const expected = await Bun.file(
         "tests/fixtures/basic.expected.tf",
@@ -122,7 +196,7 @@ describe("CLI E2E (generate)", () => {
 
   it("reads TSX from stdin when input is '-'", async () => {
     const result =
-      await $`cat tests/fixtures/basic.tsx | bun run src/cli/index.ts generate -`.text();
+      await $`cd ${testWorkdir} && cat ${fixturePath("basic.tsx")} | ${BUN_PATH} run ${CLI_ENTRYPOINT} generate -`.text();
     const expected = await Bun.file("tests/fixtures/basic.expected.tf").text();
     expect(result).toBe(expected);
   });
@@ -131,7 +205,7 @@ describe("CLI E2E (generate)", () => {
 describe("CLI error handling (generate)", () => {
   it("exits with error for non-existent input file", async () => {
     try {
-      await $`bun run src/cli/index.ts generate non-existent-file.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate non-existent-file.tsx`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -145,7 +219,7 @@ describe("CLI error handling (generate)", () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     try {
       await Bun.write(`${tmpDir}/bad.tsx`, `export default <NotClosed`);
-      await $`bun run src/cli/index.ts generate ${tmpDir}/bad.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${tmpDir}/bad.tsx`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -161,7 +235,7 @@ describe("CLI error handling (generate)", () => {
 
   it("exits with formatted location for invalid TSX from stdin", async () => {
     try {
-      await $`printf "export default <NotClosed" | bun run src/cli/index.ts generate -`.quiet();
+      await $`cd ${testWorkdir} && printf "export default <NotClosed" | ${BUN_PATH} run ${CLI_ENTRYPOINT} generate -`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -174,7 +248,7 @@ describe("CLI error handling (generate)", () => {
 
   it("exits with error for unknown option", async () => {
     try {
-      await $`bun run src/cli/index.ts generate --foo tests/fixtures/basic.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate --foo ${fixturePath("basic.tsx")}`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -186,7 +260,7 @@ describe("CLI error handling (generate)", () => {
 
   it("exits with error when input file and stdin are both provided", async () => {
     try {
-      await $`cat tests/fixtures/basic.tsx | bun run src/cli/index.ts generate tests/fixtures/basic.tsx`.quiet();
+      await $`cd ${testWorkdir} && cat ${fixturePath("basic.tsx")} | ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("basic.tsx")}`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -199,7 +273,7 @@ describe("CLI error handling (generate)", () => {
 
   it("exits with error when '-' is passed without stdin content", async () => {
     try {
-      await $`bun run src/cli/index.ts generate -`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate -`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -212,7 +286,7 @@ describe("CLI error handling (generate)", () => {
 
   it("exits with error for duplicate resource conflict", async () => {
     try {
-      await $`bun run src/cli/index.ts generate tests/fixtures/error-duplicate-resource.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("error-duplicate-resource.tsx")}`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -223,7 +297,7 @@ describe("CLI error handling (generate)", () => {
 
   it("does not validate innerText HCL syntax", async () => {
     const result =
-      await $`bun run src/cli/index.ts generate tests/fixtures/error-invalid-innertext.tsx`.text();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("error-invalid-innertext.tsx")}`.text();
     expect(result).toContain("this is not valid HCL {{{");
   });
 
@@ -231,7 +305,7 @@ describe("CLI error handling (generate)", () => {
     const tmpDir = (await $`mktemp -d`.text()).trim();
     const outFile = `${tmpDir}/nested/output/infra.tf`;
     try {
-      await $`bun run src/cli/index.ts generate tests/fixtures/basic.tsx -o ${outFile}`;
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate ${fixturePath("basic.tsx")} -o ${outFile}`;
       const content = await Bun.file(outFile).text();
       const expected = await Bun.file(
         "tests/fixtures/basic.expected.tf",
@@ -244,7 +318,7 @@ describe("CLI error handling (generate)", () => {
 
   it("rejects removed --hcl-react option", async () => {
     try {
-      await $`bun run src/cli/index.ts generate --hcl-react tests/fixtures/basic.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate --hcl-react ${fixturePath("basic.tsx")}`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;
@@ -255,7 +329,7 @@ describe("CLI error handling (generate)", () => {
 
   it("rejects --module in generate command", async () => {
     try {
-      await $`bun run src/cli/index.ts generate --module tests/fixtures/basic.tsx`.quiet();
+      await $`cd ${testWorkdir} && ${BUN_PATH} run ${CLI_ENTRYPOINT} generate --module ${fixturePath("basic.tsx")}`.quiet();
       throw new Error("should have failed");
     } catch (e) {
       const err = e as ShellError;

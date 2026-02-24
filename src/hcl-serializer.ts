@@ -9,10 +9,146 @@
  *   1. Explicit marker wrappers: attribute()/block()
  *   2. Fallback: plain objects -> attribute syntax
  */
+import type {
+  TerraformAttributeSchema,
+  TerraformBlockSchema,
+  TerraformNestedBlockSchema,
+} from "./cli/init/types";
+
 export type SerializationContext = {
-  blockType: "resource" | "data";
+  blockType: "resource" | "data" | "provider";
   type: string;
+  schemaBlock?: TerraformBlockSchema | null;
 };
+
+function toValueType(
+  terraformType: unknown,
+): "string" | "number" | "bool" | "list" | "set" | "map" | "object" | "any" {
+  if (terraformType === "string") return "string";
+  if (terraformType === "number") return "number";
+  if (terraformType === "bool") return "bool";
+
+  if (Array.isArray(terraformType) && terraformType.length > 0) {
+    const head = terraformType[0];
+    if (head === "list" || head === "tuple") return "list";
+    if (head === "set") return "set";
+    if (head === "map") return "map";
+    if (head === "object") return "object";
+  }
+
+  return "any";
+}
+
+function isComputedOnlyAttribute(schema: TerraformAttributeSchema): boolean {
+  return (
+    schema.computed === true &&
+    schema.required !== true &&
+    schema.optional !== true
+  );
+}
+
+function isValueCompatibleWithAttributeType(
+  value: unknown,
+  terraformType: unknown,
+): boolean {
+  if (isRawHCL(value)) {
+    return true;
+  }
+
+  const valueType = toValueType(terraformType);
+  switch (valueType) {
+    case "string":
+      return typeof value === "string";
+    case "number":
+      return typeof value === "number";
+    case "bool":
+      return typeof value === "boolean";
+    case "list":
+    case "set":
+      return Array.isArray(value);
+    case "map":
+    case "object":
+      return isPlainObject(value);
+    case "any":
+      return true;
+  }
+}
+
+function isBlockObject(value: unknown): value is Record<string, unknown> {
+  if (isBlockHCL(value) || isAttributeHCL(value) || isRawHCL(value)) {
+    return false;
+  }
+  return isPlainObject(value);
+}
+
+function isBlockObjectArray(
+  value: unknown,
+): value is Record<string, unknown>[] {
+  return Array.isArray(value) && value.every((item) => isBlockObject(item));
+}
+
+function validateNestedBlockValueForMode(
+  value: unknown,
+  schema: TerraformNestedBlockSchema,
+): void {
+  if (isRawHCL(value) || isBlockHCL(value) || isAttributeHCL(value)) {
+    return;
+  }
+
+  const nestingMode = schema.nesting_mode;
+  const isObject = isBlockObject(value);
+  const isArray = isBlockObjectArray(value);
+
+  if (nestingMode === "single") {
+    if (!isObject) {
+      throw new Error("single");
+    }
+    return;
+  }
+
+  if (nestingMode === "list" || nestingMode === "set") {
+    // Keep compatibility with generated types that allow single object shorthand.
+    if (!isObject && !isArray) {
+      throw new Error(nestingMode);
+    }
+    return;
+  }
+
+  if (!isObject && !isArray) {
+    throw new Error(nestingMode);
+  }
+}
+
+function validateSchemaAgainstAttrs(
+  attrs: Record<string, any>,
+  schemaBlock: TerraformBlockSchema,
+  context: SerializationContext,
+): void {
+  const attributes = schemaBlock.attributes ?? {};
+  const blockTypes = schemaBlock.block_types ?? {};
+
+  for (const [name, attributeSchema] of Object.entries(attributes)) {
+    if (attributeSchema.required !== true) {
+      continue;
+    }
+    if (attributeSchema.computed === true) {
+      continue;
+    }
+    if (!(name in attrs)) {
+      throw new Error(
+        `Missing required attribute "${name}" for ${context.blockType} "${context.type}".`,
+      );
+    }
+  }
+
+  for (const [name, nestedSchema] of Object.entries(blockTypes)) {
+    if ((nestedSchema.min_items ?? 0) > 0 && !(name in attrs)) {
+      throw new Error(
+        `Missing required nested block "${name}" for ${context.blockType} "${context.type}".`,
+      );
+    }
+  }
+}
 
 const RAW_HCL_SYMBOL = Symbol.for("react-hcl:RawHCL");
 
@@ -129,20 +265,32 @@ export function serializeHCLAttributes(
 
   const simpleEntries: SimpleEntry[] = [];
   const blockEntries: BlockEntry[] = [];
+  const schemaBlock = context?.schemaBlock ?? null;
+  if (schemaBlock && context) {
+    validateSchemaAgainstAttrs(attrs, schemaBlock, context);
+  }
 
   for (const [key, value] of Object.entries(attrs)) {
+    const attributeSchema = schemaBlock?.attributes?.[key];
+    const nestedBlockSchema = schemaBlock?.block_types?.[key];
+    if (schemaBlock && !attributeSchema && !nestedBlockSchema) {
+      throw new Error(
+        `Unknown key "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}".`,
+      );
+    }
+
     if (isAttributeHCL(value)) {
+      if (attributeSchema && isComputedOnlyAttribute(attributeSchema)) {
+        throw new Error(
+          `Attribute "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}" is computed-only and cannot be set.`,
+        );
+      }
       blockEntries.push({ kind: "attribute", key, value });
       continue;
     }
 
     if (isBlockHCL(value)) {
       blockEntries.push({ kind: "block", key, value });
-      continue;
-    }
-
-    if (isPlainObject(value)) {
-      blockEntries.push({ kind: "attribute", key, value: attribute(value) });
       continue;
     }
 
@@ -161,6 +309,61 @@ export function serializeHCLAttributes(
         key,
         value: value.map((item) => item.value),
       });
+      continue;
+    }
+
+    if (attributeSchema) {
+      if (isComputedOnlyAttribute(attributeSchema)) {
+        throw new Error(
+          `Attribute "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}" is computed-only and cannot be set.`,
+        );
+      }
+      if (!isValueCompatibleWithAttributeType(value, attributeSchema.type)) {
+        throw new Error(
+          `Attribute "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}" has an invalid value type.`,
+        );
+      }
+    }
+
+    if (nestedBlockSchema) {
+      try {
+        validateNestedBlockValueForMode(value, nestedBlockSchema);
+      } catch {
+        throw new Error(
+          `Nested block "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}" does not match nesting_mode "${nestedBlockSchema.nesting_mode}".`,
+        );
+      }
+
+      if (isRawHCL(value)) {
+        simpleEntries.push({ kind: "simple", key, value });
+        continue;
+      }
+
+      if (isBlockObject(value)) {
+        blockEntries.push({
+          kind: "block",
+          key,
+          value: block(value as Record<string, any>),
+        });
+        continue;
+      }
+
+      if (isBlockObjectArray(value)) {
+        blockEntries.push({
+          kind: "repeated_block",
+          key,
+          value: value as Record<string, any>[],
+        });
+        continue;
+      }
+
+      throw new Error(
+        `Nested block "${key}" for ${context?.blockType ?? "block"} "${context?.type ?? "unknown"}" has an invalid value shape.`,
+      );
+    }
+
+    if (isPlainObject(value)) {
+      blockEntries.push({ kind: "attribute", key, value: attribute(value) });
       continue;
     }
 
@@ -187,17 +390,13 @@ export function serializeHCLAttributes(
         for (let i = 0; i < entry.value.length; i++) {
           if (i > 0) lines.push("");
           lines.push(`${pad}${entry.key} {`);
-          lines.push(
-            serializeHCLAttributes(entry.value[i], indent + 2, context),
-          );
+          lines.push(serializeHCLAttributes(entry.value[i], indent + 2));
           lines.push(`${pad}}`);
         }
         break;
       case "block":
         lines.push(`${pad}${entry.key} {`);
-        lines.push(
-          serializeHCLAttributes(entry.value.value, indent + 2, context),
-        );
+        lines.push(serializeHCLAttributes(entry.value.value, indent + 2));
         lines.push(`${pad}}`);
         break;
       case "attribute":
