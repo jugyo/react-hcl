@@ -9,18 +9,18 @@ This directory contains the implementation of the `react-hcl init` subcommand.
 It performs the following steps:
 
 1. Resolve Terraform CLI version (`terraform version -json`).
-2. Load AWS provider schema from cache or fetch it via Terraform.
-3. Normalize Terraform schema JSON into an internal shape.
-4. Render provider-specific TypeScript declarations under `.react-hcl/gen/aws/`.
-5. Copy bundled runtime declaration files into `.react-hcl/gen/react-hcl/`.
-6. Remove stale generated files and update `.react-hcl/gen/metadata.json`.
-7. Create `tsconfig.json` if missing.
+2. Load AWS provider schema from `.react-hcl/provider-schema/` or fetch it via Terraform.
+3. Persist active provider schema selection in `.react-hcl/metadata.json`.
+4. Normalize Terraform schema JSON into an internal shape for type generation.
+5. Render provider-specific TypeScript declarations under `.react-hcl/gen/aws/`.
+6. Copy bundled runtime declaration files into `.react-hcl/gen/react-hcl/`.
+7. Remove stale generated files and update `.react-hcl/gen/metadata.json`.
+8. Create `tsconfig.json` if missing.
 
 ## File responsibilities
 
 - `index.ts`: Orchestrates the full init flow.
-- `provider-schema/resolver.ts`: Terraform command execution, cache handling, and schema resolution.
-- `provider-schema/normalize.ts`: Pure schema normalization logic (`Terraform schema -> normalized schema`).
+- `provider-schema/resolver.ts`: Terraform command execution, provider schema storage, and schema resolution.
 - `schema-type/render.ts`: Type declaration rendering for resources, data sources, providers, and augmentation.
 - `schema-type/output.ts`: Generated file writing, stale cleanup, metadata generation, and `tsconfig` creation.
 - `runtime-shim/source.ts`: Bundled declaration source discovery and filtering.
@@ -28,8 +28,9 @@ It performs the following steps:
 - `paths.ts`: Shared path construction for generated outputs and package-relative lookup.
 - `io.ts`: Atomic file write utility.
 - `log.ts`: Init log output helper.
-- `types.ts`: Internal type definitions used across init modules.
+- `types.ts`: Init-facing type barrel for shared type definitions.
 - `utils.ts`: Shared stable hashing/stringification/path helpers.
+- `../../provider-schema/`: Core provider schema domain (`store`, `registry`, `normalize`, and shared types).
 
 ## Important design choices
 
