@@ -6,7 +6,7 @@ import { atomicWrite } from "../io";
 import { logInit } from "../log";
 import {
   getGenBaseDir,
-  getMetadataPath,
+  getGeneratedMetadataPath,
   getPackageJsonPathCandidates,
   getTsconfigPath,
 } from "../paths";
@@ -177,7 +177,7 @@ export async function writeGeneratedOutputs(
   );
   const expectedPaths = new Set(filesByPath.keys());
 
-  const metadataPath = getMetadataPath();
+  const metadataPath = getGeneratedMetadataPath();
   const previousMetadata = await readPreviousMetadata(metadataPath);
 
   await writeManagedFiles(filesByPath);

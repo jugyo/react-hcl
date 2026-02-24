@@ -1,13 +1,16 @@
+// Normalization from raw Terraform provider schema JSON into canonical internal schema.
+import type {
+  TerraformAttributeSchema,
+  TerraformBlockSchema,
+  TerraformProviderSchemaEntry,
+} from "../cli/init/types/terraform-schema";
 import type {
   GeneratedAttributeSchema,
   GeneratedNestedBlockSchema,
   GeneratedTypeSchema,
   NormalizedProviderSchema,
-  TerraformAttributeSchema,
-  TerraformBlockSchema,
-  TerraformProviderSchemaEntry,
   ValueType,
-} from "../types";
+} from "./types";
 
 function sortKeys<T>(record: Record<string, T>): Record<string, T> {
   return Object.fromEntries(
@@ -143,10 +146,7 @@ export function normalizeProviderSchema(options: {
   const dataSchemas = sortKeys(
     Object.fromEntries(
       Object.entries(schemaEntry.data_source_schemas ?? {}).map(
-        ([type, entry]) => [
-          type,
-          normalizeTypeSchema("data", type, entry.block),
-        ],
+        ([type, entry]) => [type, normalizeTypeSchema("data", type, entry.block)],
       ),
     ),
   );

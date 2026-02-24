@@ -4,20 +4,28 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { atomicWrite } from "../io";
 import { logInit } from "../log";
+import { getProviderSchemaBaseDir } from "../paths";
 import type {
   CachePayload,
-  CommandResult,
-  CommandRunOptions,
-  NormalizedProviderSchema,
+  ResolvedProviderSchema,
   TerraformSchemaResult,
   TerraformVersionResult,
 } from "../types";
 import { relativeToCwd } from "../utils";
-import { normalizeProviderSchema } from "./normalize";
 
 export const PROVIDER_SOURCE = "registry.terraform.io/hashicorp/aws";
 export const PROVIDER_VERSION = "latest";
 const DEFAULT_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+type RunCommandResult = {
+  stdout: string;
+  stderr: string;
+};
+
+type RunCommandOptions = {
+  cwd?: string;
+  streamOutput?: boolean;
+};
 
 function sanitizeForFileName(value: string): string {
   return encodeURIComponent(value);
@@ -25,20 +33,14 @@ function sanitizeForFileName(value: string): string {
 
 function getCacheFilePath(terraformVersion: string): string {
   const fileName = `${sanitizeForFileName(PROVIDER_SOURCE)}@${PROVIDER_VERSION}@${sanitizeForFileName(terraformVersion)}.json`;
-  return resolve(
-    process.cwd(),
-    ".react-hcl",
-    "cache",
-    "provider-schema",
-    fileName,
-  );
+  return resolve(getProviderSchemaBaseDir(), fileName);
 }
 
 async function runCommand(
   command: string,
   args: string[],
-  options?: CommandRunOptions,
-): Promise<CommandResult> {
+  options?: RunCommandOptions,
+): Promise<RunCommandResult> {
   return new Promise((resolvePromise, reject) => {
     const child = spawn(command, args, {
       cwd: options?.cwd,
@@ -86,7 +88,7 @@ async function runCommand(
 }
 
 export async function ensureTerraformVersion(): Promise<string> {
-  let versionOutput: CommandResult;
+  let versionOutput: RunCommandResult;
   try {
     versionOutput = await runCommand("terraform", ["version", "-json"]);
   } catch (error) {
@@ -200,7 +202,7 @@ async function fetchProviderSchema(
 export async function resolveSchema(options: {
   refresh: boolean;
   terraformVersion: string;
-}): Promise<NormalizedProviderSchema> {
+}): Promise<ResolvedProviderSchema> {
   const cacheFilePath = getCacheFilePath(options.terraformVersion);
 
   let payload: CachePayload | null = null;
@@ -218,11 +220,8 @@ export async function resolveSchema(options: {
     logInit(`Cached schema: ${relativeToCwd(cacheFilePath)}`);
   }
 
-  return normalizeProviderSchema({
-    providerSource: PROVIDER_SOURCE,
-    providerVersion: PROVIDER_VERSION,
-    schemaEntry: payload.schema,
-    terraformVersion: options.terraformVersion,
-    generatedAt: payload.fetchedAt,
-  });
+  return {
+    cachePayload: payload,
+    schemaFilePath: cacheFilePath,
+  };
 }

@@ -187,6 +187,39 @@ describe("CLI E2E (init)", () => {
     }
   });
 
+  it("writes active provider schema metadata under .react-hcl/metadata.json", async () => {
+    const env = await createFakeTerraformEnvironment();
+
+    try {
+      await runInit({ cwd: env.tempDir, pathPrefix: env.pathPrefix });
+
+      const metadataPath = resolve(env.tempDir, ".react-hcl/metadata.json");
+      const metadata = JSON.parse(await Bun.file(metadataPath).text()) as {
+        formatVersion?: number;
+        activeProviderSchemas?: Record<
+          string,
+          {
+            path?: string;
+            terraformVersion?: string;
+            providerVersion?: string;
+            updatedAt?: string;
+          }
+        >;
+      };
+
+      const active =
+        metadata.activeProviderSchemas?.["registry.terraform.io/hashicorp/aws"];
+      expect(metadata.formatVersion).toBe(1);
+      expect(active?.terraformVersion).toBe("1.9.0");
+      expect(active?.providerVersion).toBe("latest");
+      expect(active?.path).toContain(".react-hcl/provider-schema/");
+      expect(active?.path?.endsWith(".json")).toBe(true);
+      expect(typeof active?.updatedAt).toBe("string");
+    } finally {
+      await $`rm -rf ${env.tempDir}`;
+    }
+  });
+
   it("does not modify unrelated user files", async () => {
     const env = await createFakeTerraformEnvironment();
 
