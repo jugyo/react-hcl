@@ -13,7 +13,9 @@ let runtimeMetadataPath = "";
 let runtimeSchemaPath = "";
 
 beforeAll(async () => {
-  testWorkdir = await mkdtemp(join(resolve(REPO_ROOT, "tmp"), "cli-e2e-"));
+  const tempRoot = resolve(REPO_ROOT, "tmp");
+  await mkdir(tempRoot, { recursive: true });
+  testWorkdir = await mkdtemp(join(tempRoot, "cli-e2e-"));
   runtimeMetadataPath = resolve(testWorkdir, ".react-hcl/metadata.json");
   runtimeSchemaPath = resolve(
     testWorkdir,

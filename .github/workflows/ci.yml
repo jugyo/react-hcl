@@ -18,6 +18,8 @@ jobs:
 
       - run: bun run lint
 
+      - run: bun run build:types
+
       - run: bun test
 
       - run: bun run typecheck:examples
