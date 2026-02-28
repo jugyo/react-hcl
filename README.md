@@ -144,7 +144,7 @@ export function WebServer({ vpcId, subnetId, instanceType }) {
 Run the transpiler for `main.tsx`:
 
 ```bash
-$ react-hcl main.tsx
+$ react-hcl generate main.tsx
 ```
 
 <details>
