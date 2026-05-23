@@ -66,23 +66,14 @@ examples/vpc-network-simplified/
 
 ## Generated HCL Snippet
 
-```hcl
-resource "aws_subnet" "public_0" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = cidrsubnet("10.0.0.0/16", 8, 0)
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = true
-}
+The loop emits concrete subnet blocks such as `public_1`:
 
+```hcl
 resource "aws_subnet" "public_1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet("10.0.0.0/16", 8, 1)
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
-}
-
-output "public_subnet_ids" {
-  value = [aws_subnet.public_0.id, aws_subnet.public_1.id]
 }
 ```
 
