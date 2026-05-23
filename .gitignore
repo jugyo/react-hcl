@@ -4,6 +4,8 @@ node_modules
 # output
 out
 dist
+website/.vitepress/cache
+website/.vitepress/dist
 *.tgz
 
 # code coverage

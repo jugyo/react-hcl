@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!tests/fixtures/hcl-react/*.expected.tsx"]
+    "includes": [
+      "**",
+      "!.docs",
+      "!docs/presentation.html",
+      "!tests/fixtures/hcl-react/*.expected.tsx"
+    ]
   },
   "formatter": {
     "enabled": true,
