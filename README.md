@@ -122,4 +122,4 @@ bun test
 bun run build
 ```
 
-See [docs/development.md](docs/development.md) for contributor workflow details.
+See the [contributor development guide](https://jugyo.github.io/react-hcl/contributing/development) or [docs/development.md](docs/development.md) for workflow details.

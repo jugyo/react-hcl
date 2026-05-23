@@ -3,6 +3,8 @@
 This document is the practical guide for contributors.
 It covers local setup, project structure, scripts, testing, and release operations.
 
+The public contributor guide is also available in the documentation site at `website/contributing/development.md`.
+
 ## Prerequisites
 
 - Use Bun for project commands.
