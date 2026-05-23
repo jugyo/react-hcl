@@ -34,7 +34,13 @@ export default defineConfig({
       },
       {
         text: "Examples",
-        items: [{ text: "Overview", link: "/examples/" }],
+        items: [
+          { text: "Overview", link: "/examples/" },
+          { text: "Module Composition", link: "/examples/module-composition" },
+          { text: "Static Website", link: "/examples/static-website" },
+          { text: "ECS Fargate", link: "/examples/ecs-fargate" },
+          { text: "VPC Network", link: "/examples/vpc-network" },
+        ],
       },
       {
         text: "Design",
