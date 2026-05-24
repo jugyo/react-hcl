@@ -1,38 +1,21 @@
 # Concepts
 
-`react-hcl` is an authoring tool for Terraform configuration.
+`react-hcl` is a TSX authoring layer for rendering Terraform configuration.
 
-You write JSX/TSX, use components to structure the configuration, and generate Terraform HCL as the artifact that Terraform CLI consumes.
+Use TSX to describe structure, reuse, and shared patterns. Generate Terraform HCL as the artifact that people review and Terraform CLI consumes.
 
-## Authoring Format vs Output Format
+## How Generation Works
 
-JSX/TSX is the authoring format. HCL is the output format.
+`react-hcl generate` loads a TSX module, evaluates its default export, collects the primitive Terraform blocks returned by JSX components, and serializes those blocks to HCL.
 
 ```text
 TSX entrypoint
-  -> component evaluation
+  -> default export JSX
   -> primitive Terraform blocks
   -> generated .tf
 ```
 
-Custom components help organize the source code, but they do not appear in the generated HCL. Their internal primitive blocks are expanded into normal Terraform blocks.
-
-## Components Are Structural Units
-
-Primitive components map directly to Terraform blocks:
-
-| Component | HCL block |
-| --- | --- |
-| `<Resource>` | `resource` |
-| `<Data>` | `data` |
-| `<Module>` | `module` |
-| `<Provider>` | `provider` |
-| `<Variable>` | `variable` |
-| `<Output>` | `output` |
-| `<Locals>` | `locals` |
-| `<Terraform>` | `terraform` |
-
-Custom components are for structure, reuse, and readability:
+Custom components run during this generation step. They do not appear in the generated HCL.
 
 ```tsx
 function WebServer({ subnetId, instanceType }) {
@@ -54,15 +37,26 @@ function WebServer({ subnetId, instanceType }) {
 }
 ```
 
-The generated HCL contains the security group and instance blocks. It does not contain a `WebServer` block.
+The generated HCL contains the security group and instance resources, not a `WebServer` block.
 
-## Output Order
+## HCL Remains The Artifact
 
-Output order follows component evaluation and declaration order.
+Primitive components map directly to Terraform blocks:
 
-`react-hcl` does not sort blocks automatically. This preserves the source structure in the generated HCL, which makes generated diffs easier to relate back to the TSX source.
+| Component | HCL block |
+| --- | --- |
+| `<Resource>` | `resource` |
+| `<Data>` | `data` |
+| `<Module>` | `module` |
+| `<Provider>` | `provider` |
+| `<Variable>` | `variable` |
+| `<Output>` | `output` |
+| `<Locals>` | `locals` |
+| `<Terraform>` | `terraform` |
 
-## References with `useRef`
+Output order follows TSX evaluation and declaration order. `react-hcl` does not sort blocks automatically, so generated diffs stay close to the source shape.
+
+## References
 
 Use `useRef()` when one Terraform block needs to reference another.
 
@@ -96,7 +90,7 @@ Refs represent Terraform references. Plain strings remain Terraform strings.
 
 ## Terraform Expressions
 
-Use helper functions when a JSX attribute should become a Terraform expression instead of a string:
+Use `tf` helpers when a JSX attribute should become a Terraform expression:
 
 ```tsx
 <Resource
@@ -116,14 +110,14 @@ resource "aws_instance" "web" {
 }
 ```
 
-Use:
+Common helpers:
 
 - `tf.var("name")` for `var.name`
 - `tf.local("name")` for `local.name`
 - `tf.raw("...")` for an explicit Terraform expression
 - `tf.block({ ... })` when a value should be emitted as a nested block
 
-## Attribute Syntax and HCL Body Text
+## Attribute Syntax And Body Text
 
 For most blocks, JSX attributes are the clearest form:
 
@@ -135,7 +129,7 @@ For most blocks, JSX attributes are the clearest form:
 />
 ```
 
-For complex Terraform constructs, direct HCL body text can be easier:
+For Terraform syntax that is easier to keep as HCL, pass body text:
 
 ```tsx
 <Resource type="aws_security_group" label="example">
@@ -153,38 +147,9 @@ For complex Terraform constructs, direct HCL body text can be easier:
 </Resource>
 ```
 
-Use attribute syntax for ordinary configuration and HCL body text when Terraform syntax is the better tool for the block body.
+Use body text as an escape hatch for complex Terraform constructs or migration from existing HCL.
 
-## Build-Time JavaScript
+## Output Boundary
 
-JavaScript conditionals and loops run before HCL is generated.
-
-```tsx
-{subnets.map((cidr, index) => (
-  <Resource
-    type="aws_subnet"
-    label={`public_${index}`}
-    cidr_block={cidr}
-  />
-))}
-```
-
-The generated HCL contains concrete Terraform blocks. It does not contain the JavaScript loop.
-
-## Responsibility Boundary
-
-`react-hcl` is responsible for:
-
-- evaluating the TSX entrypoint
-- expanding components
-- resolving refs
-- serializing Terraform blocks to HCL
-- detecting selected structural conflicts
-
-Terraform remains responsible for:
-
-- provider behavior
-- formatting and validation
-- planning and applying
-- state management
-- runtime input values
+`react-hcl generate` produces Terraform HCL as its output.
+The generated `.tf` file can then be used with the standard Terraform CLI.
