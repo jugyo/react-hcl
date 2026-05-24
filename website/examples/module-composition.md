@@ -1,7 +1,5 @@
 # Module Composition
 
-Source: `examples/module-composition`
-
 ## What This Example Shows
 
 This example demonstrates module composition with:
@@ -10,14 +8,6 @@ This example demonstrates module composition with:
 - module output references such as `network.vpc_id`
 - `depends_on` using a module ref
 - outputs that expose module values
-
-## Input Structure
-
-```text
-examples/module-composition/
-  input/main.tsx
-  output/main.tf
-```
 
 ## Key TSX Snippet
 
@@ -62,12 +52,16 @@ module "database" {
   depends_on = [module.networking]
 }
 
+output "vpc_id" {
+  value = module.networking.vpc_id
+}
+
 output "database_endpoint" {
   value = module.database.endpoint
 }
 ```
 
-## Notes
+## Takeaway
 
 The TSX source keeps the relationship between modules explicit. The generated HCL uses normal Terraform module references.
 

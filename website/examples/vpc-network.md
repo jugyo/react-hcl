@@ -1,7 +1,5 @@
 # VPC Network
 
-Source: `examples/vpc-network-simplified`
-
 ## What This Example Shows
 
 This example creates a VPC with public and private subnets.
@@ -13,19 +11,33 @@ It demonstrates:
 - composite components for public and private network concerns
 - refs passed between parent and child components
 
-## Input Structure
-
-```text
-examples/vpc-network-simplified/
-  input/main.tsx
-  input/public-network.tsx
-  input/private-network.tsx
-  output/main.tf
-```
-
 ## Key TSX Snippet
 
 ```tsx
+const vpcCidr = "10.0.0.0/16";
+const publicSubnetCount = 2;
+const privateSubnetCount = 2;
+const projectName = "demo";
+
+const azRef = useRef();
+const vpcRef = useRef();
+const igwRef = useRef();
+const natSubnetRef = useRef();
+
+<Data type="aws_availability_zones" label="available" ref={azRef} />
+<Resource type="aws_vpc" label="main" ref={vpcRef} cidr_block={vpcCidr} />
+
+<Resource
+  type="aws_subnet"
+  label="public_0"
+  ref={natSubnetRef}
+  vpc_id={vpcRef.id}
+  cidr_block={tf.raw(`cidrsubnet("${vpcCidr}", 8, 0)`)}
+  availability_zone={tf.raw(`${azRef.names}[0]`)}
+  map_public_ip_on_launch={true}
+  tags={{ Name: `${projectName}-public-0` }}
+/>
+
 <PublicNetwork
   vpcRef={vpcRef}
   azRef={azRef}
@@ -50,6 +62,8 @@ examples/vpc-network-simplified/
 ## TypeScript Loop Snippet
 
 ```tsx
+const subnetRefs = Array.from({ length: subnetCount - 1 }, () => useRef());
+
 {subnetRefs.map((ref, i) => (
   <Resource
     type="aws_subnet"
@@ -74,10 +88,14 @@ resource "aws_subnet" "public_1" {
   cidr_block              = cidrsubnet("10.0.0.0/16", 8, 1)
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
+
+  tags = {
+    Name = "demo-public-1"
+  }
 }
 ```
 
-## Notes
+## Takeaway
 
 The loop runs before HCL generation. Terraform receives concrete subnet blocks, not a JavaScript loop.
 
