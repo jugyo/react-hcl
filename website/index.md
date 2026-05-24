@@ -14,12 +14,12 @@ hero:
       link: /guide/concepts
 
 features:
-  - title: Rendering before output
-    details: Use TSX to describe how Terraform configuration is produced from shared inputs and patterns.
-  - title: HCL remains the artifact
-    details: Generate Terraform .tf files that can be read, reviewed, formatted, validated, planned, and applied with Terraform CLI.
-  - title: Terraform stays in charge
-    details: react-hcl stops at transpilation. State, providers, validation, planning, and apply remain in Terraform.
+  - title: Author in TSX, render HCL
+    details: Use components, props, conditionals, and loops to describe configuration, then generate plain Terraform .tf files.
+  - title: Components compile away
+    details: Custom components run during generation. The output contains primitive Terraform blocks, not a new runtime abstraction.
+  - title: Keep Terraform semantics
+    details: Refs and tf helpers emit Terraform references and expressions while Terraform CLI still handles validation, planning, state, and apply.
 ---
 
 ## Why react-hcl?
