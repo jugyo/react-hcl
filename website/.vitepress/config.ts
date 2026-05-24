@@ -10,7 +10,6 @@ export default defineConfig({
       { text: "Guide", link: "/guide/getting-started" },
       { text: "Reference", link: "/reference/cli" },
       { text: "Examples", link: "/examples/" },
-      { text: "Design", link: "/design/overview" },
       { text: "Contributing", link: "/contributing/development" },
     ],
     sidebar: [
@@ -39,13 +38,6 @@ export default defineConfig({
           { text: "Static Website", link: "/examples/static-website" },
           { text: "ECS Fargate", link: "/examples/ecs-fargate" },
           { text: "VPC Network", link: "/examples/vpc-network" },
-        ],
-      },
-      {
-        text: "Design",
-        items: [
-          { text: "Overview", link: "/design/overview" },
-          { text: "Constraints", link: "/design/constraints" },
         ],
       },
       {
