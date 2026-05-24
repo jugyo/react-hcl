@@ -1,49 +1,41 @@
-# Init Reference
+# Init
 
-`react-hcl init` prepares local TypeScript declarations from Terraform provider schema information.
+`react-hcl init` prepares local TypeScript support for TSX authoring.
 
 ```bash
 react-hcl init
 ```
 
-## What It Does
-
-`init` performs these steps:
-
-1. Resolves the installed Terraform CLI version.
-2. Resolves provider schema information through Terraform.
-3. Writes provider schema metadata.
-4. Generates declaration files under `.react-hcl/`.
-5. Ensures a local `tsconfig.json` exists when needed.
-
-The generated declarations make TSX authoring more useful by giving provider-aware component props in your local project.
-
-## Refreshing Schema Data
-
-Use `--refresh` to ignore the cache TTL and fetch provider schema information again:
-
-```bash
-react-hcl init --refresh
-```
-
-Use this when provider versions changed, Terraform configuration changed, or local generated types appear stale.
-
-## Generated Files
-
-Generated files live under:
-
-```text
-.react-hcl/
-```
-
-They are local project support files. Keep them with the project when you want consistent editor and type-checking behavior for other contributors.
-
 ## Requirements
 
-`init` expects Terraform CLI to be available in the environment because provider schema resolution is delegated to Terraform.
+`init` calls Terraform CLI to read provider schema information, so `terraform` must be available:
 
 ```bash
 terraform version
 ```
 
 If Terraform is missing or provider schema resolution fails, fix the Terraform setup first, then run `react-hcl init` again.
+
+## What It Writes
+
+`init` creates or updates:
+
+- `.react-hcl/provider-schema/` for cached provider schema data
+- `.react-hcl/metadata.json` for active provider schema metadata
+- `.react-hcl/gen/` for generated TypeScript declarations
+- `tsconfig.json` when one does not already exist
+
+Existing `tsconfig.json` files are left unchanged.
+
+## Local Support Files
+
+The `.react-hcl/` files support editor completions, TypeScript checking, and runtime schema lookup for `react-hcl generate`.
+They are not Terraform configuration and are not part of the generated HCL review artifact.
+
+## Refresh Schema Data
+
+Use `--refresh` to fetch provider schema data again instead of using the local cache:
+
+```bash
+react-hcl init --refresh
+```

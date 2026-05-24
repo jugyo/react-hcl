@@ -2,21 +2,12 @@
 
 This guide takes you from an empty project to a generated Terraform file.
 
-`react-hcl` generates HCL. It does not run Terraform for you, so validation, planning, applying, and state management stay in your normal Terraform workflow.
-
 ## Install
 
 Install the published CLI from npm:
 
 ```bash
 npm install -g react-hcl
-```
-
-If you are working from this repository instead, install dependencies and run the CLI through Bun:
-
-```bash
-bun install
-bun src/cli/index.ts --help
 ```
 
 ## Initialize Provider Types
@@ -28,6 +19,7 @@ react-hcl init
 ```
 
 `init` fetches Terraform provider schema information, generates local declaration files under `.react-hcl/`, and creates a local `tsconfig.json` when one is missing.
+The `.react-hcl/` directory is local support data for authoring and generation; it is separate from the Terraform HCL files you generate and review.
 
 Use `--refresh` when you want to ignore the schema cache and fetch again:
 
@@ -95,11 +87,9 @@ terraform init
 terraform validate
 ```
 
-From here, continue with your existing Terraform workflow, such as `terraform plan` and `terraform apply`.
-
 ## Read Next
 
-- [CLI Reference](/reference/cli)
-- [Components Reference](/reference/components)
-- [Hooks Reference](/reference/hooks)
-- [Helpers Reference](/reference/helpers)
+- [CLI](/reference/cli)
+- [Components](/reference/components)
+- [Hooks](/reference/hooks)
+- [Helpers](/reference/helpers)
