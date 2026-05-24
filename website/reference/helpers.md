@@ -60,7 +60,8 @@ resource "aws_instance" "web" {
 }
 ```
 
-Use `tf.raw` sparingly. Prefer refs, `tf.var`, and `tf.local` when they express the intent directly.
+Prefer refs, `tf.var`, and `tf.local` when they express the intent clearly.
+Use `tf.raw` for expressions that need to be written directly.
 
 ## `tf.block(value)`
 
