@@ -188,5 +188,3 @@ Terraform remains responsible for:
 - planning and applying
 - state management
 - runtime input values
-
-See [Terraform Workflow](/guide/terraform-workflow) for the operational flow.

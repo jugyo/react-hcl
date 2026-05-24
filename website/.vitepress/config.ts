@@ -19,7 +19,6 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Concepts", link: "/guide/concepts" },
-          { text: "Terraform Workflow", link: "/guide/terraform-workflow" },
         ],
       },
       {

@@ -52,4 +52,3 @@ resource "aws_s3_bucket" "assets" {
 
 - [Getting Started](/guide/getting-started) walks through installation, `init`, generation, and Terraform validation.
 - [Concepts](/guide/concepts) explains how components, refs, expressions, and output order work.
-- [Terraform Workflow](/guide/terraform-workflow) shows where `react-hcl` fits in a normal Terraform process.
