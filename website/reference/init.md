@@ -1,4 +1,4 @@
-# Init
+# react-hcl init
 
 `react-hcl init` prepares local TypeScript support for TSX authoring.
 

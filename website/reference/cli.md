@@ -1,4 +1,4 @@
-# CLI
+# CLI Reference
 
 The `react-hcl` CLI converts between JSX/TSX and Terraform HCL.
 
@@ -67,4 +67,4 @@ Options:
 | --- | --- |
 | `--refresh` | Ignore cache TTL and refresh provider schema from Terraform CLI. |
 
-See [Init](/reference/init) for details.
+See [react-hcl init](/reference/init) for details.

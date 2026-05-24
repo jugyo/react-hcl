@@ -23,11 +23,11 @@ export default defineConfig({
       {
         text: "Reference",
         items: [
-          { text: "CLI", link: "/reference/cli" },
-          { text: "Components", link: "/reference/components" },
-          { text: "Hooks", link: "/reference/hooks" },
-          { text: "Helpers", link: "/reference/helpers" },
-          { text: "Init", link: "/reference/init" },
+          { text: "CLI Reference", link: "/reference/cli" },
+          { text: "Component Reference", link: "/reference/components" },
+          { text: "useRef Hook", link: "/reference/hooks" },
+          { text: "Terraform Helpers", link: "/reference/helpers" },
+          { text: "react-hcl init", link: "/reference/init" },
         ],
       },
       {

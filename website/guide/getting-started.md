@@ -89,7 +89,7 @@ terraform validate
 
 ## Read Next
 
-- [CLI](/reference/cli)
-- [Components](/reference/components)
-- [Hooks](/reference/hooks)
-- [Helpers](/reference/helpers)
+- [CLI Reference](/reference/cli)
+- [Component Reference](/reference/components)
+- [useRef Hook](/reference/hooks)
+- [Terraform Helpers](/reference/helpers)
