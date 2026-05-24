@@ -38,9 +38,8 @@ Convert Terraform HCL to JSX/TSX.
 
 ```bash
 react-hcl reverse main.tf
-react-hcl reverse main.tf -o ./src/main.tsx
 react-hcl reverse --module main.tf
-cat main.tf | react-hcl reverse -
+cat main.tf | react-hcl reverse - -o ./src/main.tsx
 ```
 
 Arguments and options:
@@ -55,7 +54,7 @@ Use `--module` when you want an immediately editable TSX module rather than only
 
 ## `init`
 
-Fetch Terraform provider schema information and generate local TypeScript declarations.
+Fetch Terraform provider schema and generate TypeScript declarations.
 
 ```bash
 react-hcl init
@@ -66,26 +65,6 @@ Options:
 
 | Name | Description |
 | --- | --- |
-| `--refresh` | Ignore the cache TTL and fetch provider schema information again. |
+| `--refresh` | Ignore cache TTL and refresh provider schema from Terraform CLI. |
 
 See [Init](/reference/init) for details.
-
-## Common Errors
-
-### `Cannot use stdin and input file together.`
-
-Pass either a file path or stdin, not both.
-
-### `Stdin input is required when input is '-'.`
-
-The input argument is `-`, but no stdin content was provided.
-
-### Provider schema is missing
-
-Run:
-
-```bash
-react-hcl init
-```
-
-Then run `generate` again.
