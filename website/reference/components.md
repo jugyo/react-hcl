@@ -1,4 +1,4 @@
-# Components Reference
+# Components
 
 Components describe Terraform blocks in JSX/TSX. Custom components can group these primitive components, but only the primitive Terraform blocks are emitted into HCL.
 

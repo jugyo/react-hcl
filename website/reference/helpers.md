@@ -1,4 +1,4 @@
-# Helpers Reference
+# Helpers
 
 The `tf` helper creates Terraform expressions inside JSX attributes.
 
